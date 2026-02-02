@@ -1,0 +1,74 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: taskmanager_mongo
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./mongod.conf:/etc/mongod.conf:ro
+      - ./configdb/mongo-keyfile:/data/configdb/mongo-keyfile:ro
+    command: >
+      bash -c "
+        mongod --config /etc/mongod.conf --replSet rs0 --bind_ip_all --auth --keyFile /data/configdb/mongo-keyfile/keyfile
+      "
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - task-manager-network
+  backup:
+    image: offen/docker-volume-backup:v2
+    container_name: taskmanager_backup
+    restart: always
+    environment:
+      BACKUP_CRON_EXPRESSION: "0 0 */14 * *" # every 1 weeks
+      BACKUP_RETENTION: 5 # keep 5 days of backups
+    volumes:
+      - mongo_data:/backup/mongo_data:ro
+      - ./backups:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - task-manager-network
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskmanager-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.production
+    depends_on:
+      - mongodb
+    networks:
+      - task-manager-network
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    container_name: taskmanager-frontend
+    restart: always
+    env_file:
+      - .env.production
+    ports:
+      - "8010:8010"
+    depends_on:
+      - backend
+    networks:
+      - task-manager-network
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  task-manager-network:
+    driver: bridge

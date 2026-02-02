@@ -9,6 +9,7 @@ yarn-error.log
 # Ignore environment files
 .env
 .env.local
+.env.*
 
 data.txt
 
