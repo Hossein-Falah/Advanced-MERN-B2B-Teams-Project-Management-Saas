@@ -41,12 +41,9 @@ app.use(
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    // When running in production over HTTPS we need SameSite='none' and secure=true.
-    // For local development (HTTP) set SameSite='lax' and secure=false so browsers accept the cookie.
-    sameSite: config.NODE_ENV === "production" ? "none" : "lax",
-    secure: config.NODE_ENV === "production",
-    httpOnly: true,
-    domain: ".teleservat.com"
+    sameSite: "lax",
+    secure: true,
+    httpOnly: true
   })
 );
 
