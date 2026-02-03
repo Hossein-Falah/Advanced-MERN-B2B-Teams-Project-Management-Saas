@@ -41,9 +41,10 @@ app.use(
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: "none",          // 🔥 حیاتی
-    secure: false,             // 🔥 حیاتی
-    httpOnly: false      
+    sameSite: "none", 
+    secure: true,             
+    httpOnly: true,
+    path: '/'
   })
 );
 
