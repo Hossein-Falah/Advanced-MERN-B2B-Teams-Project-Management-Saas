@@ -44,6 +44,7 @@ app.use(
     sameSite: "none", 
     secure: true,             
     httpOnly: true,
+    domain: ".teleservat.com",
     path: '/'
   })
 );
