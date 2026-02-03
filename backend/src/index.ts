@@ -46,6 +46,7 @@ app.use(
     sameSite: config.NODE_ENV === "production" ? "none" : "lax",
     secure: config.NODE_ENV === "production",
     httpOnly: true,
+    domain: ".teleservat.com"
   })
 );
 
