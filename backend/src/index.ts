@@ -41,7 +41,7 @@ app.use(
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: "none", 
+    sameSite: "lax", 
     secure: true,             
     httpOnly: true,
     domain: ".teleservat.com",
