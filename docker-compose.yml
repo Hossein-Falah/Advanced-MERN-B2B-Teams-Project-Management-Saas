@@ -7,12 +7,6 @@ services:
       - "27018:27017"
     volumes:
       - mongo_data:/data/db
-      - ./mongod.conf:/etc/mongod.conf:ro
-      - ./configdb/mongo-keyfile:/data/configdb/mongo-keyfile:ro
-    command: >
-      bash -c "
-        mongod --config /etc/mongod.conf --replSet rs0 --bind_ip_all --auth --keyFile /data/configdb/mongo-keyfile/keyfile
-      "
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s

@@ -58,11 +58,14 @@ const SignIn = () => {
     mutate(values, {
       onSuccess: (data) => {
         const user = data.user;
+        
         console.log(user);
         const decodedUrl = returnUrl ? decodeURIComponent(returnUrl) : null;
         navigate(decodedUrl || `/workspace/${user.currentWorkspace}`);
       },
       onError: (error) => {
+        console.log(error);
+        
         toast({
           title: "Error",
           description: error.message,
