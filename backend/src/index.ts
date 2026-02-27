@@ -31,7 +31,13 @@ app.set("trust proxy", 1);
 
 app.use(
   cors({
-    origin: [config.FRONTEND_ORIGIN, config.FRONTEND_DEVELOPMENT],
+    origin: [
+      config.FRONTEND_ORIGIN, 
+      config.FRONTEND_DEVELOPMENT,
+      "http://localhost:5173",
+      "http://localhost:8010",
+      "https://task.teleservat.com"
+    ],
     credentials: true,
   })
 );
