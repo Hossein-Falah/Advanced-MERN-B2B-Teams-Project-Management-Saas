@@ -42,31 +42,31 @@ app.use(
   })
 );
 
-// app.use(
-//   session({
-//     name: "session",
-//     keys: [config.SESSION_SECRET],
-//     maxAge: 24 * 60 * 60 * 1000,
-//     sameSite: "lax",
-//     secure: true,       
-//     httpOnly: true,
-//     path: '/'
-//   })
-// );
-
-app.use((req, res, next) => {
-  const isLocalhost = req.headers.origin?.includes("localhost");
-  console.log(isLocalhost);
-  
+app.use(
   session({
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
+    secure: false,
+    sameSite: "lax",
     httpOnly: true,
-    secure: true,
-    sameSite: isLocalhost ? "none" : "lax",
-  })(req, res, next);
-});
+    path: '/'
+  })
+);
+
+// app.use((req, res, next) => {
+//   const isLocalhost = req.headers.origin?.includes("localhost");
+//   console.log(isLocalhost);
+  
+//   session({
+//     name: "session",
+//     keys: [config.SESSION_SECRET],
+//     maxAge: 24 * 60 * 60 * 1000,
+//     httpOnly: true,
+//     secure: true,
+//     sameSite: isLocalhost ? "none" : "lax",
+//   })(req, res, next);
+// });
 
 // app.use(
 //   session({
