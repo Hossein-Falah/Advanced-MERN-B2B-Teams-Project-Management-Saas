@@ -36,15 +36,28 @@ app.use(
   })
 );
 
+// app.use(
+//   session({
+//     name: "session",
+//     keys: [config.SESSION_SECRET],
+//     maxAge: 24 * 60 * 60 * 1000,
+//     sameSite: "lax", 
+//     secure: false,             
+//     httpOnly: true,
+//     domain: ".teleservat.com",
+//     path: '/'
+//   })
+// );
+
 app.use(
   session({
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: "lax", 
-    secure: false,             
+    sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    domain: ".teleservat.com",
+    domain: process.env.NODE_ENV === "production" ? ".teleservat.com" : undefined,
     path: '/'
   })
 );
