@@ -44,7 +44,6 @@ app.use(
     sameSite: "none", 
     secure: true,             
     httpOnly: true,
-    domain: "task-api.teleservat.com",
     path: '/'
   })
 );
