@@ -36,31 +36,31 @@ app.use(
   })
 );
 
-// app.use(
-//   session({
-//     name: "session",
-//     keys: [config.SESSION_SECRET],
-//     maxAge: 24 * 60 * 60 * 1000,
-//     sameSite: "lax", 
-//     secure: false,             
-//     httpOnly: true,
-//     domain: ".teleservat.com",
-//     path: '/'
-//   })
-// );
-
 app.use(
   session({
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "none", 
+    secure: false,             
     httpOnly: true,
-    domain: process.env.NODE_ENV === "production" ? "api.teleservat.com" : "localhost",
+    domain: "task-api.teleservat.com",
     path: '/'
   })
 );
+
+// app.use(
+//   session({
+//     name: "session",
+//     keys: [config.SESSION_SECRET],
+//     maxAge: 24 * 60 * 60 * 1000,
+//     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+//     secure: process.env.NODE_ENV === "production",
+//     httpOnly: true,
+//     domain: process.env.NODE_ENV === "production" ? "task-api.teleservat.com" : "localhost",
+//     path: '/'
+//   })
+// );
 
 app.use(passport.initialize());
 app.use(passport.session());
