@@ -54,10 +54,10 @@ app.use(
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    domain: process.env.NODE_ENV === "production" ? ".teleservat.com" : undefined,
+    domain: process.env.NODE_ENV === "production" ? "api.teleservat.com" : "localhost",
     path: '/'
   })
 );
