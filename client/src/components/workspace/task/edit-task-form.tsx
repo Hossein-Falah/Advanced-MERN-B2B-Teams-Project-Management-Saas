@@ -25,8 +25,10 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
+import { FileDropInput } from '@/components/ui/inputFile'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '../../ui/textarea'
+import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import useWorkspaceId from '@/hooks/use-workspace-id'
 import { TaskPriorityEnum, TaskStatusEnum } from '@/constant'
@@ -55,7 +57,7 @@ export default function EditTaskForm({
   const { data: memberData } = useGetWorkspaceMembers(workspaceId)
   const members = memberData?.members || []
 
-  // گزینه‌های اعضا
+  // اعضای فضای کاری
   const membersOptions = members?.map((member) => {
     const name = member.userId?.name || 'ناشناس'
     const initials = getAvatarFallbackText(name)
@@ -75,7 +77,48 @@ export default function EditTaskForm({
     }
   })
 
-  // برچسب‌های فارسی برای وضعیت‌ها
+  const formSchema = z.object({
+    title: z.string().trim().min(1, {
+      message: 'عنوان تسک الزامی است',
+    }),
+    description: z.string().trim(),
+    status: z.enum(
+      Object.values(TaskStatusEnum) as [keyof typeof TaskStatusEnum],
+      {
+        required_error: 'وضعیت الزامی است',
+      },
+    ),
+    priority: z.enum(
+      Object.values(TaskPriorityEnum) as [keyof typeof TaskPriorityEnum],
+      {
+        required_error: 'اولویت الزامی است',
+      },
+    ),
+    assignedTo: z.string().trim().min(1, {
+      message: 'انتخاب مسئول الزامی است',
+    }),
+    dueDate: z.date({
+      required_error: 'تاریخ سررسید الزامی است',
+    }),
+    attachment: z.instanceof(File).optional(),
+  })
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: task?.title ?? '',
+      description: task?.description ?? '',
+      status: task?.status ?? 'TODO',
+      priority: task?.priority ?? 'MEDIUM',
+      assignedTo: task?.assignedTo?._id ?? '',
+      dueDate: task?.dueDate ? new Date(task.dueDate) : new Date(),
+      attachment: undefined,
+    },
+  })
+
+  const taskStatusList = Object.values(TaskStatusEnum)
+  const taskPriorityList = Object.values(TaskPriorityEnum)
+
   // برچسب‌های فارسی برای وضعیت‌ها
   const statusLabels: Record<string, string> = {
     BACKLOG: 'لیست انتظار',
@@ -93,248 +136,330 @@ export default function EditTaskForm({
     URGENT: 'فوری',
   }
 
-  // گزینه‌های وضعیت با برچسب فارسی
-  const statusOptions = Object.values(TaskStatusEnum).map((status) => ({
-    label: statusLabels[status] || status,
+  // ساخت گزینه‌های وضعیت با برچسب فارسی
+  const statusOptions = taskStatusList.map((status) => ({
     value: status,
+    label: statusLabels[status] || status,
   }))
 
-  // گزینه‌های اولویت با برچسب فارسی
-  const priorityOptions = Object.values(TaskPriorityEnum).map((priority) => ({
-    label: priorityLabels[priority] || priority,
+  // ساخت گزینه‌های اولویت با برچسب فارسی
+  const priorityOptions = taskPriorityList.map((priority) => ({
     value: priority,
+    label: priorityLabels[priority] || priority,
   }))
-
-  const formSchema = z.object({
-    title: z.string().trim().min(1, { message: 'عنوان تسک الزامی است' }),
-    description: z.string().trim(),
-    status: z.enum(
-      Object.values(TaskStatusEnum) as [keyof typeof TaskStatusEnum]
-    ),
-    priority: z.enum(
-      Object.values(TaskPriorityEnum) as [keyof typeof TaskPriorityEnum]
-    ),
-    assignedTo: z
-      .string()
-      .trim()
-      .min(1, { message: 'انتخاب مسئول الزامی است' }),
-    dueDate: z.date({ required_error: 'تاریخ سررسید الزامی است' }),
-  })
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: task?.title ?? '',
-      description: task?.description ?? '',
-      status: task?.status ?? 'TODO',
-      priority: task?.priority ?? 'MEDIUM',
-      assignedTo: task.assignedTo?._id ?? '',
-      dueDate: task?.dueDate ? new Date(task.dueDate) : new Date(),
-    },
-  })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return
 
-    const payload = {
-      workspaceId,
-      projectId: task.project?._id ?? '',
-      taskId: task._id,
-      data: {
-        ...values,
-        dueDate: values.dueDate.toISOString(),
-      },
+    const formData = new FormData()
+
+    formData.append('workspaceId', workspaceId)
+    formData.append('projectId', task.project?._id ?? '')
+    formData.append('title', values.title)
+    formData.append('description', values.description || '')
+    formData.append('assignedTo', values.assignedTo)
+    formData.append('status', values.status)
+    formData.append('priority', values.priority)
+    formData.append('dueDate', values.dueDate.toISOString())
+
+    if (values.attachment) {
+      formData.append('attachment', values.attachment)
     }
 
-    mutate(payload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['all-tasks', workspaceId] })
-        toast({
-          title: 'موفق',
-          description: 'تسک با موفقیت به‌روزرسانی شد',
-          variant: 'success',
-        })
-        onClose()
+    mutate(
+      {
+        workspaceId,
+        projectId: task.project?._id ?? '',
+        taskId: task._id,
+        data: formData,
       },
-      onError: (error) => {
-        toast({
-          title: 'خطا',
-          description: error.message,
-          variant: 'destructive',
-        })
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ['project-analytics', task.project?._id],
+          })
+
+          queryClient.invalidateQueries({
+            queryKey: ['all-tasks', workspaceId],
+          })
+
+          toast({
+            title: 'موفق',
+            description: 'تسک با موفقیت به‌روزرسانی شد',
+            variant: 'success',
+          })
+
+          onClose()
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'خطا',
+            description: error.message,
+            variant: 'destructive',
+          })
+        },
       },
-    })
+    )
   }
 
   return (
     <div className='w-full h-auto max-w-full' dir='rtl'>
       <div className='h-full'>
         <div className='my-5 pb-2 border-b'>
-          <h1 className='text-xl font-semibold text-center sm:text-right'>
-            ویرایش تسک
-          </h1>
+          <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
+            ویرایش و بروزرسانی اطلاعات تسک
+          </p>
         </div>
+
         <Form {...form}>
           <form className='space-y-3' onSubmit={form.handleSubmit(onSubmit)}>
-            {/* عنوان */}
-            <FormField
-              control={form.control}
-              name='title'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>عنوان تسک</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='عنوان تسک' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* توضیحات */}
-            <FormField
-              control={form.control}
-              name='description'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>توضیحات تسک</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} rows={2} placeholder='توضیحات' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* مسئول */}
-            <FormField
-              control={form.control}
-              name='assignedTo'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>مسئول</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
+            <div>
+              <FormField
+                control={form.control}
+                name='title'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
+                      عنوان تسک
+                    </FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='یک مسئول انتخاب کنید' />
-                      </SelectTrigger>
+                      <Input
+                        placeholder='بازطراحی وب‌سایت'
+                        className='!h-[48px]'
+                        {...field}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <div className='w-full max-h-[200px] overflow-y-auto scrollbar'>
-                        {membersOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div>
+              <FormField
+                control={form.control}
+                name='description'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
+                      توضیحات تسک
+                      <span className='text-xs font-extralight mr-2'>
+                        (اختیاری)
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea rows={1} placeholder='توضیحات' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div>
+              <FormField
+                control={form.control}
+                name='assignedTo'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>مسئول</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='یک مسئول انتخاب کنید' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <div className='w-full max-h-[200px] overflow-y-auto scrollbar'>
+                          {membersOptions?.map((option) => (
+                            <SelectItem
+                              className='cursor-pointer'
+                              key={option.value}
+                              value={option.value}
+                            >
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className='!mt-2'>
+              <FormField
+                control={form.control}
+                name='dueDate'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>تاریخ سررسید</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-full flex-1 pl-3 text-right font-normal',
+                              !field.value && 'text-muted-foreground',
+                            )}
+                          >
+                            {field.value ? (
+                              formatJalali(field.value, 'PPP', { locale: faIR })
+                            ) : (
+                              <span>انتخاب تاریخ</span>
+                            )}
+                            <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+
+                      <PopoverContent className='w-auto p-0' align='start'>
+                        <Calendar
+                          mode='single'
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                            date > new Date('2100-12-31')
+                          }
+                          initialFocus
+                          defaultMonth={field.value || new Date()}
+                          fromMonth={new Date()}
+                          locale={faIR}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div>
+              <FormField
+                control={form.control}
+                name='status'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>وضعیت</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            className='!text-muted-foreground !capitalize'
+                            placeholder='یک وضعیت انتخاب کنید'
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {statusOptions?.map((status) => (
+                          <SelectItem
+                            className='!capitalize'
+                            key={status.value}
+                            value={status.value}
+                          >
+                            {status.label}
                           </SelectItem>
                         ))}
-                      </div>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            {/* تاریخ سررسید */}
-            <FormField
-              control={form.control}
-              name='dueDate'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>تاریخ سررسید</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
+            <div>
+              <FormField
+                control={form.control}
+                name='priority'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>اولویت</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
                       <FormControl>
-                        <Button
-                          variant='outline'
-                          className='w-full justify-start text-right'
-                        >
-                          {field.value
-                            ? formatJalali(field.value, 'PPP', { locale: faIR })
-                            : 'انتخاب تاریخ'}
-                          <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
-                        </Button>
+                        <SelectTrigger>
+                          <SelectValue placeholder='یک اولویت انتخاب کنید' />
+                        </SelectTrigger>
                       </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        mode='single'
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        locale={faIR}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      <SelectContent>
+                        {priorityOptions?.map((priority) => (
+                          <SelectItem
+                            className='!capitalize'
+                            key={priority.value}
+                            value={priority.value}
+                          >
+                            {priority.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            {/* وضعیت */}
-            <FormField
-              control={form.control}
-              name='status'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>وضعیت</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='انتخاب وضعیت' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {statusOptions.map((status) => (
-                        <SelectItem key={status.value} value={status.value}>
-                          {status.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div>
+              <FormField
+                control={form.control}
+                name='attachment'
+                render={({ field }) => {
+                  const attachmentPreview = task?.attachment ?? undefined
 
-            {/* اولویت */}
-            <FormField
-              control={form.control}
-              name='priority'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>اولویت</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='انتخاب اولویت' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {priorityOptions.map((priority) => (
-                        <SelectItem key={priority.value} value={priority.value}>
-                          {priority.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  return (
+                    <FormItem>
+                      <FormLabel>فایل پیوست</FormLabel>
+                      {attachmentPreview && (
+                        <div className='bg-slate-50 dark:bg-slate-900 p-3 rounded-lg'>
+                          <a
+                            href={attachmentPreview}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                          >
+                            <div className=' flex  justify-between'>
+                              <p>دانلود فایل ضمیمه</p>
+                              <p className='text-sm '>دانلود</p>
+                            </div>
+                            <p className='line-clamp-3 opacity-50 text-right text-xs mt-1'>
+                              {attachmentPreview}
+                            </p>
+                          </a>
+                        </div>
+                      )}
 
-            <Button type='submit' className='w-full' disabled={isPending}>
+                      <FormControl>
+                        <FileDropInput
+                          onFileChange={(file) => field.onChange(file)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
+              />
+            </div>
+
+            <Button
+              className='flex place-self-start h-[40px] text-white font-semibold'
+              type='submit'
+              disabled={isPending}
+            >
               {isPending && <Loader className='animate-spin ml-2' />}
               ذخیره تغییرات
             </Button>

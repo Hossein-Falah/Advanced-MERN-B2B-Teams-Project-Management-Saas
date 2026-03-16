@@ -25,6 +25,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
+import { FileDropInput } from '@/components/ui/inputFile'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '../../ui/textarea'
 import { cn } from '@/lib/utils'
@@ -119,6 +120,7 @@ export default function CreateTaskForm(props: {
     dueDate: z.date({
       required_error: 'تاریخ سررسید الزامی است',
     }),
+    attachment: z.instanceof(File).optional(),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -126,6 +128,7 @@ export default function CreateTaskForm(props: {
     defaultValues: {
       title: '',
       description: '',
+      attachment: undefined,
       projectId: projectId ? projectId : '',
     },
   })
@@ -164,40 +167,53 @@ export default function CreateTaskForm(props: {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return
-    const payload = {
-      workspaceId,
-      projectId: values.projectId,
-      data: {
-        ...values,
-        dueDate: values.dueDate.toISOString(),
-      },
+
+    // ساخت FormData برای ارسال فایل
+    const formData = new FormData()
+
+    formData.append('workspaceId', workspaceId)
+    formData.append('projectId', values.projectId)
+    formData.append('title', values.title)
+    formData.append('description', values.description || '')
+    formData.append('assignedTo', values.assignedTo)
+    formData.append('status', values.status)
+    formData.append('priority', values.priority)
+    formData.append('dueDate', values.dueDate.toISOString())
+
+    if (values.attachment) {
+      formData.append('attachment', values.attachment)
     }
 
-    mutate(payload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['project-analytics', projectId],
-        })
+    // حالا ارسال
+    mutate(
+      { workspaceId, projectId: values.projectId, data: formData },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ['project-analytics', projectId],
+          })
 
-        queryClient.invalidateQueries({
-          queryKey: ['all-tasks', workspaceId],
-        })
+          queryClient.invalidateQueries({
+            queryKey: ['all-tasks', workspaceId],
+          })
 
-        toast({
-          title: 'موفق',
-          description: 'تسک با موفقیت ایجاد شد',
-          variant: 'success',
-        })
-        onClose()
+          toast({
+            title: 'موفق',
+            description: 'تسک با موفقیت ایجاد شد',
+            variant: 'success',
+          })
+
+          onClose()
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'خطا',
+            description: error.message,
+            variant: 'destructive',
+          })
+        },
       },
-      onError: (error) => {
-        toast({
-          title: 'خطا',
-          description: error.message,
-          variant: 'destructive',
-        })
-      },
-    })
+    )
   }
 
   return (
@@ -462,7 +478,23 @@ export default function CreateTaskForm(props: {
                 )}
               />
             </div>
-
+            <div>
+              <FormField
+                control={form.control}
+                name='attachment'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>فایل پیوست</FormLabel>
+                    <FormControl>
+                      <FileDropInput
+                        onFileChange={(file) => field.onChange(file)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <Button
               className='flex place-self-start h-[40px] text-white font-semibold'
               type='submit'

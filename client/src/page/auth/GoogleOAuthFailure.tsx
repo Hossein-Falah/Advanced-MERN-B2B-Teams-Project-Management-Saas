@@ -14,18 +14,18 @@ const GoogleOAuthFailure = () => {
           className='flex items-center gap-2 self-center font-medium'
         >
           <Logo />
-          TeleMe
+          تِلِ من
         </Link>
         <div className='flex flex-col gap-6'></div>
       </div>
       <Card>
         <CardContent>
           <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Authentication Failed</h1>
-            <p>We couldn't sign you in with Google. Please try again.</p>
+            <h1>احراز هویت ناموفق بود</h1>
+            <p>ورود شما با حساب گوگل انجام نشد. لطفاً دوباره تلاش کنید.</p>
 
             <Button onClick={() => navigate('/')} style={{ marginTop: '20px' }}>
-              Back to Login
+              بازگشت به صفحه ورود
             </Button>
           </div>
         </CardContent>

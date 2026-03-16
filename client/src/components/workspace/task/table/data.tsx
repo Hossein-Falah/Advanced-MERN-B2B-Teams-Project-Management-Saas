@@ -6,6 +6,7 @@ import {
   ArrowUp,
   CheckCircle,
   Circle,
+  ClockAlert,
   HelpCircle,
   Timer,
   View,
@@ -23,14 +24,15 @@ const priorityIcons = {
   [TaskPriorityEnum.LOW]: ArrowDown,
   [TaskPriorityEnum.MEDIUM]: ArrowRight,
   [TaskPriorityEnum.HIGH]: ArrowUp,
+  [TaskPriorityEnum.URGENT]: ClockAlert,
 }
 
 export const statuses = transformOptions(
   Object.values(TaskStatusEnum),
-  statusIcons
+  statusIcons,
 )
 
 export const priorities = transformOptions(
   Object.values(TaskPriorityEnum),
-  priorityIcons
+  priorityIcons,
 )

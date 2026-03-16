@@ -19,9 +19,12 @@ import {
 } from '@/lib/helper'
 import { priorities, statuses } from './data'
 import { TaskType } from '@/types/api.type'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import CommentsDialog from './create-comment-dialog'
+import { useState } from 'react'
 export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
+  const [isOpenComments, setIsOpenComments] = useState(false)
+
   const columns: ColumnDef<TaskType>[] = [
     {
       id: '_id',
@@ -55,13 +58,26 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
       ),
       cell: ({ row }) => {
         return (
-          <div className='flex flex-wrap space-x-2 rtl:space-x-reverse'>
-            <Badge variant='outline' className='capitalize shrink-0 h-[25px]'>
-              {row.original.taskCode}
-            </Badge>
-            <span className='block lg:max-w-[220px] max-w-[200px] font-medium'>
-              {row.original.title}
-            </span>
+          <div>
+            <div
+              onClick={() => setIsOpenComments(true)}
+              className='flex flex-wrap space-x-2 rtl:space-x-reverse cursor-pointer'
+            >
+              <Badge
+                variant='outline'
+                className='capitalize shrink-0 h-[25px] '
+              >
+                {row.original.taskCode}
+              </Badge>
+              <span className='block lg:max-w-[220px] max-w-[200px] font-medium'>
+                {row.original.title}
+              </span>
+            </div>
+            <CommentsDialog
+              task={row.original}
+              isOpen={isOpenComments}
+              onClose={() => setIsOpenComments(false)}
+            />
           </div>
         )
       },
@@ -104,7 +120,6 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
           name && (
             <div className='flex items-center gap-1'>
               <Avatar className='h-6 w-6'>
-                <AvatarImage src={assignee?.profilePicture || ''} alt={name} />
                 <AvatarFallback className={avatarColor}>
                   {initials}
                 </AvatarFallback>
@@ -143,7 +158,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
       ),
       cell: ({ row }) => {
         const status = statuses.find(
-          (status) => status.value === row.getValue('status')
+          (status) => status.value === row.getValue('status'),
         )
         if (!status) return null
         const statusKey = formatStatusToEnum(status.value) as TaskStatusEnumType
@@ -170,11 +185,11 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
       ),
       cell: ({ row }) => {
         const priority = priorities.find(
-          (priority) => priority.value === row.getValue('priority')
+          (priority) => priority.value === row.getValue('priority'),
         )
         if (!priority) return null
         const statusKey = formatStatusToEnum(
-          priority.value
+          priority.value,
         ) as TaskPriorityEnumType
         const Icon = priority.icon
         if (!Icon) return null

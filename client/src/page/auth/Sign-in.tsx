@@ -80,7 +80,7 @@ const SignIn = () => {
           className='flex items-center gap-2 self-center font-medium'
         >
           <Logo />
-          TeleMe
+          تِلِ من
         </Link>
         <div className='flex flex-col gap-6'>
           <Card>

@@ -78,7 +78,7 @@ const SignUp = () => {
           className='flex items-center gap-2 self-center font-medium'
         >
           <Logo />
-          TeleMe
+          تِلِ من
         </Link>
         <div className='flex flex-col gap-6'>
           <Card>
@@ -173,7 +173,7 @@ const SignUp = () => {
                         className='w-full'
                       >
                         {isPending && <Loader className='animate-spin' />}
-                        Sign up
+                        ثبت نام
                       </Button>
                     </div>
                     <div className='text-center text-sm'>
