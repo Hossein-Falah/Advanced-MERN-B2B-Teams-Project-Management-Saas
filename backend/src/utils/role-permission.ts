@@ -24,6 +24,10 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
     Permissions.EDIT_TASK,
     Permissions.DELETE_TASK,
 
+    Permissions.CREATE_COMMENT,
+    Permissions.EDIT_COMMENT,
+    Permissions.DELETE_COMMENT,
+
     Permissions.VIEW_ONLY,
   ],
   ADMIN: [
@@ -36,10 +40,20 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
     Permissions.DELETE_TASK,
     Permissions.MANAGE_WORKSPACE_SETTINGS,
     Permissions.VIEW_ONLY,
+
+    Permissions.CREATE_COMMENT,
+    Permissions.EDIT_COMMENT,
+    Permissions.DELETE_COMMENT,
+
   ],
   MEMBER: [
     Permissions.VIEW_ONLY,
     Permissions.CREATE_TASK,
     Permissions.EDIT_TASK,
+
+    Permissions.CREATE_COMMENT,
+    Permissions.EDIT_COMMENT,
+    Permissions.DELETE_COMMENT,
+
   ],
 };

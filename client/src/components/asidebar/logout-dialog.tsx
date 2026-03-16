@@ -34,7 +34,7 @@ const LogoutDialog = (props: {
     },
     onError: (error) => {
       toast({
-        title: "Error",
+        title: "خطا",
         description: error.message,
         variant: "destructive",
       });
@@ -52,19 +52,19 @@ const LogoutDialog = (props: {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure you want to log out?</DialogTitle>
+            <DialogTitle>آیا مطمئن هستید می‌خواهید خارج شوید؟</DialogTitle>
             <DialogDescription>
-              This will end your current session and you will need to log in
-              again to access your account.
+              با این کار نشست فعلی شما پایان می‌یابد و برای دسترسی دوباره باید
+              دوباره وارد شوید.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button disabled={isPending} type="button" onClick={handleLogout}>
               {isPending && <Loader className="animate-spin" />}
-              Sign out
+              خروج از حساب
             </Button>
             <Button type="button" onClick={() => setIsOpen(false)}>
-              Cancel
+              انصراف
             </Button>
           </DialogFooter>
         </DialogContent>

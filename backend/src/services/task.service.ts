@@ -3,6 +3,7 @@ import MemberModel from "../models/member.model";
 import ProjectModel from "../models/project.model";
 import TaskModel from "../models/task.model";
 import { BadRequestException, NotFoundException } from "../utils/appError";
+import { deleteFile, uploadFileToS3 } from "../utils/s3";
 
 export const createTaskService = async (
   workspaceId: string,
@@ -15,7 +16,8 @@ export const createTaskService = async (
     status: string;
     assignedTo?: string | null;
     dueDate?: string;
-  }
+  },
+  attachment: string | undefined
 ) => {
   const { title, description, priority, status, assignedTo, dueDate } = body;
 
@@ -46,6 +48,7 @@ export const createTaskService = async (
     workspace: workspaceId,
     project: projectId,
     dueDate,
+    attachment
   });
 
   await task.save();
@@ -64,7 +67,8 @@ export const updateTaskService = async (
     status: string;
     assignedTo?: string | null;
     dueDate?: string;
-  }
+  },
+  file?: Express.Multer.File | undefined
 ) => {
   const project = await ProjectModel.findById(projectId);
 
@@ -76,6 +80,14 @@ export const updateTaskService = async (
 
   const task = await TaskModel.findById(taskId);
 
+  let attachmentUrl: string | undefined;
+
+  if (file && task?.attachment) {
+    await deleteFile(task?.attachment);
+    attachmentUrl = await uploadFileToS3(file, "task/attachment");
+  }
+  
+
   if (!task || task.project.toString() !== projectId.toString()) {
     throw new NotFoundException(
       "Task not found or does not belong to this project"
@@ -86,6 +98,7 @@ export const updateTaskService = async (
     taskId,
     {
       ...body,
+      attachment: attachmentUrl
     },
     { new: true }
   );
@@ -154,7 +167,7 @@ export const getAllTasksService = async (
       .populate("assignedTo", "_id name profilePicture -password")
       .populate("project", "_id emoji name"),
     TaskModel.countDocuments(query),
-  ]);
+  ]);  
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -204,6 +217,8 @@ export const deleteTaskService = async (
     _id: taskId,
     workspace: workspaceId,
   });
+  
+  if (task?.attachment) await deleteFile(task.attachment);
 
   if (!task) {
     throw new NotFoundException(

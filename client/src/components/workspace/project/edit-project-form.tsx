@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useEffect, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import {
   Form,
   FormControl,
@@ -9,168 +9,166 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "../../ui/textarea";
-import EmojiPickerComponent from "@/components/emoji-picker";
-import { ProjectType } from "@/types/api.type";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useWorkspaceId from "@/hooks/use-workspace-id";
-import { editProjectMutationFn } from "@/lib/api";
-import { toast } from "@/hooks/use-toast";
-import { Loader } from "lucide-react";
+} from '@/components/ui/popover'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '../../ui/textarea'
+import EmojiPickerComponent from '@/components/emoji-picker'
+import { ProjectType } from '@/types/api.type'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import useWorkspaceId from '@/hooks/use-workspace-id'
+import { editProjectMutationFn } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
+import { Loader } from 'lucide-react'
 
 export default function EditProjectForm(props: {
-  project?: ProjectType;
-  onClose: () => void;
+  project?: ProjectType
+  onClose: () => void
 }) {
-  const { project, onClose } = props;
-  const workspaceId = useWorkspaceId();
-  const queryClient = useQueryClient();
+  const { project, onClose } = props
+  const workspaceId = useWorkspaceId()
+  const queryClient = useQueryClient()
 
-  const [emoji, setEmoji] = useState("📊");
+  const [emoji, setEmoji] = useState('📊')
 
-  const projectId = project?._id as string;
+  const projectId = project?._id as string
 
   const formSchema = z.object({
     name: z.string().trim().min(1, {
-      message: "Project title is required",
+      message: 'عنوان پروژه الزامی است',
     }),
     description: z.string().trim(),
-  });
+  })
 
   const { mutate, isPending } = useMutation({
     mutationFn: editProjectMutationFn,
-  });
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
     },
-  });
+  })
 
   useEffect(() => {
     if (project) {
-      setEmoji(project.emoji);
-      form.setValue("name", project.name);
-      form.setValue("description", project.description);
+      setEmoji(project.emoji)
+      form.setValue('name', project.name)
+      form.setValue('description', project.description)
     }
-  }, [form, project]);
+  }, [form, project])
 
   const handleEmojiSelection = (emoji: string) => {
-    setEmoji(emoji);
-  };
+    setEmoji(emoji)
+  }
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (isPending) return;
+    if (isPending) return
     const payload = {
       projectId,
       workspaceId,
       data: { emoji, ...values },
-    };
+    }
     mutate(payload, {
       onSuccess: (data) => {
         queryClient.invalidateQueries({
-          queryKey: ["singleProject", projectId],
-        });
+          queryKey: ['singleProject', projectId],
+        })
 
         queryClient.invalidateQueries({
-          queryKey: ["allprojects", workspaceId],
-        });
+          queryKey: ['allprojects', workspaceId],
+        })
 
         toast({
-          title: "Success",
+          title: 'موفق',
           description: data.message,
-          variant: "success",
-        });
+          variant: 'success',
+        })
 
-        setTimeout(() => onClose(), 100);
+        setTimeout(() => onClose(), 100)
       },
       onError: (error) => {
         toast({
-          title: "Error",
+          title: 'خطا',
           description: error.message,
-          variant: "destructive",
-        });
+          variant: 'destructive',
+        })
       },
-    });
-  };
+    })
+  }
 
   return (
-    <div className="w-full h-auto max-w-full">
-      <div className="h-full">
-        <div className="mb-5 pb-2 border-b">
-          <h1
-            className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1
-           text-center sm:text-left"
-          >
-            Edit Project
-          </h1>
-          <p className="text-muted-foreground text-sm leading-tight">
-            Update the project details to refine task management
+    <div className='w-full h-auto max-w-full' dir='rtl '>
+      <div className='h-full'>
+        <div className='m-5  pb-2 border-b'>
+          <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
+            جزئیات پروژه را برای مدیریت بهتر تسک‌ها به‌روز کنید
           </p>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Select Emoji
+            <div className='mb-4'>
+              <label className='block text-sm font-medium text-gray-700'>
+                انتخاب ایموجی
               </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
-                    className="font-normal size-[60px] !p-2 !shadow-none mt-2 items-center rounded-full "
+                    variant='outline'
+                    className='font-normal size-[60px] !p-2 !shadow-none mt-2 items-center rounded-full'
                   >
-                    <span className="text-4xl">{emoji}</span>
+                    <span className='text-4xl'>{emoji}</span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" className=" !p-0">
+                <PopoverContent align='start' className='!p-0'>
                   <EmojiPickerComponent onSelectEmoji={handleEmojiSelection} />
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="mb-4">
+            <div className='mb-4'>
               <FormField
                 control={form.control}
-                name="name"
+                name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Project title
+                    <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
+                      عنوان پروژه
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="" className="!h-[48px]" {...field} />
+                      <Input
+                        placeholder='عنوان پروژه'
+                        className='!h-[48px]'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <div className="mb-4">
+            <div className='mb-4'>
               <FormField
                 control={form.control}
-                name="description"
+                name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Project description
-                      <span className="text-xs font-extralight ml-2">
-                        Optional
+                    <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
+                      توضیحات پروژه
+                      <span className='text-xs font-extralight mr-2'>
+                        (اختیاری)
                       </span>
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         rows={4}
-                        placeholder="Projects description"
+                        placeholder='توضیحات پروژه'
                         {...field}
                       />
                     </FormControl>
@@ -182,15 +180,15 @@ export default function EditProjectForm(props: {
 
             <Button
               disabled={isPending}
-              className="flex place-self-end  h-[40px] text-white font-semibold"
-              type="submit"
+              className='flex place-self-end h-[40px] text-white font-semibold'
+              type='submit'
             >
-              {isPending && <Loader className="animate-spin" />}
-              Update
+              {isPending && <Loader className='animate-spin ml-2' />}
+              به‌روزرسانی
             </Button>
           </form>
         </Form>
       </div>
     </div>
-  );
+  )
 }

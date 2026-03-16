@@ -2,11 +2,172 @@
 @tailwind components;
 @tailwind utilities;
 
+/* fonts */
+/* ————— I R A N S A N S ————— */
+
+@font-face {
+  font-family: 'IranSans';
+  font-style: normal;
+  font-weight: 200;
+  src:
+    url('../assets/fonts/IranSans/woff2/IranSans-200-ExtraLight.woff2')
+      format('woff2'),
+    url('../assets/fonts/IranSans/woff/IranSans-200-ExtraLight.woff')
+      format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IranSans';
+  font-style: normal;
+  font-weight: 300;
+  src:
+    url('../assets/fonts/IranSans/woff2/IranSans-300-Light.woff2')
+      format('woff2'),
+    url('../assets/fonts/IranSans/woff/IranSans-300-Light.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IranSans';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url('../assets/fonts/IranSans/woff2/IranSans-400-Regular.woff2')
+      format('woff2'),
+    url('../assets/fonts/IranSans/woff/IranSans-400-Regular.woff')
+      format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IranSans';
+  font-style: normal;
+  font-weight: 500;
+  src:
+    url('../assets/fonts/IranSans/woff2/IranSans-500-Medium.woff2')
+      format('woff2'),
+    url('../assets/fonts/IranSans/woff/IranSans-500-Medium.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IranSans';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url('../assets/fonts/IranSans/woff2/IranSans-700-Bold.woff2')
+      format('woff2'),
+    url('../assets/fonts/IranSans/woff/IranSans-700-Bold.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'IranSans';
+  font-style: normal;
+  font-weight: 900;
+  src:
+    url('../assets/fonts/IranSans/woff2/IranSans-900-Black.woff2')
+      format('woff2'),
+    url('../assets/fonts/IranSans/woff/IranSans-900-Black.woff') format('woff');
+  font-display: swap;
+}
+
+/* ————— N U N I T O ————— */
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 200;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-200-ExtraLight.woff2')
+      format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-200-ExtraLight.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 300;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-300-Light.woff2') format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-300-Light.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-400-Regular.woff2') format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-400-Regular.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 500;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-500-Medium.woff2') format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-500-Medium.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 600;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-600-SemiBold.woff2')
+      format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-600-SemiBold.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-700-Bold.woff2') format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-700-Bold.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 800;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-800-ExtraBold.woff2')
+      format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-800-ExtraBold.woff') format('woff');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 900;
+  src:
+    url('../assets/fonts/Nunito/woff2/Nunito-900-Black.woff2') format('woff2'),
+    url('../assets/fonts/Nunito/woff/Nunito-900-Black.woff') format('woff');
+  font-display: swap;
+}
+
 /* ... */
+* {
+  direction: rtl;
+  text-align: right;
+  font-family: IranSans;
+}
 html,
 hody {
   height: 100%;
-  font-family: "DM Sans", serif !important;
+  font-family: 'DM Sans', serif !important;
 }
 em-emoji-picker {
   width: 350px;
@@ -20,7 +181,9 @@ em-emoji-picker {
   overflow-y: auto;
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: rgba(176, 174, 174, 0.7) #ddd; /* Firefox */
-  transition: scrollbar-color 0.3s ease, scrollbar-width 0.3s ease;
+  transition:
+    scrollbar-color 0.3s ease,
+    scrollbar-width 0.3s ease;
 }
 
 .scrollbar::-webkit-scrollbar {

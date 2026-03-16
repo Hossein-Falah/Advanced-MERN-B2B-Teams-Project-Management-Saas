@@ -1,19 +1,32 @@
 //THE UPDATED ONE BECAUSE OF THE FILTERS ->  Take Note ->
+const LABEL_MAP: Record<string, string> = {
+  BACKLOG: "بک‌لاگ",
+  TODO: "برای انجام",
+  IN_PROGRESS: "در حال انجام",
+  IN_REVIEW: "در بازبینی",
+  DONE: "انجام‌شده",
+  LOW: "کم",
+  MEDIUM: "متوسط",
+  HIGH: "زیاد",
+};
+
 export const transformOptions = (
   options: string[],
   iconMap?: Record<string, React.ComponentType<{ className?: string }>>
 ) =>
   options.map((value) => ({
-    label: value
-      .replace(/_/g, " ")
-      .toLowerCase()
-      .replace(/\b\w/g, (c) => c.toUpperCase()),
+    label:
+      LABEL_MAP[value] ??
+      value
+        .replace(/_/g, " ")
+        .toLowerCase()
+        .replace(/\b\w/g, (c) => c.toUpperCase()),
     value: value,
     icon: iconMap ? iconMap[value] : undefined,
   }));
 
 export const transformStatusEnum = (status: string): string => {
-  return status.replace(/_/g, " ");
+  return LABEL_MAP[status] ?? status.replace(/_/g, " ");
 };
 
 export const formatStatusToEnum = (status: string): string => {
@@ -42,7 +55,7 @@ export const getAvatarColor = (initials: string): string => {
 };
 
 export const getAvatarFallbackText = (name: string) => {
-  if (!name) return "NA";
+  if (!name) return "نا";
   const initials = name
     .split(" ")
     .map((n) => n.charAt(0).toUpperCase())

@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -10,7 +10,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table'
 import {
   Table,
   TableBody,
@@ -18,32 +18,32 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import TableSkeleton from "@/components/skeleton-loaders/table-skeleton";
-import { DataTablePagination } from "./table-pagination";
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { ChevronDown } from 'lucide-react'
+import TableSkeleton from '@/components/skeleton-loaders/table-skeleton'
+import { DataTablePagination } from './table-pagination'
 
 interface PaginationProps {
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
+  totalCount: number
+  pageNumber: number
+  pageSize: number
 }
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  isLoading?: boolean;
-  filtersToolbar?: React.ReactNode;
-  pagination?: PaginationProps;
-  onPageChange?: (page: number) => void;
-  onPageSizeChange?: (size: number) => void;
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  isLoading?: boolean
+  filtersToolbar?: React.ReactNode
+  pagination?: PaginationProps
+  onPageChange?: (page: number) => void
+  onPageSizeChange?: (size: number) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -55,15 +55,15 @@ export function DataTable<TData, TValue>({
   onPageChange,
   onPageSizeChange,
 }: DataTableProps<TData, TValue>) {
-  const { totalCount = 0, pageNumber = 1, pageSize = 10 } = pagination || {};
+  const { totalCount = 0, pageNumber = 1, pageSize = 10 } = pagination || {}
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  );
+  )
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+    React.useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = React.useState({})
 
   const table = useReactTable({
     data,
@@ -84,19 +84,18 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-  });
-
+  })
   return (
-    <div className="w-full space-y-2">
-      <div className="block w-full lg:flex lg:items-center lg:justify-between">
-        {filtersToolbar && <div className="flex-1"> {filtersToolbar}</div>}
+    <div className='w-full space-y-2' dir='rtl'>
+      <div className='block w-full lg:flex lg:items-center lg:justify-between'>
+        {filtersToolbar && <div className='flex-1'> {filtersToolbar}</div>}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto w-full lg:w-auto">
-              Columns <ChevronDown />
+            <Button variant='outline' className='mr-auto w-full lg:w-auto'>
+              ستون‌ها <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align='end'>
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -104,20 +103,20 @@ export function DataTable<TData, TValue>({
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
+                    className='capitalize'
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) =>
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.columnDef.meta?.displayName || column.id}
                   </DropdownMenuCheckboxItem>
-                );
+                )
               })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className='rounded-md border'>
         {isLoading ? (
           <TableSkeleton columns={6} rows={10} />
         ) : (
@@ -135,7 +134,7 @@ export function DataTable<TData, TValue>({
                               header.getContext()
                             )}
                       </TableHead>
-                    );
+                    )
                   })}
                 </TableRow>
               ))}
@@ -145,7 +144,7 @@ export function DataTable<TData, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
+                    data-state={row.getIsSelected() && 'selected'}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -161,9 +160,9 @@ export function DataTable<TData, TValue>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center"
+                    className='h-24 text-center'
                   >
-                    No results.
+                    نتیجه‌ای یافت نشد.
                   </TableCell>
                 </TableRow>
               )}
@@ -180,5 +179,5 @@ export function DataTable<TData, TValue>({
         onPageSizeChange={onPageSizeChange}
       />
     </div>
-  );
+  )
 }

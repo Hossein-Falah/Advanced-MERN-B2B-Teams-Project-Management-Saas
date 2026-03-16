@@ -29,14 +29,12 @@ import {
 export const loginMutationFn = async (
   data: loginType
 ): Promise<LoginResponseType> => {
-  const response = await API.post("/auth/login", data);  
+  const response = await API.post("/auth/login", data);
   return response.data;
 };
 
-export const registerMutationFn = async (data: registerType) => {
-  const res = await API.post("/auth/register", data);  
-  return res.data;
-}
+export const registerMutationFn = async (data: registerType) =>
+  await API.post("/auth/register", data);
 
 export const logoutMutationFn = async () => await API.post("/auth/logout");
 

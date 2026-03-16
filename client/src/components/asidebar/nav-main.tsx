@@ -38,17 +38,17 @@ export function NavMain() {
 
   const items: ItemType[] = [
     {
-      title: "Dashboard",
+      title: "داشبورد",
       url: `/workspace/${workspaceId}`,
       icon: LayoutDashboard,
     },
     {
-      title: "Tasks",
+      title: "وظایف",
       url: `/workspace/${workspaceId}/tasks`,
       icon: CheckCircle,
     },
     {
-      title: "Members",
+      title: "اعضا",
       url: `/workspace/${workspaceId}/members`,
       icon: Users,
     },
@@ -56,7 +56,7 @@ export function NavMain() {
     ...(canManageSettings
       ? [
           {
-            title: "Settings",
+            title: "تنظیمات",
             url: `/workspace/${workspaceId}/settings`,
             icon: Settings,
           },

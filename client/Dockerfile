@@ -3,6 +3,8 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+RUN npm config set registry https://mirror-npm.runflare.com
+
 # Copy package files
 COPY package*.json ./
 
@@ -25,6 +27,8 @@ RUN npm run build
 FROM node:22-alpine AS runner
 
 WORKDIR /app
+
+RUN npm config set registry https://mirror-npm.runflare.com
 
 # Install serve globally to serve static files
 RUN npm install -g serve

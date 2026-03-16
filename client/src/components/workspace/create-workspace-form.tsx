@@ -1,6 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import {
   Form,
   FormControl,
@@ -9,129 +9,131 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "../ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createWorkspaceMutationFn } from "@/lib/api";
-import { useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
-import { Loader } from "lucide-react";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '../ui/textarea'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createWorkspaceMutationFn } from '@/lib/api'
+import { useNavigate } from 'react-router-dom'
+import { toast } from '@/hooks/use-toast'
+import { Loader } from 'lucide-react'
 
 export default function CreateWorkspaceForm({
   onClose,
 }: {
-  onClose: () => void;
+  onClose: () => void
 }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const { mutate, isPending } = useMutation({
     mutationFn: createWorkspaceMutationFn,
-  });
+  })
 
   const formSchema = z.object({
     name: z.string().trim().min(1, {
-      message: "Workspace name is required",
+      message: 'نام فضای کاری الزامی است',
     }),
     description: z.string().trim(),
-  });
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
     },
-  });
+  })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (isPending) return;
+    if (isPending) return
     mutate(values, {
       onSuccess: (data) => {
         queryClient.resetQueries({
-          queryKey: ["userWorkspaces"],
-        });
+          queryKey: ['userWorkspaces'],
+        })
 
-        const workspace = data.workspace;
-        onClose();
-        navigate(`/workspace/${workspace._id}`);
+        const workspace = data.workspace
+        onClose()
+        navigate(`/workspace/${workspace._id}`)
       },
       onError: (error) => {
         toast({
-          title: "Error",
+          title: 'خطا',
           description: error.message,
-          variant: "destructive",
-        });
+          variant: 'destructive',
+        })
       },
-    });
-  };
+    })
+  }
 
   return (
-    <main className="w-full flex flex-row min-h-[590px] h-auto max-w-full">
-      <div className="h-full px-10 py-10 flex-1">
-        <div className="mb-5">
+    <main
+      className='w-full flex flex-row min-h-[590px] h-auto max-w-full'
+      dir='rtl'
+    >
+      <div className='h-full px-10 py-10 flex-1'>
+        <div className='mb-5 flex flex-col gap-2'>
           <h1
-            className="text-2xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5
-           text-center sm:text-left"
+            className='text-2xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5
+           text-center sm:text-right'
           >
-            Let's build a Workspace
+            بیایید یک فضای کاری بسازیم
           </h1>
-          <p className="text-muted-foreground text-lg leading-tight">
-            Boost your productivity by making it easier for everyone to access
-            projects in one location.
+          <p className='text-muted-foreground   text-center sm:text-right leading-6'>
+            با دسترسی آسان همه به پروژه‌ها در یک مکان، بهره‌وری خود را افزایش
+            دهید.
           </p>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="mb-4">
+            <div className='mb-4'>
               <FormField
                 control={form.control}
-                name="name"
+                name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Workspace name
+                    <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
+                      نام فضای کاری
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Taco's Co."
-                        className="!h-[48px]"
+                        placeholder='نام شرکت یا تیم'
+                        className='!h-[48px]'
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      This is the name of your company, team or organization.
+                      این نام شرکت، تیم یا سازمان شماست.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <div className="mb-4">
+            <div className='mb-4'>
               <FormField
                 control={form.control}
-                name="description"
+                name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Workspace description
-                      <span className="text-xs font-extralight ml-2">
-                        Optional
+                    <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
+                      توضیحات فضای کاری
+                      <span className='text-xs font-extralight mr-2'>
+                        (اختیاری)
                       </span>
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         rows={6}
-                        placeholder="Our team organizes marketing projects and tasks here."
+                        placeholder='تیم ما پروژه‌ها و وظایف بازاریابی را اینجا سازماندهی می‌کند.'
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Get your members on board with a few words about your
-                      Workspace.
+                      با چند کلمه درباره فضای کاری خود، اعضا را همراه کنید.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -141,11 +143,11 @@ export default function CreateWorkspaceForm({
 
             <Button
               disabled={isPending}
-              className="w-full h-[40px] text-white font-semibold"
-              type="submit"
+              className='w-full h-[40px] text-white font-semibold'
+              type='submit'
             >
-              {isPending && <Loader className="animate-spin" />}
-              Create Workspace
+              {isPending && <Loader className='animate-spin ml-2' />}
+              ایجاد فضای کاری
             </Button>
           </form>
         </Form>
@@ -156,5 +158,5 @@ export default function CreateWorkspaceForm({
       "
       />
     </main>
-  );
+  )
 }

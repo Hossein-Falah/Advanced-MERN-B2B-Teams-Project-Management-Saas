@@ -18,6 +18,7 @@ import {
   updateTaskService,
 } from "../services/task.service";
 import { HTTPSTATUS } from "../config/http.config";
+import { uploadFileToS3 } from "../utils/s3";
 
 export const createTaskController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -30,11 +31,17 @@ export const createTaskController = asyncHandler(
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
     roleGuard(role, [Permissions.CREATE_TASK]);
 
+    let attachmentUrl: string | undefined;
+    if (req.file) {
+      attachmentUrl = await uploadFileToS3(req.file, "task/attachment");
+    }
+
     const { task } = await createTaskService(
       workspaceId,
       projectId,
       userId,
-      body
+      body,
+      attachmentUrl
     );
 
     return res.status(HTTPSTATUS.OK).json({
@@ -61,7 +68,8 @@ export const updateTaskController = asyncHandler(
       workspaceId,
       projectId,
       taskId,
-      body
+      body,
+      req.file
     );
 
     return res.status(HTTPSTATUS.OK).json({
@@ -137,7 +145,7 @@ export const deleteTaskController = asyncHandler(
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
-    roleGuard(role, [Permissions.DELETE_TASK]);
+    roleGuard(role, [Permissions.DELETE_TASK]);    
 
     await deleteTaskService(workspaceId, taskId);
 

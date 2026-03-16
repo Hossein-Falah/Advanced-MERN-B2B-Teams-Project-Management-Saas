@@ -69,3 +69,13 @@ export class UnauthorizedException extends AppError {
     );
   }
 }
+
+export class ServiceUnavailableException extends AppError {
+  constructor(message = "Service Unavailable", errorCode?: ErrorCodeEnumType) {
+    super(
+      message,
+      HTTPSTATUS.SERVICE_UNAVAILABLE,
+      errorCode || ErrorCodeEnum.SERVER_Unavailable_ERROR
+    );
+  }
+}

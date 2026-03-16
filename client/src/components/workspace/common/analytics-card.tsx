@@ -1,22 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, ArrowBigUp, ArrowBigDown, Loader } from "lucide-react";
 
+type AnalyticsKind = "total" | "overdue" | "completed";
+
 const AnalyticsCard = (props: {
   title: string;
   value: number;
   isLoading: boolean;
+  kind: AnalyticsKind;
 }) => {
-  const { title, value, isLoading } = props;
+  const { title, value, isLoading, kind } = props;
 
   const getArrowIcon = () => {
-    if (title === "Overdue Task") {
+    if (kind === "overdue") {
       return value > 0 ? (
         <ArrowBigDown strokeWidth={2.5} className="h-4 w-4 text-red-500" />
       ) : (
         <ArrowBigUp strokeWidth={2.5} className="h-4 w-4 text-green-500" />
       );
     }
-    if (title === "Completed Task" || title === "Total Task") {
+    if (kind === "completed" || kind === "total") {
       return value > 0 ? (
         <ArrowBigUp strokeWidth={2.5} className="h-4 w-4 text-green-500" />
       ) : (
