@@ -1,9 +1,12 @@
+import { TaskLogActionEnumType } from "../enums/task-log.enum";
 import { TaskPriorityEnum, TaskStatusEnum } from "../enums/task.enum";
 import MemberModel from "../models/member.model";
 import ProjectModel from "../models/project.model";
+import TaskLogModel from "../models/task-log.model";
 import TaskModel from "../models/task.model";
 import { BadRequestException, NotFoundException } from "../utils/appError";
 import { deleteFile, uploadFileToS3 } from "../utils/s3";
+import { getTaskChanges } from "./task-log.service";
 
 export const createTaskService = async (
   workspaceId: string,
@@ -53,6 +56,22 @@ export const createTaskService = async (
 
   await task.save();
 
+  await TaskLogModel.create({
+    task: task._id,
+    workspace: workspaceId,
+    user: userId,
+    action: TaskLogActionEnumType.CREATE,
+    changes: [
+      { field: "title", newValue: task.title },
+      { field: "description", newValue: task.description },
+      { field: "status", newValue: task.status },
+      { field: "priority", newValue: task.priority },
+      { field: "assignedTo", newValue: task.assignedTo },
+      { field: "dueDate", newValue: task.dueDate },
+      { field: "attachment", newValue: task.attachment },
+    ],
+  });
+
   return { task };
 };
 
@@ -60,6 +79,7 @@ export const updateTaskService = async (
   workspaceId: string,
   projectId: string,
   taskId: string,
+  userId: string,
   body: {
     title: string;
     description?: string;
@@ -80,31 +100,45 @@ export const updateTaskService = async (
 
   const task = await TaskModel.findById(taskId);
 
-  let attachmentUrl: string | undefined;
-
-  if (file && task?.attachment) {
-    await deleteFile(task?.attachment);
-    attachmentUrl = await uploadFileToS3(file, "task/attachment");
-  }
-  
-
   if (!task || task.project.toString() !== projectId.toString()) {
     throw new NotFoundException(
       "Task not found or does not belong to this project"
     );
   }
 
+  const oldTask = task.toObject();
+
+  let attachmentUrl: string | undefined;
+
+  if (file && task?.attachment) {
+    await deleteFile(task?.attachment);
+    attachmentUrl = await uploadFileToS3(file, "task/attachment");
+  }
+
+
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
     {
       ...body,
-      attachment: attachmentUrl
+      ...(attachmentUrl && { attachment: attachmentUrl }),
     },
     { new: true }
   );
 
   if (!updatedTask) {
     throw new BadRequestException("Failed to update task");
+  }
+
+  const changes = getTaskChanges(oldTask, updatedTask.toObject());
+
+  if (changes.length > 0) {
+    await TaskLogModel.create({
+      task: updatedTask._id,
+      workspace: workspaceId,
+      user: userId,
+      action: TaskLogActionEnumType.UPDATE,
+      changes,
+    });
   }
 
   return { updatedTask };
@@ -211,7 +245,8 @@ export const getTaskByIdService = async (
 
 export const deleteTaskService = async (
   workspaceId: string,
-  taskId: string
+  taskId: string,
+  userId: string
 ) => {
   const task = await TaskModel.findOneAndDelete({
     _id: taskId,
@@ -225,6 +260,14 @@ export const deleteTaskService = async (
       "Task not found or does not belong to the specified workspace"
     );
   }
+
+  await TaskLogModel.create({
+    task: task._id,
+    workspace: workspaceId,
+    user: userId,
+    action: TaskLogActionEnumType.DELETE,
+    changes: [],
+  });
 
   return;
 };
