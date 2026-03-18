@@ -1,5 +1,4 @@
 import {
-  Roles,
   Permissions,
   PermissionType,
   RoleType,
@@ -29,6 +28,9 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
     Permissions.DELETE_COMMENT,
 
     Permissions.VIEW_ONLY,
+
+    Permissions.UNDO_TASK,
+    Permissions.REDO_TASK
   ],
   ADMIN: [
     Permissions.ADD_MEMBER,
@@ -45,6 +47,8 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
     Permissions.EDIT_COMMENT,
     Permissions.DELETE_COMMENT,
 
+    Permissions.UNDO_TASK,
+    Permissions.REDO_TASK
   ],
   MEMBER: [
     Permissions.VIEW_ONLY,

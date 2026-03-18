@@ -5,6 +5,8 @@ import {
   deleteTaskController,
   getAllTasksController,
   getTaskByIdController,
+  redoTaskController,
+  undoTaskController,
   updateTaskController,
 } from "../controllers/task.controller";
 import upload from "../middlewares/upload.middelware";
@@ -33,5 +35,9 @@ taskRoutes.get(
   "/:id/project/:projectId/workspace/:workspaceId",
   getTaskByIdController
 );
+
+taskRoutes.post("/workspace/:workspaceId/undo/:taskId", undoTaskController);
+
+taskRoutes.post("/workspace/:workspaceId/redo/:taskId", redoTaskController);
 
 export default taskRoutes;

@@ -1,12 +1,15 @@
+import { Types } from "mongoose";
 import { BadRequestException, NotFoundException } from "../utils/appError";
 import CommentModel from "../models/comment.model";
 import TaskModel from "../models/task.model";
 import { deleteFile, uploadFileToS3 } from "../utils/s3";
+import { toObjectId } from "../utils/convert-objectId.util";
+import { MentionService } from "../modules/mention/mention.service";
 
 export const createCommentService = async (
     workspace: string,
     taskId: string,
-    user: string,
+    userId: string,
     body: {
         content: string;
     },
@@ -24,13 +27,21 @@ export const createCommentService = async (
 
     const comment = new CommentModel({
         content,
-        user,
+        userId,
         workspace,
         attachment,
         task: taskId
     });
 
     await comment.save();
+
+    await MentionService.handleMentions(
+        content,
+        toObjectId(userId),
+        toObjectId(task._id as Types.ObjectId),
+        comment._id,
+        toObjectId(workspace)
+    );
 
     return { comment };
 };
@@ -121,7 +132,7 @@ export const getAllCommentService = async (
                 select: "_id name email profilePicture isActive lastLogin currentWorkspace -password"
             }),
         CommentModel.countDocuments(query),
-    ]);    
+    ]);
 
     const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -155,10 +166,10 @@ export const getCommentByIdService = async (
         workspace: workspaceId,
         task: taskId,
     })
-    .populate({
-        path: "user",
-        select: "_id name email profilePicture isActive lastLogin currentWorkspace -password"
-    })    
+        .populate({
+            path: "user",
+            select: "_id name email profilePicture isActive lastLogin currentWorkspace -password"
+        })
 
     if (!comment) throw new NotFoundException("Comment not found.");
 

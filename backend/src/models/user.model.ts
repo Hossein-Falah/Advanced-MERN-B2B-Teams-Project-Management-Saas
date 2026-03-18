@@ -8,6 +8,8 @@ export interface UserDocument extends Document {
   profilePicture: string | null;
   isActive: boolean;
   lastLogin: Date | null;
+  username?: string;
+  phone?: string
   createdAt: Date;
   updatedAt: Date;
   currentWorkspace: mongoose.Types.ObjectId | null;
@@ -28,6 +30,18 @@ const userSchema = new Schema<UserDocument>(
       unique: true,
       trim: true,
       lowercase: true,
+    },
+    username: {
+      type: String,
+      required: false,
+      unique: true,
+      trim: true
+    },
+    phone: {
+      type: String,
+      required: false,
+      unique: true,
+      trim: true
     },
     password: { type: String, select: true },
     profilePicture: {
@@ -66,4 +80,14 @@ userSchema.methods.comparePassword = async function (value: string) {
 };
 
 const UserModel = mongoose.model<UserDocument>("User", userSchema);
+
+userSchema.path("profilePicture").get(function (value: string) {
+  if (!value) return value;
+  const bucket = process.env.AWS_S3_BUCKET_NAME;
+  const endpoint = process.env.AWS_ENDPOINT;
+  return `https://${bucket}.${endpoint}/${value}`;
+});
+
+userSchema.set("toJSON", { getters: true });
+
 export default UserModel;

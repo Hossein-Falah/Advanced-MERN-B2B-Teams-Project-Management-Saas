@@ -13,6 +13,7 @@ export interface TaskLogDocument extends Document {
     user: mongoose.Types.ObjectId;
     action: TaskLogActionType;
     changes: TaskLogChangeType;
+    isUndone: boolean;
     createdAt: Date;
 }
 
@@ -46,6 +47,11 @@ const taskLogSchema = new Schema<TaskLogDocument>(
                 newValue: Schema.Types.Mixed,
             },
         ],
+        isUndone: {
+            type: Boolean,
+            default: false,
+            index: true
+        }
     },
     {
         timestamps: { createdAt: true, updatedAt: false },

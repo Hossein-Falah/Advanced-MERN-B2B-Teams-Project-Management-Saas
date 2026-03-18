@@ -29,6 +29,9 @@ export const Permissions = {
   DELETE_COMMENT: "DELETE_COMMENT",
 
   VIEW_ONLY: "VIEW_ONLY",
+
+  UNDO_TASK: "UNDO_TASK",
+  REDO_TASK: "REDO_TASK"
 } as const;
 
 export type PermissionType = keyof typeof Permissions;

@@ -21,8 +21,8 @@ export const getMemberRoleInWorkspace = async (
   const member = await MemberModel.findOne({
     userId,
     workspaceId,
-  }).populate("role");
-
+  }).populate("role");  
+  
   if (!member) {
     throw new UnauthorizedException(
       "You are not a member of this workspace",

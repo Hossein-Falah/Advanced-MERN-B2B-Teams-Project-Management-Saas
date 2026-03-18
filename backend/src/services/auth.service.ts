@@ -22,8 +22,6 @@ export const loginOrCreateAccountService = async (data: {
   const { providerId, provider, displayName, email, picture } = data;
 
   try {
-    console.log("Started Session...");
-
     let user = await UserModel.findOne({ email });
 
     if (!user) {
@@ -69,7 +67,6 @@ export const loginOrCreateAccountService = async (data: {
       user.currentWorkspace = workspace._id as mongoose.Types.ObjectId;
       await user.save();
     }
-    console.log("End Session...");
 
     return { user };
   } catch (error) {
@@ -130,8 +127,6 @@ export const registerUserService = async (body: {
 
     user.currentWorkspace = workspace._id as mongoose.Types.ObjectId;
     await user.save();
-
-    console.log("End Session...");
 
     return {
       userId: user._id,

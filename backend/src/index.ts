@@ -1,7 +1,11 @@
 import "dotenv/config";
-import express, { NextFunction, Request, Response } from "express";
+
+import http from "http";
 import cors from "cors";
+import passport from "passport";
 import session from "cookie-session";
+import express, { NextFunction, Request, Response } from "express";
+
 import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
@@ -11,7 +15,6 @@ import { BadRequestException } from "./utils/appError";
 import { ErrorCodeEnum } from "./enums/error-code.enum";
 
 import "./config/passport.config";
-import passport from "passport";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
 import isAuthenticated from "./middlewares/isAuthenticated.middleware";
@@ -21,9 +24,13 @@ import projectRoutes from "./routes/project.route";
 import taskRoutes from "./routes/task.route";
 import commentRoutes from "./routes/comment.route";
 import taskLogRoutes from "./routes/task-log.route";
+import { registerSocket } from "./socket";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
+
+const server = http.createServer(app);
+registerSocket(server);
 
 app.use(express.json());
 
@@ -56,33 +63,6 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-//   const isLocalhost = req.headers.origin?.includes("localhost");
-//   console.log(isLocalhost);
-  
-//   session({
-//     name: "session",
-//     keys: [config.SESSION_SECRET],
-//     maxAge: 24 * 60 * 60 * 1000,
-//     httpOnly: true,
-//     secure: true,
-//     sameSite: isLocalhost ? "none" : "lax",
-//   })(req, res, next);
-// });
-
-// app.use(
-//   session({
-//     name: "session",
-//     keys: [config.SESSION_SECRET],
-//     maxAge: 24 * 60 * 60 * 1000,
-//     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-//     secure: process.env.NODE_ENV === "production",
-//     httpOnly: true,
-//     domain: process.env.NODE_ENV === "production" ? "task-api.teleservat.com" : "localhost",
-//     path: '/'
-//   })
-// );
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -110,7 +90,7 @@ app.use(`${BASE_PATH}/comment`, isAuthenticated, commentRoutes)
 
 app.use(errorHandler);
 
-app.listen(config.PORT, async () => {
+server.listen(config.PORT, async () => {
   console.log(`Server listening on port ${config.PORT} in ${config.NODE_ENV}`);
   await connectDatabase();
 });

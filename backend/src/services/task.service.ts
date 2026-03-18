@@ -1,12 +1,16 @@
+import mongoose, { Types } from "mongoose";
+import { NotificationTypeEnum } from "../enums/notification.enum";
 import { TaskLogActionEnumType } from "../enums/task-log.enum";
 import { TaskPriorityEnum, TaskStatusEnum } from "../enums/task.enum";
 import MemberModel from "../models/member.model";
 import ProjectModel from "../models/project.model";
 import TaskLogModel from "../models/task-log.model";
 import TaskModel from "../models/task.model";
+import { NotificationService } from "../modules/notification/notification.service";
 import { BadRequestException, NotFoundException } from "../utils/appError";
 import { deleteFile, uploadFileToS3 } from "../utils/s3";
 import { getTaskChanges } from "./task-log.service";
+import { toObjectId } from "../utils/convert-objectId.util";
 
 export const createTaskService = async (
   workspaceId: string,
@@ -31,6 +35,7 @@ export const createTaskService = async (
       "Project not found or does not belong to this workspace"
     );
   }
+
   if (assignedTo) {
     const isAssignedUserMember = await MemberModel.exists({
       userId: assignedTo,
@@ -41,6 +46,7 @@ export const createTaskService = async (
       throw new Error("Assigned user is not a member of this workspace.");
     }
   }
+
   const task = new TaskModel({
     title,
     description,
@@ -55,6 +61,10 @@ export const createTaskService = async (
   });
 
   await task.save();
+
+  if (assignedTo) {
+    await assignTask(task.id, toObjectId(assignedTo), toObjectId(userId));
+  }
 
   await TaskLogModel.create({
     task: task._id,
@@ -124,6 +134,10 @@ export const updateTaskService = async (
     },
     { new: true }
   );
+
+  if (body.assignedTo) {
+    await assignTask(task.id, toObjectId(body.assignedTo), toObjectId(userId))
+  }
 
   if (!updatedTask) {
     throw new BadRequestException("Failed to update task");
@@ -201,7 +215,7 @@ export const getAllTasksService = async (
       .populate("assignedTo", "_id name profilePicture -password")
       .populate("project", "_id emoji name"),
     TaskModel.countDocuments(query),
-  ]);  
+  ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -252,7 +266,7 @@ export const deleteTaskService = async (
     _id: taskId,
     workspace: workspaceId,
   });
-  
+
   if (task?.attachment) await deleteFile(task.attachment);
 
   if (!task) {
@@ -271,3 +285,82 @@ export const deleteTaskService = async (
 
   return;
 };
+
+export const assignTask = async (taskId: Types.ObjectId, userId: Types.ObjectId, senderId: Types.ObjectId) => {
+  const task = await TaskModel.findByIdAndUpdate(
+    taskId,
+    { assignedTo: userId },
+    { new: true }
+  );
+
+  await NotificationService.create({
+    type: NotificationTypeEnum.TASK_ASSIGNED,
+    receiver: userId,
+    sender: senderId,
+    task: task?._id as Types.ObjectId,
+    workspace: task?.workspace
+  });
+}
+
+
+export const undoTask = async (taskId: Types.ObjectId) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const log = await TaskLogModel.findOne({
+      task: taskId,
+      isUndone: false
+    }).sort({ createdAt: -1 });
+
+    if (!log) throw new NotFoundException("Nothing to undo");
+
+    const update: any = {};
+
+    log.changes.forEach(change => {
+      update[change.field] = change.oldValue;
+    });
+
+    await TaskModel.findByIdAndUpdate(taskId, { $set: update });
+
+    log.isUndone = true;
+    await log.save();
+
+    return { success: true };
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+}
+
+export const redoTask = async (taskId: Types.ObjectId) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const log = await TaskLogModel.findOne({
+      task: taskId,
+      isUndone: true
+    }).sort({ createdAt: -1 });  
+  
+    if (!log) throw new NotFoundException("Nothing to redo");
+  
+    const update: any = {};
+  
+    log.changes.forEach(change => {
+      update[change.field] = change.newValue;
+    });
+  
+    await TaskModel.findByIdAndUpdate(taskId, { $set: update });
+  
+    log.isUndone = false;
+    await log.save();
+  
+    return { success: true };    
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
+}
