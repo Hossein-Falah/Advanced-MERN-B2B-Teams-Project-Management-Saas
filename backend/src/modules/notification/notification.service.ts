@@ -2,14 +2,14 @@ import NotificationModel, { NotificationDocument } from "./notification.model";
 import { io } from "../../socket";
 
 export class NotificationService {
-    static async create(data: Partial<NotificationDocument>) {        
+    static async create(data: Partial<NotificationDocument>) {
         let notification = await NotificationModel.create(data);
-        
+
         notification = await notification.populate([
             { path: "sender", select: "id name email -password" },
             { path: "task", select: "_id title" }
         ]);
-
+        
         if (io) {
             io.to(`user:${data.receiver}`).emit("notification:new", {
                 _id: notification._id,
@@ -31,33 +31,17 @@ export class NotificationService {
             { new: true }
         );
 
-        if (!notification) return null;
-
-        if (io) {
-            io.to(`user:${userId}`).emit("notification:read", {
-                notificationId: notification._id
-            });
-        }
-
         return notification;
     }
 
-    static async markAllAsRead(userId: string) {
-        await NotificationModel.updateMany(
-            { receiver: userId, read: false },
-            { read: true }
-        );
+    static async getAllNotifications(userId: string, page: number = 1, limit: number = 20) {
+        const skip = (page - 1) * limit;
 
-        if (io) {
-            io.to(`user:${userId}`).emit("notification:all-read");
-        }
-    }
-
-    static async getUserNotifications(userId: string) {
         const notifications = await NotificationModel
             .find({ receiver: userId })
             .sort({ createdAt: -1 })
-            .limit(50)
+            .skip(skip)
+            .limit(limit)
             .lean();
 
         const unreadCount = await NotificationModel.countDocuments({
@@ -65,9 +49,24 @@ export class NotificationService {
             read: false
         });
 
+        const total = await NotificationModel.countDocuments({ receiver: userId });
+
         return {
             notifications,
-            unreadCount
+            unreadCount,
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit),
+            },
         };
+    }
+
+    static async markAllAsRead(userId: string) {
+        await NotificationModel.updateMany(
+            { receiver: userId, read: false },
+            { read: true }
+        );
     }
 }

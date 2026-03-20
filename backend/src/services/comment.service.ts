@@ -27,12 +27,12 @@ export const createCommentService = async (
 
     const comment = new CommentModel({
         content,
-        userId,
+        user: userId,
         workspace,
         attachment,
         task: taskId
     });
-
+    
     await comment.save();
 
     await MentionService.handleMentions(

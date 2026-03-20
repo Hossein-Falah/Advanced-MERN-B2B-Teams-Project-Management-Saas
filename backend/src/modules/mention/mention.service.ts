@@ -3,16 +3,16 @@ import UserModel from "../../models/user.model";
 import { NotificationTypeEnum } from "../../enums/notification.enum";
 import { NotificationService } from "../notification/notification.service";
 import { toObjectId } from "../../utils/convert-objectId.util";
-import { io } from "../../socket";
 
 export class MentionService {
     static extractMentions(content: string): string[] {
-        const regex = /@(\w+)/g;
-        const matches = content.match(regex);
+        const regex = /@([a-zA-Z0-9_-]+)/g;
 
-        if (!matches) return [];
+        const matches = [...content.matchAll(regex)];
 
-        return [...new Set(matches.map(m => m.slice(1)))];
+        if (!matches.length) return [];
+
+        return [...new Set(matches.map(m => m[1]))];
     }
 
     static async handleMentions(
@@ -22,40 +22,59 @@ export class MentionService {
         commentId: Types.ObjectId,
         workspace: Types.ObjectId
     ) {
-
-        const usernames = this.extractMentions(content);
+        const usernames = [...new Set(this.extractMentions(content))];
 
         if (!usernames.length) return;
 
         const users = await UserModel.find({
             username: { $in: usernames },
-            _id: { $ne: senderId }
+            currentWorkspace: workspace,
+            _id: senderId
         });
-
-        for (const user of users) {
-            const notification = await NotificationService.create({
-                type: NotificationTypeEnum.MENTION,
-                receiver: toObjectId(user._id as Types.ObjectId),
-                sender: toObjectId(senderId),
-                task: toObjectId(taskId),
-                comment: toObjectId(commentId),
-                workspace: toObjectId(workspace)
-            });
-
-            io.to(`user:${user._id}`).emit("notification:new", notification);
-        }
+        
+        await Promise.all(
+            users.map(async user => 
+                await NotificationService.create({
+                    type: NotificationTypeEnum.MENTION,
+                    receiver: toObjectId(user._id as Types.ObjectId),
+                    sender: toObjectId(senderId),
+                    task: toObjectId(taskId),
+                    comment: toObjectId(commentId),
+                    workspace: toObjectId(workspace)
+                })
+            )
+        );
     }
 
-    static async searchUsers(workspace: string, query: string) {
-        if (!query) return [];
+    static async getMentionUsers(workspace: string, query: string, page: number = 1, limit: number = 20) {
+        const skip = (page - 1) * limit;
 
-        const users = await UserModel.find({
-            currentWorkspace: workspace,
-            username: { $regex: `^${query}`, $options: "i" }
-        })
-        .select("_id username avatar -password")
-        .limit(10);
+        const filter: any = {
+            currentWorkspace: toObjectId(workspace)
+        };
 
-        return users;
+        if (query && query.trim() !== "") {
+            filter.username = {
+                $regex: `^${query}`,
+                $options: "i"
+            };
+        }
+
+        const users = await UserModel.find(filter)
+            .select("_id username avatar -password")
+            .skip(skip)
+            .limit(limit);
+
+        const total = await UserModel.countDocuments(filter);
+
+        return {
+            users,
+            pagination: {
+                total,
+                page,
+                limit,
+                pages: Math.ceil(total / limit),
+            },
+        };
     }
 }

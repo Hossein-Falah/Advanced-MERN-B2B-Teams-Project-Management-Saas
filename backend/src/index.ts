@@ -25,6 +25,8 @@ import taskRoutes from "./routes/task.route";
 import commentRoutes from "./routes/comment.route";
 import taskLogRoutes from "./routes/task-log.route";
 import { registerSocket } from "./socket";
+import notificationRoutes from "./modules/notification/notification.route";
+import mentionRoutes from "./modules/mention/mention.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -41,7 +43,7 @@ app.set("trust proxy", 1);
 app.use(
   cors({
     origin: [
-      config.FRONTEND_ORIGIN, 
+      config.FRONTEND_ORIGIN,
       config.FRONTEND_DEVELOPMENT,
       "http://localhost:5173",
       "http://localhost:8010",
@@ -86,7 +88,9 @@ app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);
 app.use(`${BASE_PATH}/project`, isAuthenticated, projectRoutes);
 app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);
 app.use(`${BASE_PATH}/log`, isAuthenticated, taskLogRoutes);
-app.use(`${BASE_PATH}/comment`, isAuthenticated, commentRoutes)
+app.use(`${BASE_PATH}/comment`, isAuthenticated, commentRoutes);
+app.use(`${BASE_PATH}/notification`, isAuthenticated, notificationRoutes);
+app.use(`${BASE_PATH}/mention`, isAuthenticated, mentionRoutes);
 
 app.use(errorHandler);
 
