@@ -78,18 +78,33 @@ export const registerUserService = async (body: {
   email: string;
   name: string;
   password: string;
+  phone: string;
 }) => {
-  const { email, name, password } = body;  
+  const { email, name, password, phone } = body;  
   try {
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       throw new BadRequestException("Email already exists");
     }
 
+    const existingPhone = await UserModel.findOne({ phone });
+    if (existingPhone) {
+      throw new BadRequestException("Phone already exists");
+    }
+
+    let username = email.split("@")[0];
+
+    const usernameExists = await UserModel.findOne({ username });
+    if (usernameExists) {
+      username = `${username}${Math.floor(Math.random() * 1000)}`;
+    }
+
     const user = new UserModel({
       email,
       name,
       password,
+      username,
+      phone
     });
     await user.save();    
 

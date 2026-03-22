@@ -1,5 +1,5 @@
 import { RequestHandler, Router } from "express";
-import { getCurrentUserController, updateProfileController } from "../controllers/user.controller";
+import { getCurrentUserController, getUserProfileController, updateProfileController } from "../controllers/user.controller";
 import upload from "../middlewares/upload.middelware";
 
 const userRoutes = Router();
@@ -13,5 +13,7 @@ userRoutes.patch(
     singleUpload,
     updateProfileController
 );
+
+userRoutes.get('/profile', getUserProfileController);
 
 export default userRoutes;

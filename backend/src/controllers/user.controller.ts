@@ -2,8 +2,9 @@ import { ZodError } from "zod";
 import { Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandler.middleware";
 import { HTTPSTATUS } from "../config/http.config";
-import { getCurrentUserService, updateUserProfileService } from "../services/user.service";
+import { getCurrentUserService, getUserProfileService, updateUserProfileService } from "../services/user.service";
 import { updateUserSchema } from "../validation/user.validation";
+import { workspaceIdSchema } from "../validation/workspace.validation";
 
 export const getCurrentUserController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -43,5 +44,21 @@ export const updateProfileController = asyncHandler(
         message: "Error updating profile",
       });
     }
+  }
+);
+
+export const getUserProfileController = asyncHandler(
+  async (req: Request, res: Response) => {
+
+    const { username, workspaceId } = req.query;
+
+    const workspace = workspaceIdSchema.parse(workspaceId);
+
+    const profile = await getUserProfileService(
+      username as string,
+      workspace as string
+    );
+
+    return res.status(HTTPSTATUS.OK).json(profile);
   }
 );

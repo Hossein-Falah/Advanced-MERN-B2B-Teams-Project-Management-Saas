@@ -9,7 +9,11 @@ export interface UserDocument extends Document {
   isActive: boolean;
   lastLogin: Date | null;
   username?: string;
-  phone?: string
+  phone?: string;
+  bio?: string;
+  jobTitle?: string;
+  isOnline?: string | null;
+  lastSeen?: string | null;
   createdAt: Date;
   updatedAt: Date;
   currentWorkspace: mongoose.Types.ObjectId | null;
@@ -44,6 +48,24 @@ const userSchema = new Schema<UserDocument>(
       trim: true
     },
     password: { type: String, select: true },
+    bio: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    jobTitle: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
+    lastSeen: {
+      type: Date,
+      default: null,
+    },
     profilePicture: {
       type: String,
       default: null,

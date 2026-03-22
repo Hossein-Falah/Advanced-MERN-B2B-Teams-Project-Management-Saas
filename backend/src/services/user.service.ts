@@ -1,5 +1,6 @@
+import MemberModel from "../models/member.model";
 import UserModel, { UserDocument } from "../models/user.model";
-import { BadRequestException } from "../utils/appError";
+import { BadRequestException, NotFoundException } from "../utils/appError";
 import { uploadFileToS3 } from "../utils/s3";
 
 export const getCurrentUserService = async (userId: string) => {
@@ -45,4 +46,31 @@ export const updateUserProfileService = async (
   ).select("-password");
 
   return user;
+};
+
+export const getUserProfileService = async (
+  username: string,
+  workspaceId: string
+) => {
+
+  const user = await UserModel.findOne({ username })
+    .select("name username bio jobTitle profilePicture isOnline lastSeen -password")
+    .populate({ path: "currentWorkspace", select: "_id name description" });
+
+  if (!user) {
+    throw new NotFoundException("User not found");
+  }
+
+  const member = await MemberModel.findOne({
+    userId: user._id,
+    workspaceId,
+  }).populate("role");
+
+  if (!member) {
+    throw new NotFoundException("User not in this workspace");
+  }
+
+  return {
+    user
+  };
 };
