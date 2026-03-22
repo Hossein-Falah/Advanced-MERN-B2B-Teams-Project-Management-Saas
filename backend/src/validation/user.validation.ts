@@ -5,5 +5,7 @@ export const updateUserSchema = z.object({
     username: z.string().trim().min(1).max(255),
     phone: z.string()
         .trim()
-        .regex(/^09\d{9}$/, "شماره موبایل باید با 09 شروع شود و 11 رقم باشد")
+        .regex(/^09\d{9}$/, "شماره موبایل باید با 09 شروع شود و 11 رقم باشد"),
+    bio: z.string().trim().min(1).max(500).optional(),
+    jobTitle: z.string().trim().min(1).max(500).optional()
 });

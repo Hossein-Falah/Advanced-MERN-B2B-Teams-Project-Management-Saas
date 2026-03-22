@@ -23,15 +23,19 @@ export const updateUserProfileService = async (
     name?: string;
     username?: string;
     phone?: string;
+    bio?: string;
+    jobTitle?: string
   },
   file?: Express.Multer.File
 ) => {
-  const { name, username, phone } = data;
+  const { name, username, phone, bio, jobTitle } = data;
 
   const updateData: Record<string, any> = {
     ...(name && { name }),
     ...(username && { username }),
     ...(phone && { phone }),
+    ...(bio && { bio }),
+    ...(jobTitle && { jobTitle })
   };
 
   if (file) {
