@@ -104,7 +104,7 @@ export const getWorkspaceMembersService = async (workspaceId: string) => {
   const members = await MemberModel.find({
     workspaceId,
   })
-    .populate("userId", "name email profilePicture -password")
+    .populate("userId", { password: 0 })
     .populate("role", "name");
 
   const roles = await RoleModel.find({}, { name: 1, _id: 1 })

@@ -212,7 +212,7 @@ export const getAllTasksService = async (
       .skip(skip)
       .limit(pageSize)
       .sort({ createdAt: -1 })
-      .populate("assignedTo", "_id name profilePicture -password")
+      .populate("assignedTo", { password: 0 })
       .populate("project", "_id emoji name"),
     TaskModel.countDocuments(query),
   ]);
@@ -342,22 +342,22 @@ export const redoTask = async (taskId: Types.ObjectId) => {
     const log = await TaskLogModel.findOne({
       task: taskId,
       isUndone: true
-    }).sort({ createdAt: -1 });  
-  
+    }).sort({ createdAt: -1 });
+
     if (!log) throw new NotFoundException("Nothing to redo");
-  
+
     const update: any = {};
-  
+
     log.changes.forEach(change => {
       update[change.field] = change.newValue;
     });
-  
+
     await TaskModel.findByIdAndUpdate(taskId, { $set: update });
-  
+
     log.isUndone = false;
     await log.save();
-  
-    return { success: true };    
+
+    return { success: true };
   } catch (error) {
     await session.abortTransaction();
     session.endSession();

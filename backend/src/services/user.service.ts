@@ -58,7 +58,7 @@ export const getUserProfileService = async (
 ) => {
 
   const user = await UserModel.findOne({ username })
-    .select("name username bio jobTitle profilePicture isOnline lastSeen -password")
+    .select("name username bio jobTitle profilePicture isOnline lastSeen createdAt -password")
     .populate({ path: "currentWorkspace", select: "_id name description" });
 
   if (!user) {

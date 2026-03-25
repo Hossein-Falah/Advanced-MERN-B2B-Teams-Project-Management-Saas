@@ -3,6 +3,7 @@ import UserModel from "../../models/user.model";
 import { NotificationTypeEnum } from "../../enums/notification.enum";
 import { NotificationService } from "../notification/notification.service";
 import { toObjectId } from "../../utils/convert-objectId.util";
+import MemberModel from "../../models/member.model";
 
 export class MentionService {
     static extractMentions(content: string): string[] {
@@ -49,10 +50,29 @@ export class MentionService {
     static async getMentionUsers(workspace: string, query: string, page: number = 1, limit: number = 20) {
         const skip = (page - 1) * limit;
 
-        const filter: any = {
-            currentWorkspace: toObjectId(workspace)
-        };
+        const members = await MemberModel.find({
+            workspaceId: toObjectId(workspace)
+        })
+        .populate("userId", { password: 0 });        
 
+        const userIds = members.map(m => m.userId);
+
+        if (userIds.length === 0) {
+            return {
+                users: [],
+                pagination: {
+                    total: 0,
+                    page,
+                    limit,
+                    pages: 0
+                }
+            };
+        }
+    
+        const filter: any = {
+            _id: { $in: userIds }
+        };
+    
         if (query && query.trim() !== "") {
             filter.username = {
                 $regex: `^${query}`,
