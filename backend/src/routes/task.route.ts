@@ -36,8 +36,8 @@ taskRoutes.get(
   getTaskByIdController
 );
 
-taskRoutes.post("/workspace/:workspaceId/undo/:taskId", undoTaskController);
+taskRoutes.post("/workspace/:workspaceId/undo/:taskId/log/:logId", undoTaskController);
 
-taskRoutes.post("/workspace/:workspaceId/redo/:taskId", redoTaskController);
+taskRoutes.post("/workspace/:workspaceId/redo/:taskId/log/:logId", redoTaskController);
 
 export default taskRoutes;

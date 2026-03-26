@@ -13,16 +13,16 @@ import { getTaskChanges } from "./task-log.service";
 import { toObjectId } from "../utils/convert-objectId.util";
 
 export const createTaskService = async (
-  workspaceId: string,
-  projectId: string,
-  userId: string,
+  workspaceId: string | Types.ObjectId,
+  projectId: string | Types.ObjectId,
+  userId: string | Types.ObjectId,
   body: {
     title: string;
     description?: string;
     priority: string;
     status: string;
-    assignedTo?: string | null;
-    dueDate?: string;
+    assignedTo?: string | null | Types.ObjectId;
+    dueDate?: string | Date;
   },
   attachment: string | undefined
 ) => {
@@ -91,10 +91,10 @@ export const updateTaskService = async (
   taskId: string,
   userId: string,
   body: {
-    title: string;
+    title?: string;
     description?: string;
-    priority: string;
-    status: string;
+    priority?: string;
+    status?: string;
     assignedTo?: string | null;
     dueDate?: string;
   },
@@ -120,11 +120,12 @@ export const updateTaskService = async (
 
   let attachmentUrl: string | undefined;
 
-  if (file && task?.attachment) {
-    await deleteFile(task?.attachment);
+  if (file) {
+    if (task?.attachment) {
+      await deleteFile(task.attachment);
+    }
     attachmentUrl = await uploadFileToS3(file, "task/attachment");
   }
-
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
@@ -303,17 +304,16 @@ export const assignTask = async (taskId: Types.ObjectId, userId: Types.ObjectId,
 }
 
 
-export const undoTask = async (taskId: Types.ObjectId) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
+export const undoTask = async (taskId: Types.ObjectId, logId: Types.ObjectId) => {
   try {
     const log = await TaskLogModel.findOne({
-      task: taskId,
-      isUndone: false
-    }).sort({ createdAt: -1 });
+      _id: logId,
+      task: taskId
+    });
 
-    if (!log) throw new NotFoundException("Nothing to undo");
+    if (!log) throw new NotFoundException("Log not found for this task");
+    if (log.isUndone) throw new BadRequestException("Log already undone");
+
 
     const update: any = {};
 
@@ -321,30 +321,29 @@ export const undoTask = async (taskId: Types.ObjectId) => {
       update[change.field] = change.oldValue;
     });
 
-    await TaskModel.findByIdAndUpdate(taskId, { $set: update });
+    await TaskModel.findByIdAndUpdate(
+      taskId,
+      { $set: update },
+    );
 
     log.isUndone = true;
     await log.save();
 
     return { success: true };
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     throw error;
   }
 }
 
-export const redoTask = async (taskId: Types.ObjectId) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
+export const redoTask = async (taskId: Types.ObjectId, logId: Types.ObjectId) => {
   try {
     const log = await TaskLogModel.findOne({
-      task: taskId,
-      isUndone: true
-    }).sort({ createdAt: -1 });
+      _id: logId,
+      task: taskId
+    });
 
-    if (!log) throw new NotFoundException("Nothing to redo");
+    if (!log) throw new NotFoundException("Log not found for this task");
+    if (!log.isUndone) throw new BadRequestException("Log is not undone");
 
     const update: any = {};
 
@@ -352,15 +351,16 @@ export const redoTask = async (taskId: Types.ObjectId) => {
       update[change.field] = change.newValue;
     });
 
-    await TaskModel.findByIdAndUpdate(taskId, { $set: update });
+    await TaskModel.findByIdAndUpdate(
+      taskId,
+      { $set: update },
+    );
 
     log.isUndone = false;
     await log.save();
 
     return { success: true };
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     throw error;
   }
 }

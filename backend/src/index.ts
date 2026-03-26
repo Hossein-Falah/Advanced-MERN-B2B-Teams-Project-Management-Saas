@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import http from "http";
 import cors from "cors";
+import schedule from "node-schedule";
 import passport from "passport";
 import session from "cookie-session";
 import express, { NextFunction, Request, Response } from "express";
@@ -27,6 +28,8 @@ import taskLogRoutes from "./routes/task-log.route";
 import { registerSocket } from "./socket";
 import notificationRoutes from "./modules/notification/notification.route";
 import mentionRoutes from "./modules/mention/mention.route";
+import automationRoutes from "./modules/automation/automation.route";
+import { scheduler } from "./modules/automation/workers/scheduler.service";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -91,8 +94,15 @@ app.use(`${BASE_PATH}/log`, isAuthenticated, taskLogRoutes);
 app.use(`${BASE_PATH}/comment`, isAuthenticated, commentRoutes);
 app.use(`${BASE_PATH}/notification`, isAuthenticated, notificationRoutes);
 app.use(`${BASE_PATH}/mention`, isAuthenticated, mentionRoutes);
+app.use(`${BASE_PATH}/automation`, isAuthenticated, automationRoutes);
 
 app.use(errorHandler);
+
+schedule.scheduleJob("*/1 * * * *", async () => {
+  console.log("runs every minute");
+
+  await scheduler();
+})
 
 server.listen(config.PORT, async () => {
   console.log(`Server listening on port ${config.PORT} in ${config.NODE_ENV}`);

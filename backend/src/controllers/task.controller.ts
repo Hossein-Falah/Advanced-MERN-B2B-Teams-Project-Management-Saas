@@ -166,19 +166,20 @@ export const undoTaskController = asyncHandler(
 
       const taskId = taskIdSchema.parse(req.params.taskId);
       const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
-
+      const logId = taskIdSchema.parse(req.params.logId);
+  
       const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
       roleGuard(role, [Permissions.UNDO_TASK]);
 
-      const result = await undoTask(toObjectId(taskId));
+      const result = await undoTask(toObjectId(taskId), toObjectId(logId));
 
       return res.status(HTTPSTATUS.OK).json({
         message: "Undo Task successfully",
         result
       })
-    } catch (error) {      
-      res.status(500).json({
-        message: "Error updating task",
+    } catch (error: any) {            
+      res.status(HTTPSTATUS.BAD_REQUEST).json({
+        message: error.message
       });
     }
   }
@@ -191,19 +192,20 @@ export const redoTaskController = asyncHandler(
 
       const taskId = taskIdSchema.parse(req.params.taskId);
       const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+      const logId = taskIdSchema.parse(req.params.logId);
 
       const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
       roleGuard(role, [Permissions.REDO_TASK]);
 
-      const result = await redoTask(toObjectId(taskId));
+      const result = await redoTask(toObjectId(taskId), toObjectId(logId));
 
       return res.status(HTTPSTATUS.OK).json({
         message: "Redo Task Successfully",
         result
       })
-    } catch (error) {      
-      res.status(500).json({
-        message: "Error updating task",
+    } catch (error: any) {    
+      res.status(HTTPSTATUS.BAD_REQUEST).json({
+        message: error.message
       });
     }
   }

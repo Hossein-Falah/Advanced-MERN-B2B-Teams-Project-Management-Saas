@@ -15,7 +15,7 @@ export const getTaskLogsController = asyncHandler(
         
             return res.status(HTTPSTATUS.OK).json(result);
             
-        } catch (error: any) {            
+        } catch (error: any) {
             return res.status(500).json({
               message: error.message,
             })

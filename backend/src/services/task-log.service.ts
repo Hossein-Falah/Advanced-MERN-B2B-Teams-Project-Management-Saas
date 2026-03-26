@@ -88,7 +88,7 @@ export const getTaskLogsService = async (
     const skip = (page - 1) * limit;
 
     const logs = await TaskLogModel.find({ task: taskId })
-        .populate("user", "name email -password")
+        .populate("user", "name email profilePicture username -password")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
