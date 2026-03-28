@@ -38,11 +38,13 @@ export class NotificationService {
         const skip = (page - 1) * limit;
 
         const notifications = await NotificationModel
-            .find({ receiver: userId })
+            .find({ receiver: userId }, { receiver: 0 })
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .lean();
+            .populate({ path: "sender", select: "id name email -password" })
+            .populate({ path: "task", select: "_id title" })
+            .lean();            
 
         const unreadCount = await NotificationModel.countDocuments({
             receiver: userId,

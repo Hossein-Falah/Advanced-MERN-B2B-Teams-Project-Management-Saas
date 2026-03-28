@@ -10,6 +10,7 @@ export interface AutomationDocument extends Document {
     nextRunAt: Date | null;
     lastRunAt: Date;
     active: boolean;
+    duration?: number;
 }
 
 const automationSchema = new Schema<AutomationDocument>({
@@ -43,8 +44,11 @@ const automationSchema = new Schema<AutomationDocument>({
     active: {
         type: Boolean,
         default: true
+    },
+    duration: {
+        type: Number,
+        require: false
     }
-
 }, { timestamps: true });
 
 automationSchema.index({ nextRunAt: 1 });

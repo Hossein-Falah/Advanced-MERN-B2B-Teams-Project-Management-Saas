@@ -21,8 +21,6 @@ taskRoutes.post(
   createTaskController
 );
 
-taskRoutes.delete("/:id/workspace/:workspaceId/delete", deleteTaskController);
-
 taskRoutes.put(
   "/:id/project/:projectId/workspace/:workspaceId/update",
   singleUpload,
@@ -39,5 +37,7 @@ taskRoutes.get(
 taskRoutes.post("/workspace/:workspaceId/undo/:taskId/log/:logId", undoTaskController);
 
 taskRoutes.post("/workspace/:workspaceId/redo/:taskId/log/:logId", redoTaskController);
+
+taskRoutes.delete("/delete/workspace/:workspaceId/:taskId", deleteTaskController);
 
 export default taskRoutes;

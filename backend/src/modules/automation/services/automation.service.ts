@@ -1,19 +1,38 @@
 import { Types } from "mongoose";
-import TaskModel from "../../../models/task.model";
-import { createTaskService } from "../../../services/task.service";
+import { createTaskService, getTaskById } from "../../../services/task.service";
 import { NotFoundException } from "../../../utils/appError";
 import calculateNextRun from "../../../utils/calculateNextRun";
 import AutomationModel, { AutomationDocument } from "../automation.model";
 
 export class AutomationService {
     static async create(automation: Partial<AutomationDocument>) {
-        return await AutomationModel.create(automation);
+        const task = await getTaskById(automation.taskId as Types.ObjectId);
+
+        let duration: number | null = null;
+
+        if (task.dueDate) {
+            console.log(task.dueDate);
+            console.log(task.createdAt);
+            
+            duration = task.dueDate.getTime() - task.createdAt.getTime();        
+            console.log(duration);
+             
+        }
+
+        return await AutomationModel.create({ ...automation, duration });
     };
 
     static async runTask(automation: AutomationDocument) {
-        const task = await TaskModel.findById(automation.taskId);
+        const task = await getTaskById(automation.taskId);
 
-        if (!task) return;
+        let newDueDate: Date | null = null;
+
+        if (automation.duration) {
+            const now = new Date();
+            newDueDate = new Date(now.getTime() + automation.duration);
+        }
+        console.log(newDueDate);
+        
 
         await createTaskService(
             task.workspace,
@@ -25,7 +44,7 @@ export class AutomationService {
                 priority: task.priority,
                 status: task.status,
                 assignedTo: task.assignedTo!,
-                dueDate: task.dueDate!
+                dueDate: newDueDate as Date
             },
             task.attachment
         )

@@ -1,5 +1,5 @@
 import mongoose, { Types } from "mongoose";
-import { NotificationTypeEnum } from "../enums/notification.enum";
+import { NotificationType, NotificationTypeEnum } from "../enums/notification.enum";
 import { TaskLogActionEnumType } from "../enums/task-log.enum";
 import { TaskPriorityEnum, TaskStatusEnum } from "../enums/task.enum";
 import MemberModel from "../models/member.model";
@@ -11,6 +11,7 @@ import { BadRequestException, NotFoundException } from "../utils/appError";
 import { deleteFile, uploadFileToS3 } from "../utils/s3";
 import { getTaskChanges } from "./task-log.service";
 import { toObjectId } from "../utils/convert-objectId.util";
+import { HTTPSTATUS } from "../config/http.config";
 
 export const createTaskService = async (
   workspaceId: string | Types.ObjectId,
@@ -63,7 +64,12 @@ export const createTaskService = async (
   await task.save();
 
   if (assignedTo) {
-    await assignTask(task.id, toObjectId(assignedTo), toObjectId(userId));
+    await assignTask(
+      task.id, 
+      toObjectId(assignedTo), 
+      toObjectId(userId), 
+      NotificationTypeEnum.TASK_ASSIGNED
+    );
   }
 
   await TaskLogModel.create({
@@ -136,8 +142,27 @@ export const updateTaskService = async (
     { new: true }
   );
 
-  if (body.assignedTo) {
-    await assignTask(task.id, toObjectId(body.assignedTo), toObjectId(userId))
+  const assignedToChanged =
+    body.assignedTo !== undefined &&
+    body.assignedTo?.toString() !== (oldTask.assignedTo?.toString() ?? null);
+
+
+  if (assignedToChanged && body.assignedTo) {
+    await assignTask(
+      task.id, 
+      toObjectId(body.assignedTo), 
+      toObjectId(userId),
+      NotificationTypeEnum.TASK_ASSIGNED
+    )
+  }
+
+  if (!assignedToChanged) {
+    await assignTask(
+      task.id, 
+      toObjectId(updatedTask?.assignedTo as Types.ObjectId ?? updatedTask?.createdBy), 
+      toObjectId(userId),
+      NotificationTypeEnum.TASK_UPDATED
+    )
   }
 
   if (!updatedTask) {
@@ -287,7 +312,12 @@ export const deleteTaskService = async (
   return;
 };
 
-export const assignTask = async (taskId: Types.ObjectId, userId: Types.ObjectId, senderId: Types.ObjectId) => {
+export const assignTask = async (
+  taskId: Types.ObjectId,
+  userId: Types.ObjectId,
+  senderId: Types.ObjectId,
+  type: NotificationType
+) => {
   const task = await TaskModel.findByIdAndUpdate(
     taskId,
     { assignedTo: userId },
@@ -295,7 +325,7 @@ export const assignTask = async (taskId: Types.ObjectId, userId: Types.ObjectId,
   );
 
   await NotificationService.create({
-    type: NotificationTypeEnum.TASK_ASSIGNED,
+    type,
     receiver: userId,
     sender: senderId,
     task: task?._id as Types.ObjectId,
@@ -360,6 +390,16 @@ export const redoTask = async (taskId: Types.ObjectId, logId: Types.ObjectId) =>
     await log.save();
 
     return { success: true };
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const getTaskById = async (id: Types.ObjectId) => {
+  try {
+    const task = await TaskModel.findById(id);
+    if (!task) throw new NotFoundException("task notfound");
+    return task;
   } catch (error) {
     throw error;
   }
