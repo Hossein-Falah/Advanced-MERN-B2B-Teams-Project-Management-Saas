@@ -22,6 +22,7 @@ import {
 import { HTTPSTATUS } from "../config/http.config";
 import { uploadFileToS3 } from "../utils/s3";
 import { toObjectId } from "../utils/convert-objectId.util";
+import { parseTaskFilters } from "../utils/parse-filter.util";
 
 export const createTaskController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -39,11 +40,13 @@ export const createTaskController = asyncHandler(
       attachmentUrl = await uploadFileToS3(req.file, "task/attachment");
     }
 
+    const startDate = new Date();
+
     const { task } = await createTaskService(
       workspaceId,
       projectId,
       userId,
-      body,
+      { ...body, startDate },
       attachmentUrl
     );
 
@@ -89,20 +92,7 @@ export const getAllTasksController = asyncHandler(
 
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
 
-    const filters = {
-      projectId: req.query.projectId as string | undefined,
-      status: req.query.status
-        ? (req.query.status as string)?.split(",")
-        : undefined,
-      priority: req.query.priority
-        ? (req.query.priority as string)?.split(",")
-        : undefined,
-      assignedTo: req.query.assignedTo
-        ? (req.query.assignedTo as string)?.split(",")
-        : undefined,
-      keyword: req.query.keyword as string | undefined,
-      dueDate: req.query.dueDate as string | undefined,
-    };
+    const filters = parseTaskFilters(req.query);
 
     const pagination = {
       pageSize: parseInt(req.query.pageSize as string) || 10,
@@ -145,10 +135,10 @@ export const deleteTaskController = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?._id;
 
-    const taskId = taskIdSchema.parse(req.params.taskId);
-    const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+    const taskId = taskIdSchema.parse(req.query.taskId);
+    const workspaceId = workspaceIdSchema.parse(req.query.workspaceId);
 
-    const { role } = await getMemberRoleInWorkspace(userId, workspaceId);    
+    const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
     roleGuard(role, [Permissions.DELETE_TASK]);
 
     await deleteTaskService(workspaceId, taskId, userId);
@@ -167,7 +157,7 @@ export const undoTaskController = asyncHandler(
       const taskId = taskIdSchema.parse(req.params.taskId);
       const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
       const logId = taskIdSchema.parse(req.params.logId);
-  
+
       const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
       roleGuard(role, [Permissions.UNDO_TASK]);
 
@@ -177,7 +167,7 @@ export const undoTaskController = asyncHandler(
         message: "Undo Task successfully",
         result
       })
-    } catch (error: any) {            
+    } catch (error: any) {
       res.status(HTTPSTATUS.BAD_REQUEST).json({
         message: error.message
       });
@@ -203,7 +193,7 @@ export const redoTaskController = asyncHandler(
         message: "Redo Task Successfully",
         result
       })
-    } catch (error: any) {    
+    } catch (error: any) {
       res.status(HTTPSTATUS.BAD_REQUEST).json({
         message: error.message
       });

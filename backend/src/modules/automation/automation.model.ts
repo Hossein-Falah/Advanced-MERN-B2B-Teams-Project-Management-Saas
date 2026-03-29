@@ -7,10 +7,10 @@ export interface AutomationDocument extends Document {
     daysOfWeek: number[];
     timeOfDay: string;
     timezone: string;
+    durationMs: number;
     nextRunAt: Date | null;
     lastRunAt: Date;
     active: boolean;
-    duration?: number;
 }
 
 const automationSchema = new Schema<AutomationDocument>({
@@ -32,6 +32,10 @@ const automationSchema = new Schema<AutomationDocument>({
         type: String, // "09:00"
         required: true
     },
+    durationMs: {
+        type: Number,
+        required: true
+    },
     timezone: {
         type: String,
         default: "Asia/Tehran"
@@ -44,14 +48,9 @@ const automationSchema = new Schema<AutomationDocument>({
     active: {
         type: Boolean,
         default: true
-    },
-    duration: {
-        type: Number,
-        require: false
     }
 }, { timestamps: true });
 
-automationSchema.index({ nextRunAt: 1 });
 automationSchema.index({ active: 1, nextRunAt: 1 });
 
 const AutomationModel = mongoose.model<AutomationDocument>("Automation", automationSchema);

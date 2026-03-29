@@ -15,17 +15,20 @@ export const statusSchema = z.enum(
 );
 
 export const dueDateSchema = z
-  .string()
-  .trim()
+  .union([z.string(), z.date()])
   .optional()
   .refine(
     (val) => {
-      return !val || !isNaN(Date.parse(val));
+      if (!val) return true;
+      if (val instanceof Date) return !isNaN(val.getTime());
+      return !isNaN(Date.parse(val));
     },
-    {
-      message: "Invalid date format. Please provide a valid date string.",
-    }
-  );
+    { message: "Invalid date format." }
+  )
+  .transform((val) => {
+    if (!val) return undefined;
+    return val instanceof Date ? val : new Date(val);
+  });
 
 export const taskIdSchema = z.string().trim().min(1);
 

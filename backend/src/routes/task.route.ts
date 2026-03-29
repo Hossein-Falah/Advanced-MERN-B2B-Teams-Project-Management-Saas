@@ -38,6 +38,6 @@ taskRoutes.post("/workspace/:workspaceId/undo/:taskId/log/:logId", undoTaskContr
 
 taskRoutes.post("/workspace/:workspaceId/redo/:taskId/log/:logId", redoTaskController);
 
-taskRoutes.delete("/delete/workspace/:workspaceId/:taskId", deleteTaskController);
+taskRoutes.delete("/delete", deleteTaskController);
 
 export default taskRoutes;

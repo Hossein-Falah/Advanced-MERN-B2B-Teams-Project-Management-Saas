@@ -18,6 +18,7 @@ export interface TaskDocument extends Document {
   assignedTo: mongoose.Types.ObjectId | null;
   createdBy: mongoose.Types.ObjectId;
   attachment: string;
+  startDate: Date | null;
   dueDate: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -74,6 +75,10 @@ const taskSchema = new Schema<TaskDocument>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    startDate: {
+      type: Date,
+      default: null,
     },
     dueDate: {
       type: Date,

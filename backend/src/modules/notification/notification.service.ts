@@ -6,8 +6,8 @@ export class NotificationService {
         let notification = await NotificationModel.create(data);
 
         notification = await notification.populate([
-            { path: "sender", select: "id name email -password" },
-            { path: "task", select: "_id title" }
+            { path: "sender", select: "id name email username profilePicture -password" },
+            { path: "task", select: "_id title description" }
         ]);
         
         if (io) {
@@ -42,8 +42,8 @@ export class NotificationService {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .populate({ path: "sender", select: "id name email -password" })
-            .populate({ path: "task", select: "_id title" })
+            .populate({ path: "sender", select: "id name email username profilePicture -password" })
+            .populate({ path: "task", select: "_id title description" })
             .lean();            
 
         const unreadCount = await NotificationModel.countDocuments({

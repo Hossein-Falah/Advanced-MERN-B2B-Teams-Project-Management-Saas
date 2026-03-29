@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { createTaskService, getTaskById } from "../../../services/task.service";
-import { NotFoundException } from "../../../utils/appError";
+import { BadRequestException, NotFoundException } from "../../../utils/appError";
 import calculateNextRun from "../../../utils/calculateNextRun";
 import AutomationModel, { AutomationDocument } from "../automation.model";
 
@@ -8,32 +8,24 @@ export class AutomationService {
     static async create(automation: Partial<AutomationDocument>) {
         const task = await getTaskById(automation.taskId as Types.ObjectId);
 
-        let duration: number | null = null;
+        // if (!task.startDate || !task.dueDate) {
+        //     throw new BadRequestException("Task must have startDate and dueDate to create automation");
+        // }
 
-        if (task.dueDate) {
-            console.log(task.dueDate);
-            console.log(task.createdAt);
-            
-            duration = task.dueDate.getTime() - task.createdAt.getTime();        
-            console.log(duration);
-             
-        }
+        // const durationMs = task.dueDate.getTime() - task.startDate.getTime();
 
-        return await AutomationModel.create({ ...automation, duration });
+        // if (durationMs <= 0) {
+        //     throw new BadRequestException("Invalid task duration");
+        // }
+    
+        return await AutomationModel.create({ ...automation });
     };
 
     static async runTask(automation: AutomationDocument) {
         const task = await getTaskById(automation.taskId);
 
-        let newDueDate: Date | null = null;
-
-        if (automation.duration) {
-            const now = new Date();
-            newDueDate = new Date(now.getTime() + automation.duration);
-        }
-        console.log(newDueDate);
+        const now = new Date();
         
-
         await createTaskService(
             task.workspace,
             task.project,
@@ -44,7 +36,8 @@ export class AutomationService {
                 priority: task.priority,
                 status: task.status,
                 assignedTo: task.assignedTo!,
-                dueDate: newDueDate as Date
+                startDate: now,
+                dueDate: new Date(now.getTime() + automation.durationMs),    
             },
             task.attachment
         )

@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 import { NotificationType, NotificationTypeEnum } from "../enums/notification.enum";
 import { TaskLogActionEnumType } from "../enums/task-log.enum";
 import { TaskPriorityEnum, TaskStatusEnum } from "../enums/task.enum";
@@ -11,7 +11,8 @@ import { BadRequestException, NotFoundException } from "../utils/appError";
 import { deleteFile, uploadFileToS3 } from "../utils/s3";
 import { getTaskChanges } from "./task-log.service";
 import { toObjectId } from "../utils/convert-objectId.util";
-import { HTTPSTATUS } from "../config/http.config";
+import { validateTaskDates } from "../utils/validate-task.util";
+import { TaskFilters, TaskPagination } from "../@types/task.type";
 
 export const createTaskService = async (
   workspaceId: string | Types.ObjectId,
@@ -23,11 +24,12 @@ export const createTaskService = async (
     priority: string;
     status: string;
     assignedTo?: string | null | Types.ObjectId;
-    dueDate?: string | Date;
+    startDate?: Date | null;
+    dueDate?: Date | null;
   },
   attachment: string | undefined
 ) => {
-  const { title, description, priority, status, assignedTo, dueDate } = body;
+  const { title, description, priority, status, assignedTo, startDate, dueDate } = body;
 
   const project = await ProjectModel.findById(projectId);
 
@@ -48,6 +50,8 @@ export const createTaskService = async (
     }
   }
 
+  // validateTaskDates(startDate, dueDate);
+
   const task = new TaskModel({
     title,
     description,
@@ -57,6 +61,7 @@ export const createTaskService = async (
     createdBy: userId,
     workspace: workspaceId,
     project: projectId,
+    startDate,
     dueDate,
     attachment
   });
@@ -65,9 +70,9 @@ export const createTaskService = async (
 
   if (assignedTo) {
     await assignTask(
-      task.id, 
-      toObjectId(assignedTo), 
-      toObjectId(userId), 
+      task.id,
+      toObjectId(assignedTo),
+      toObjectId(userId),
       NotificationTypeEnum.TASK_ASSIGNED
     );
   }
@@ -84,6 +89,7 @@ export const createTaskService = async (
       { field: "priority", newValue: task.priority },
       { field: "assignedTo", newValue: task.assignedTo },
       { field: "dueDate", newValue: task.dueDate },
+      { field: "startDate", newValue: task.startDate },
       { field: "attachment", newValue: task.attachment },
     ],
   });
@@ -102,7 +108,7 @@ export const updateTaskService = async (
     priority?: string;
     status?: string;
     assignedTo?: string | null;
-    dueDate?: string;
+    dueDate?: Date | null;
   },
   file?: Express.Multer.File | undefined
 ) => {
@@ -149,8 +155,8 @@ export const updateTaskService = async (
 
   if (assignedToChanged && body.assignedTo) {
     await assignTask(
-      task.id, 
-      toObjectId(body.assignedTo), 
+      task.id,
+      toObjectId(body.assignedTo),
       toObjectId(userId),
       NotificationTypeEnum.TASK_ASSIGNED
     )
@@ -158,8 +164,8 @@ export const updateTaskService = async (
 
   if (!assignedToChanged) {
     await assignTask(
-      task.id, 
-      toObjectId(updatedTask?.assignedTo as Types.ObjectId ?? updatedTask?.createdBy), 
+      task.id,
+      toObjectId(updatedTask?.assignedTo as Types.ObjectId ?? updatedTask?.createdBy),
       toObjectId(userId),
       NotificationTypeEnum.TASK_UPDATED
     )
@@ -186,48 +192,19 @@ export const updateTaskService = async (
 
 export const getAllTasksService = async (
   workspaceId: string,
-  filters: {
-    projectId?: string;
-    status?: string[];
-    priority?: string[];
-    assignedTo?: string[];
-    keyword?: string;
-    dueDate?: string;
-  },
-  pagination: {
-    pageSize: number;
-    pageNumber: number;
-  }
+  filters: TaskFilters,
+  pagination: TaskPagination
 ) => {
-  const query: Record<string, any> = {
+  const query = {
     workspace: workspaceId,
+    ...(filters.projectId && { project: filters.projectId }),
+    ...(filters.status?.length && { status: { $in: filters.status } }),
+    ...(filters.priority?.length && { priority: { $in: filters.priority } }),
+    ...(filters.assignedTo?.length && { assignedTo: { $in: filters.assignedTo } }),
+    ...(filters.taskId && { _id: filters.taskId }),
+    ...(filters.keyword && { title: { $regex: filters.keyword, $options: "i" } }),
+    ...(filters.dueDate && { dueDate: new Date(filters.dueDate) }),
   };
-
-  if (filters.projectId) {
-    query.project = filters.projectId;
-  }
-
-  if (filters.status && filters.status?.length > 0) {
-    query.status = { $in: filters.status };
-  }
-
-  if (filters.priority && filters.priority?.length > 0) {
-    query.priority = { $in: filters.priority };
-  }
-
-  if (filters.assignedTo && filters.assignedTo?.length > 0) {
-    query.assignedTo = { $in: filters.assignedTo };
-  }
-
-  if (filters.keyword && filters.keyword !== undefined) {
-    query.title = { $regex: filters.keyword, $options: "i" };
-  }
-
-  if (filters.dueDate) {
-    query.dueDate = {
-      $eq: new Date(filters.dueDate),
-    };
-  }
 
   //Pagination Setup
   const { pageSize, pageNumber } = pagination;
