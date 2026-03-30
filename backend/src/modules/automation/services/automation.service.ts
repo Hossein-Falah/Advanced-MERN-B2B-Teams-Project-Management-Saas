@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { createTaskService, getTaskById } from "../../../services/task.service";
-import { BadRequestException, NotFoundException } from "../../../utils/appError";
+import { NotFoundException } from "../../../utils/appError";
 import calculateNextRun from "../../../utils/calculateNextRun";
 import AutomationModel, { AutomationDocument } from "../automation.model";
 

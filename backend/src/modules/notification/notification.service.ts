@@ -44,7 +44,6 @@ export class NotificationService {
             .limit(limit)
             .populate({ path: "sender", select: "id name email username profilePicture -password" })
             .populate({ path: "task", select: "_id title description" })
-            .lean();            
 
         const unreadCount = await NotificationModel.countDocuments({
             receiver: userId,

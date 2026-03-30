@@ -111,5 +111,6 @@ userSchema.path("profilePicture").get(function (value: string) {
 });
 
 userSchema.set("toJSON", { getters: true });
+userSchema.set("toObject", { getters: true });
 
 export default UserModel;

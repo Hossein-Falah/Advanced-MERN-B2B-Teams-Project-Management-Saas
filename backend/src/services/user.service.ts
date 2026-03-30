@@ -1,5 +1,5 @@
 import MemberModel from "../models/member.model";
-import UserModel, { UserDocument } from "../models/user.model";
+import UserModel from "../models/user.model";
 import { BadRequestException, NotFoundException } from "../utils/appError";
 import { uploadFileToS3 } from "../utils/s3";
 
