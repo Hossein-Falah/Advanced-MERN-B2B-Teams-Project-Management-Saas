@@ -20,7 +20,7 @@ services:
     container_name: taskmanager_backup
     restart: always
     environment:
-      BACKUP_CRON_EXPRESSION: "0 0 */14 * *" # every 1 weeks
+      BACKUP_CRON_EXPRESSION: "0 0 * * 0" # every 1 weeks
       BACKUP_RETENTION: 5 # keep 5 days of backups
     volumes:
       - mongo_data:/backup/mongo_data:ro
