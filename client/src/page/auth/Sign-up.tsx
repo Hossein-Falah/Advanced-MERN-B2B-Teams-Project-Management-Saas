@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input'
 import Logo from '@/components/logo'
 import GoogleOauthButton from '@/components/auth/google-oauth-button'
 import { useMutation } from '@tanstack/react-query'
-import { registerMutationFn } from '@/lib/api'
+import { registerMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { Loader } from 'lucide-react'
 

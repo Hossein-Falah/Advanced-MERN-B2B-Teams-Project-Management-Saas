@@ -6,7 +6,7 @@ import { useAuthContext } from '@/context/auth-provider'
 import useConfirmDialog from '@/hooks/use-confirm-dialog'
 import { toast } from '@/hooks/use-toast'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { deleteWorkspaceMutationFn } from '@/lib/api'
+import { deleteWorkspaceMutationFn } from '@/lib/api/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 
@@ -62,8 +62,8 @@ const DeleteWorkspaceCard = () => {
               <p>
                 حذف یک فضای کاری یک اقدام دائمی است و قابل بازگشت نیست. پس از
                 حذف فضای کاری، تمام داده‌های مرتبط با آن، از جمله پروژه‌ها،
-                تسک‌ها و نقش‌های اعضا، برای همیشه پاک خواهند شد. لطفاً با احتیاط
-                عمل کنید و از انجام عمدی این کار مطمئن شوید.
+                وظیفه ‌ها و نقش‌های اعضا، برای همیشه پاک خواهند شد. لطفاً با
+                احتیاط عمل کنید و از انجام عمدی این کار مطمئن شوید.
               </p>
             </div>
             <Button

@@ -36,7 +36,7 @@ import { TaskPriorityEnum, TaskStatusEnum } from '@/constant'
 import useGetProjectsInWorkspaceQuery from '@/hooks/api/use-get-projects'
 import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { createTaskMutationFn } from '@/lib/api'
+import { createTaskMutationFn } from '@/lib/api/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
 
@@ -96,7 +96,7 @@ export default function CreateTaskForm(props: {
 
   const formSchema = z.object({
     title: z.string().trim().min(1, {
-      message: 'عنوان تسک الزامی است',
+      message: 'عنوان وظیفه  الزامی است',
     }),
     description: z.string().trim(),
     projectId: z.string().trim().min(1, {
@@ -199,7 +199,7 @@ export default function CreateTaskForm(props: {
 
           toast({
             title: 'موفق',
-            description: 'تسک با موفقیت ایجاد شد',
+            description: 'وظیفه  با موفقیت ایجاد شد',
             variant: 'success',
           })
 
@@ -221,7 +221,7 @@ export default function CreateTaskForm(props: {
       <div className='h-full'>
         <div className='my-5 pb-2 border-b'>
           <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            سازماندهی و مدیریت تسک‌ها، منابع و همکاری تیمی
+            سازماندهی و مدیریت وظیفه ‌ها، منابع و همکاری تیمی
           </p>
         </div>
         <Form {...form}>
@@ -233,7 +233,7 @@ export default function CreateTaskForm(props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      عنوان تسک
+                      عنوان وظیفه
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -256,7 +256,7 @@ export default function CreateTaskForm(props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      توضیحات تسک
+                      توضیحات وظیفه
                       <span className='text-xs font-extralight mr-2'>
                         (اختیاری)
                       </span>
@@ -362,47 +362,137 @@ export default function CreateTaskForm(props: {
               <FormField
                 control={form.control}
                 name='dueDate'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>تاریخ سررسید</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'w-full flex-1 pl-3 text-right font-normal',
-                              !field.value && 'text-muted-foreground',
-                            )}
-                          >
-                            {field.value ? (
-                              formatJalali(field.value, 'PPP', { locale: faIR })
-                            ) : (
-                              <span>انتخاب تاریخ</span>
-                            )}
-                            <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className='w-auto p-0' align='start'>
-                        <Calendar
-                          mode='single'
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0)) ||
-                            date > new Date('2100-12-31')
-                          }
-                          initialFocus
-                          defaultMonth={new Date()}
-                          fromMonth={new Date()}
-                          locale={faIR} // اضافه کردن locale شمسی
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const value = field.value ? new Date(field.value) : undefined
+
+                  const updateDate = (updater: (date: Date) => void) => {
+                    const base = value ?? new Date()
+                    const newDate = new Date(base)
+                    updater(newDate)
+                    field.onChange(newDate)
+                  }
+
+                  return (
+                    <FormItem>
+                      <FormLabel>تاریخ سررسید</FormLabel>
+
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant='outline'
+                              className={cn(
+                                'w-full flex-1 pl-3 text-right font-normal',
+                                !value && 'text-muted-foreground',
+                              )}
+                            >
+                              {value ? (
+                                formatJalali(value, 'PPP HH:mm', {
+                                  locale: faIR,
+                                })
+                              ) : (
+                                <span>انتخاب تاریخ</span>
+                              )}
+                              <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+
+                        <PopoverContent
+                          className='w-auto p-3 space-y-3'
+                          align='start'
+                        >
+                          <Calendar
+                            mode='single'
+                            selected={value}
+                            locale={faIR}
+                            initialFocus
+                            onSelect={(selected) => {
+                              if (!selected) return
+
+                              const base = value ?? new Date()
+                              const newDate = new Date(selected)
+
+                              newDate.setHours(base.getHours())
+                              newDate.setMinutes(base.getMinutes())
+
+                              field.onChange(newDate)
+                            }}
+                          />
+
+                          <div className='flex gap-2'>
+                            {/* ساعت */}
+                            <div className='flex flex-col gap-1'>
+                              <p className='text-xs'>ساعت :</p>
+
+                              <Select
+                                value={
+                                  value ? String(value.getHours()) : undefined
+                                }
+                                onValueChange={(hour) => {
+                                  updateDate((d) => d.setHours(Number(hour)))
+                                }}
+                              >
+                                <SelectTrigger className='w-[80px]'>
+                                  <SelectValue placeholder='ساعت' />
+                                </SelectTrigger>
+
+                                <SelectContent className='max-h-[200px]'>
+                                  {Array.from({ length: 24 }, (_, i) => i).map(
+                                    (hour) => (
+                                      <SelectItem
+                                        key={hour}
+                                        value={String(hour)}
+                                      >
+                                        {String(hour).padStart(2, '0')}
+                                      </SelectItem>
+                                    ),
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* دقیقه */}
+                            <div className='flex flex-col gap-1'>
+                              <p className='text-xs'>دقیقه :</p>
+
+                              <Select
+                                value={
+                                  value ? String(value.getMinutes()) : undefined
+                                }
+                                onValueChange={(minute) => {
+                                  updateDate((d) =>
+                                    d.setMinutes(Number(minute)),
+                                  )
+                                }}
+                              >
+                                <SelectTrigger className='w-[80px]'>
+                                  <SelectValue placeholder='دقیقه' />
+                                </SelectTrigger>
+
+                                <SelectContent className='max-h-[200px]'>
+                                  {Array.from(
+                                    { length: 12 },
+                                    (_, i) => i * 5,
+                                  ).map((minute) => (
+                                    <SelectItem
+                                      key={minute}
+                                      value={String(minute)}
+                                    >
+                                      {String(minute).padStart(2, '0')}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
               />
             </div>
 

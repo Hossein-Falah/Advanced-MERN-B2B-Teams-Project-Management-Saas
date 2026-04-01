@@ -4,9 +4,6 @@
 
 /* fonts */
 /* ————— I R A N S A N S ————— */
-/* =========================
-   IRANSANS
-========================= */
 
 @font-face {
   font-family: 'IranSans';
@@ -152,42 +149,17 @@
   font-display: swap;
 }
 
-/* =========================
-   GLOBAL RESET / BASE
-========================= */
-
-html,
-body,
-#root {
-  height: 100%;
-}
-
-html {
+/* ... */
+* {
   direction: rtl;
-}
-
-body {
-  margin: 0;
-  padding: 0;
   text-align: right;
-  font-family: 'IranSans', 'Nunito', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: IranSans !important;
 }
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+html,
+hody {
+  height: 100%;
+  font-family: IranSans;
 }
-
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-
 em-emoji-picker {
   width: 350px;
   height: 400px;

@@ -41,7 +41,10 @@ const RecentMembers = () => {
             >
               {/* Avatar */}
               <div className='flex-shrink-0'>
-                <Avatar className='h-9 w-9 sm:flex'>
+                <Avatar
+                  toUser={member.userId?.username}
+                  className='h-9 w-9 sm:flex'
+                >
                   <AvatarImage
                     src={member.userId.profilePicture || ''}
                     alt='Avatar'

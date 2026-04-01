@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { EllipsisIcon, Loader, LogOut } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { EditIcon, EllipsisVerticalIcon, Loader, LogOut } from 'lucide-react'
 import {
   Sidebar,
   SidebarHeader,
@@ -9,7 +9,6 @@ import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
   SidebarFooter,
   SidebarRail,
   useSidebar,
@@ -34,7 +33,7 @@ import { useAuthContext } from '@/context/auth-provider'
 
 const Asidebar = () => {
   const { isLoading, user } = useAuthContext()
-
+  const navigate = useNavigate()
   const { open } = useSidebar()
   const workspaceId = useWorkspaceId()
 
@@ -45,7 +44,7 @@ const Asidebar = () => {
       <Sidebar collapsible='icon'>
         <SidebarHeader className='!py-0 dark:bg-background'>
           <div className='flex h-[50px] items-center justify-start w-full px-1'>
-            <Logo url={`/workspace/${workspaceId}`} />
+            <Logo />
             {open && (
               <Link
                 to={`/workspace/${workspaceId}`}
@@ -77,34 +76,51 @@ const Asidebar = () => {
                 />
               ) : (
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton
-                      size='lg'
-                      className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
-                    >
-                      <Avatar className='h-8 w-8 rounded-full'>
-                        <AvatarImage src={user?.profilePicture || ''} />
-                        <AvatarFallback className='rounded-full border border-gray-500'>
-                          {user?.name?.split(' ')?.[0]?.charAt(0)}
-                          {user?.name?.split(' ')?.[1]?.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className='grid flex-1 text-left text-sm leading-tight'>
-                        <span className='truncate font-semibold'>
-                          {user?.name}
-                        </span>
-                        <span className='truncate text-xs'>{user?.email}</span>
+                  <div
+                    onClick={() =>
+                      navigate(
+                        `/workspace/${workspaceId}/profile/${user?.username}`,
+                      )
+                    }
+                    className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground flex items-center gap-2 cursor-pointer hover:bg-sidebar-accent p-1 rounded-md '
+                  >
+                    <Avatar className='h-8 w-8 rounded-full hover:scale-110 hover:-rotate-12 duration-300 ease-in-out'>
+                      <AvatarImage src={user?.profilePicture || ''} />
+                      <AvatarFallback className='rounded-full border border-gray-500'>
+                        {user?.name?.split(' ')?.[0]?.charAt(0)}
+                        {user?.name?.split(' ')?.[1]?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <DropdownMenuTrigger asChild>
+                      <div className='flex items-center gap-2'>
+                        <div className='grid flex-1 text-left text-sm leading-tight'>
+                          <span className='truncate font-semibold'>
+                            {user?.name}
+                          </span>
+                          <span className='truncate text-xs'>
+                            {user?.email}
+                          </span>
+                        </div>
+
+                        <EllipsisVerticalIcon className='ml-auto size-4 ' />
                       </div>
-                      <EllipsisIcon className='ml-auto size-4' />
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
+                    </DropdownMenuTrigger>
+                  </div>
                   <DropdownMenuContent
                     className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
                     side={'bottom'}
                     align='start'
                     sideOffset={4}
                   >
-                    <DropdownMenuGroup></DropdownMenuGroup>
+                    <DropdownMenuGroup></DropdownMenuGroup>{' '}
+                    <DropdownMenuItem
+                      onClick={() =>
+                        navigate(`/workspace/${workspaceId}/profile/settings`)
+                      }
+                    >
+                      <EditIcon />
+                      ویرایش پروفایل
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setIsOpen(true)}>
                       <LogOut />

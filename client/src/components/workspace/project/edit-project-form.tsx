@@ -22,7 +22,7 @@ import EmojiPickerComponent from '@/components/emoji-picker'
 import { ProjectType } from '@/types/api.type'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { editProjectMutationFn } from '@/lib/api'
+import { editProjectMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { Loader } from 'lucide-react'
 
@@ -109,7 +109,7 @@ export default function EditProjectForm(props: {
       <div className='h-full'>
         <div className='m-5  pb-2 border-b'>
           <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            جزئیات پروژه را برای مدیریت بهتر تسک‌ها به‌روز کنید
+            جزئیات پروژه را برای مدیریت بهتر وظیفه ‌ها به‌روز کنید
           </p>
         </div>
         <Form {...form}>

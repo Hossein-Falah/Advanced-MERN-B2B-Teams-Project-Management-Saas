@@ -4,25 +4,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { getAllCommentQueryFn } from '@/lib/api'
+import { getAllCommentQueryFn } from '@/lib/api/api'
 import { useQuery } from '@tanstack/react-query'
 import CreateCommentForm from './create-comment-form'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { format as formatJalali } from 'date-fns-jalali'
 import { faIR } from 'date-fns-jalali/locale'
 import AttachmentDownload from '@/components/ui/attachment-download'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Description } from '@radix-ui/react-dialog'
+import { TaskType } from '@/types/api.type'
+import { renderCommentContent } from '@/utils/renderCommentContent'
 
 const CommentsDialog = ({
   task,
   isOpen,
   onClose,
 }: {
-  task: any
+  task: TaskType & Record<string, any>
   isOpen: boolean
   onClose: () => void
 }) => {
+  //call api
   const { data, isLoading } = useQuery({
     queryKey: ['all-comments', task?.workspace, task?.id],
     queryFn: () =>
@@ -30,29 +34,35 @@ const CommentsDialog = ({
         taskId: task.id,
         workspaceId: task.workspace,
       }),
-    staleTime: 0,
     enabled: isOpen && !!task?.id && !!task?.workspace,
   })
-  // TODO
-  const comments: any[] = (data?.comments?.comments || []).sort(
-    (a: any, b: any) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  )
+
+  if (!task) return null
+
+  const comments = data?.comments.comments
   const attachmentPreview = task?.attachment ?? undefined
 
   return (
     <Dialog modal={true} open={isOpen} onOpenChange={onClose}>
       <DialogContent className='sm:max-w-lg my-5 border-0'>
         <DialogHeader>
-          <DialogTitle className='mt-4'>{task?.title}</DialogTitle>
+          <DialogTitle className='mt-4 flex flex-col gap-2 md:flex-row justify-between break-all'>
+            <p>{task?.title}</p>
+            <p className='text-xs font-normal '>
+              {task.dueDate
+                ? formatJalali(new Date(task.dueDate), 'PPP HH:mm', {
+                    locale: faIR,
+                  })
+                : null}
+            </p>
+          </DialogTitle>
+          <Description className='text-sm leading-6 text-slate-700 dark:text-slate-300 whitespace-pre-line break-all'>
+            {task?.description || 'توضیحی برای این وظیفه ثبت نشده است.'}
+          </Description>
         </DialogHeader>
 
         {/* task description */}
         <div className='space-y-3'>
-          <p className='text-sm leading-6 text-slate-700 dark:text-slate-300 whitespace-pre-line break-all'>
-            {task?.description || 'توضیحی برای این وظیفه ثبت نشده است.'}
-          </p>
-
           {attachmentPreview && (
             <AttachmentDownload
               url={attachmentPreview}
@@ -83,10 +93,10 @@ const CommentsDialog = ({
                 </div>
               ))}
             </div>
-          ) : comments.length > 0 ? (
+          ) : comments && comments.length > 0 ? (
             <div className='space-y-3 max-h-[400px] overflow-y-auto'>
               <AnimatePresence initial={false}>
-                {comments.map((comment) => {
+                {comments?.map((comment) => {
                   const name = comment.user?.name
                   const initials = getAvatarFallbackText(name)
                   const avatarColor = getAvatarColor(name)
@@ -103,7 +113,14 @@ const CommentsDialog = ({
                     >
                       <div className='flex items-center justify-between mb-1'>
                         <div className='flex items-center gap-1'>
-                          <Avatar className='h-6 w-6'>
+                          <Avatar
+                            toUser={comment.user.username}
+                            className='h-8 w-8'
+                          >
+                            <AvatarImage
+                              src={comment.user.profilePicture || ''}
+                              alt='تصویر'
+                            />
                             <AvatarFallback className={avatarColor}>
                               {initials}
                             </AvatarFallback>
@@ -124,7 +141,10 @@ const CommentsDialog = ({
                       </div>
 
                       <p className='text-sm text-slate-700 dark:text-slate-300 leading-6 my-2'>
-                        {comment.content}
+                        {renderCommentContent({
+                          content: comment.content,
+                          workspaceId: comment.workspace,
+                        })}
                       </p>
 
                       {comment?.attachment && (

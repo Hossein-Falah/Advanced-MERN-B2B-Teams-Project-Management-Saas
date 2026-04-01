@@ -33,7 +33,7 @@ import { Calendar } from '@/components/ui/calendar'
 import useWorkspaceId from '@/hooks/use-workspace-id'
 import { TaskPriorityEnum, TaskStatusEnum } from '@/constant'
 import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
-import { editTaskMutationFn } from '@/lib/api'
+import { editTaskMutationFn } from '@/lib/api/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
 import { TaskType } from '@/types/api.type'
@@ -79,7 +79,7 @@ export default function EditTaskForm({
 
   const formSchema = z.object({
     title: z.string().trim().min(1, {
-      message: 'عنوان تسک الزامی است',
+      message: 'عنوان وظیفه  الزامی است',
     }),
     description: z.string().trim(),
     status: z.enum(
@@ -185,7 +185,7 @@ export default function EditTaskForm({
 
           toast({
             title: 'موفق',
-            description: 'تسک با موفقیت به‌روزرسانی شد',
+            description: 'وظیفه  با موفقیت به‌روزرسانی شد',
             variant: 'success',
           })
 
@@ -207,7 +207,7 @@ export default function EditTaskForm({
       <div className='h-full'>
         <div className='my-5 pb-2 border-b'>
           <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            ویرایش و بروزرسانی اطلاعات تسک
+            ویرایش و بروزرسانی اطلاعات وظیفه
           </p>
         </div>
 
@@ -220,7 +220,7 @@ export default function EditTaskForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      عنوان تسک
+                      عنوان وظیفه
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -242,7 +242,7 @@ export default function EditTaskForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      توضیحات تسک
+                      توضیحات وظیفه
                       <span className='text-xs font-extralight mr-2'>
                         (اختیاری)
                       </span>
@@ -293,6 +293,7 @@ export default function EditTaskForm({
               />
             </div>
 
+            {/* تاریخ سررسید */}
             <div className='!mt-2'>
               <FormField
                 control={form.control}
@@ -311,7 +312,9 @@ export default function EditTaskForm({
                             )}
                           >
                             {field.value ? (
-                              formatJalali(field.value, 'PPP', { locale: faIR })
+                              formatJalali(new Date(field.value), 'PPP HH:mm', {
+                                locale: faIR,
+                              })
                             ) : (
                               <span>انتخاب تاریخ</span>
                             )}
@@ -319,21 +322,80 @@ export default function EditTaskForm({
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-
-                      <PopoverContent className='w-auto p-0' align='start'>
+                      <PopoverContent
+                        className='w-auto p-3 space-y-3'
+                        align='start'
+                      >
                         <Calendar
                           mode='single'
                           selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0)) ||
-                            date > new Date('2100-12-31')
-                          }
-                          initialFocus
-                          defaultMonth={field.value || new Date()}
-                          fromMonth={new Date()}
+                          onSelect={(date) => {
+                            if (!date) return
+                            const current = field.value ?? new Date()
+                            date.setHours(current.getHours())
+                            date.setMinutes(current.getMinutes())
+                            field.onChange(date)
+                          }}
                           locale={faIR}
+                          initialFocus
                         />
+
+                        <div className='flex gap-2'>
+                          {/* ساعت */}
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-xs'>ساعت :</p>
+                            <Select
+                              value={
+                                field.value
+                                  ? String(field.value.getHours())
+                                  : undefined
+                              }
+                              onValueChange={(hour) => {
+                                const date = field.value ?? new Date()
+                                date.setHours(Number(hour))
+                                field.onChange(new Date(date))
+                              }}
+                            >
+                              <SelectTrigger className='w-[80px]'>
+                                <SelectValue placeholder='ساعت' />
+                              </SelectTrigger>
+                              <SelectContent className='max-h-[200px]'>
+                                {Array.from({ length: 24 }).map((_, i) => (
+                                  <SelectItem key={i} value={String(i)}>
+                                    {String(i).padStart(2, '0')}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {/* دقیقه */}
+                          <div className='flex flex-col gap-1'>
+                            <p className='text-xs'>دقیقه :</p>
+                            <Select
+                              value={
+                                field.value
+                                  ? String(field.value.getMinutes())
+                                  : undefined
+                              }
+                              onValueChange={(minute) => {
+                                const date = field.value ?? new Date()
+                                date.setMinutes(Number(minute))
+                                field.onChange(new Date(date))
+                              }}
+                            >
+                              <SelectTrigger className='w-[80px]'>
+                                <SelectValue placeholder='دقیقه' />
+                              </SelectTrigger>
+                              <SelectContent className='max-h-[200px]'>
+                                {Array.from({ length: 60 }).map((_, i) => (
+                                  <SelectItem key={i} value={String(i)}>
+                                    {String(i).padStart(2, '0')}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
                       </PopoverContent>
                     </Popover>
                     <FormMessage />

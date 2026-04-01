@@ -1,7 +1,7 @@
 import { FC, useState } from 'react'
 import { getColumns } from './table/columns'
 import { DataTable } from './table/table'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
@@ -10,12 +10,13 @@ import { priorities, statuses } from './table/data'
 import useTaskTableFilter from '@/hooks/use-task-table-filter'
 import { useQuery } from '@tanstack/react-query'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { getAllTasksQueryFn } from '@/lib/api'
+import { getAllTasksQueryFn } from '@/lib/api/api'
 import { TaskType } from '@/types/api.type'
 import useGetProjectsInWorkspaceQuery from '@/hooks/api/use-get-projects'
 import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import CommentsDialog from './table/create-comment-dialog'
 
 type Filters = ReturnType<typeof useTaskTableFilter>[0]
 type SetFilters = ReturnType<typeof useTaskTableFilter>[1]
@@ -25,18 +26,43 @@ interface DataTableFilterToolbarProps {
   projectId?: string
   filters: Filters
   setFilters: SetFilters
+  resetAllFilters: () => void
+  hasTaskId: boolean
 }
 
 const TaskTable = () => {
   const param = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const projectId = param.projectId as string
+  const taskId = searchParams.get('taskId')
+
+  const [selectedTask, setSelectedTask] = useState<
+    (TaskType & Record<string, any>) | null
+  >(null)
 
   const [pageNumber, setPageNumber] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
   const [filters, setFilters] = useTaskTableFilter()
   const workspaceId = useWorkspaceId()
-  const columns = getColumns(projectId)
+  const columns = getColumns({
+    projectId,
+    onOpenComments: (task) => setSelectedTask(task),
+  })
+
+  const resetAllFilters = () => {
+    setFilters({
+      keyword: null,
+      status: null,
+      priority: null,
+      projectId: null,
+      assigneeId: null,
+    })
+    if (taskId) {
+      searchParams.delete('taskId')
+      setSearchParams(searchParams)
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -46,6 +72,7 @@ const TaskTable = () => {
       pageNumber,
       filters,
       projectId,
+      taskId,
     ],
     queryFn: () =>
       getAllTasksQueryFn({
@@ -57,6 +84,7 @@ const TaskTable = () => {
         assignedTo: filters.assigneeId,
         pageNumber,
         pageSize,
+        taskId: taskId || undefined,
       }),
     staleTime: 0,
   })
@@ -68,7 +96,6 @@ const TaskTable = () => {
     setPageNumber(page)
   }
 
-  // Handle page size changes
   const handlePageSizeChange = (size: number) => {
     setPageSize(size)
   }
@@ -92,9 +119,19 @@ const TaskTable = () => {
             projectId={projectId}
             filters={filters}
             setFilters={setFilters}
+            resetAllFilters={resetAllFilters}
+            hasTaskId={!!taskId}
           />
         }
       />
+
+      {selectedTask && (
+        <CommentsDialog
+          task={selectedTask}
+          isOpen={!!selectedTask}
+          onClose={() => setSelectedTask(null)}
+        />
+      )}
     </div>
   )
 }
@@ -104,6 +141,8 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
   projectId,
   filters,
   setFilters,
+  resetAllFilters,
+  hasTaskId,
 }) => {
   const workspaceId = useWorkspaceId()
 
@@ -116,20 +155,16 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
   const projects = data?.projects || []
   const members = memberData?.members || []
 
-  //Workspace Projects
-  const projectOptions = projects?.map((project) => {
-    return {
-      label: (
-        <div className='flex items-center gap-1'>
-          <span>{project.emoji}</span>
-          <span>{project.name}</span>
-        </div>
-      ),
-      value: project._id,
-    }
-  })
+  const projectOptions = projects?.map((project) => ({
+    label: (
+      <div className='flex items-center gap-1'>
+        <span>{project.emoji}</span>
+        <span>{project.name}</span>
+      </div>
+    ),
+    value: project._id,
+  }))
 
-  // Workspace Memebers
   const assigneesOptions = members?.map((member) => {
     const name = member.userId?.name || 'ناشناس'
     const initials = getAvatarFallbackText(name)
@@ -138,7 +173,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
     return {
       label: (
         <div className='flex items-center space-x-2 rtl:space-x-reverse'>
-          <Avatar className='h-6 w-6 ml-2'>
+          <Avatar toUser={member.userId?.username} className='h-6 w-6 ml-2'>
             <AvatarImage src={member.userId?.profilePicture || ''} alt={name} />
             <AvatarFallback className={avatarColor}>{initials}</AvatarFallback>
           </Avatar>
@@ -168,7 +203,6 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
         }
         className='h-8 w-full lg:w-[250px]'
       />
-      {/* Status filter */}
       <DataTableFacetedFilter
         title='وضعیت'
         multiSelect={true}
@@ -177,8 +211,6 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
         selectedValues={filters.status?.split(',') || []}
         onFilterChange={(values) => handleFilterChange('status', values)}
       />
-
-      {/* Priority filter */}
       <DataTableFacetedFilter
         title='اولویت'
         multiSelect={true}
@@ -187,8 +219,6 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
         selectedValues={filters.priority?.split(',') || []}
         onFilterChange={(values) => handleFilterChange('priority', values)}
       />
-
-      {/* Assigned To filter */}
       <DataTableFacetedFilter
         title='مسئول'
         multiSelect={true}
@@ -209,22 +239,15 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
         />
       )}
 
-      {Object.values(filters).some(
-        (value) => value !== null && value !== ''
-      ) && (
+      {(Object.values(filters).some(
+        (value) => value !== null && value !== '',
+      ) ||
+        hasTaskId) && (
         <Button
           disabled={isLoading}
           variant='ghost'
           className='h-8 px-2 lg:px-3'
-          onClick={() =>
-            setFilters({
-              keyword: null,
-              status: null,
-              priority: null,
-              projectId: null,
-              assigneeId: null,
-            })
-          }
+          onClick={resetAllFilters}
         >
           بازنشانی
           <X />

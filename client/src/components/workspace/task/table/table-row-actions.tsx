@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Row } from '@tanstack/react-table'
-import { MoreHorizontal, Pencil } from 'lucide-react'
+import { Delete, ListOrdered, MoreHorizontal, Pencil } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -8,16 +8,16 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ConfirmDialog } from '@/components/resuable/confirm-dialog'
 import { TaskType } from '@/types/api.type'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { deleteTaskMutationFn } from '@/lib/api'
+import { deleteTaskMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import EditTaskDialog from '../edit-task-dialog'
+import TaskLogsDialog from './task-logs/task-logs-dialog'
 
 interface DataTableRowActionsProps {
   row: Row<TaskType>
@@ -26,7 +26,7 @@ interface DataTableRowActionsProps {
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const [openDeleteDialog, setOpenDialog] = useState(false)
   const [openEditDialog, setOpenEditDialog] = useState(false)
-
+  const [openTaskLogs, setOpenTaskLogs] = useState(false)
   const queryClient = useQueryClient()
   const workspaceId = useWorkspaceId()
 
@@ -60,7 +60,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             variant: 'destructive',
           })
         },
-      }
+      },
     )
   }
 
@@ -77,27 +77,39 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
-          {/* گزینه ویرایش تسک */}
+          {/* گزینه  لاگ */}
+          <DropdownMenuItem
+            className='cursor-pointer'
+            onClick={() => setOpenTaskLogs(true)}
+          >
+            <ListOrdered className='w-4 h-4 mr-2' /> تاریخچه تغییرات
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {/* گزینه ویرایش وظیفه  */}
           <DropdownMenuItem
             className='cursor-pointer'
             onClick={() => setOpenEditDialog(true)}
           >
-            <Pencil className='w-4 h-4 mr-2' /> ویرایش تسک
+            <Pencil className='w-4 h-4 mr-2' /> ویرایش وظیفه
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-
-          {/* گزینه حذف تسک */}
+          {/* گزینه حذف وظیفه  */}
           <DropdownMenuItem
             className='!text-destructive cursor-pointer'
             onClick={() => setOpenDialog(true)}
           >
-            حذف تسک
-            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+            <Delete className='w-4 h-4 mr-2' />
+            حذف وظیفه
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* دیالوگ ویرایش تسک */}
+      {/* لاگ */}
+      <TaskLogsDialog
+        task={task}
+        isOpen={openTaskLogs}
+        onClose={() => setOpenTaskLogs(false)}
+      />
+      {/* دیالوگ ویرایش وظیفه  */}
       <EditTaskDialog
         task={task}
         isOpen={openEditDialog}
@@ -110,8 +122,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         isLoading={isPending}
         onClose={() => setOpenDialog(false)}
         onConfirm={handleConfirm}
-        title='حذف تسک'
-        description={`آیا از حذف تسک ${taskCode} مطمئن هستید؟`}
+        title='حذف وظیفه '
+        description={`آیا از حذف وظیفه  ${taskCode} مطمئن هستید؟`}
         confirmText='حذف'
         cancelText='انصراف'
       />

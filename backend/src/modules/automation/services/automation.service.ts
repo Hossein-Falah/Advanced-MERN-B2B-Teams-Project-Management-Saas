@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { createTaskService, getTaskById } from "../../../services/task.service";
-import { NotFoundException } from "../../../utils/appError";
+import { BadRequestException, NotFoundException } from "../../../utils/appError";
 import calculateNextRun from "../../../utils/calculateNextRun";
 import AutomationModel, { AutomationDocument } from "../automation.model";
 
@@ -8,17 +8,17 @@ export class AutomationService {
     static async create(automation: Partial<AutomationDocument>) {
         const task = await getTaskById(automation.taskId as Types.ObjectId);
 
-        // if (!task.startDate || !task.dueDate) {
-        //     throw new BadRequestException("Task must have startDate and dueDate to create automation");
-        // }
+        if (!task.startDate || !task.dueDate) {
+            throw new BadRequestException("Task must have startDate and dueDate to create automation");
+        }
 
-        // const durationMs = task.dueDate.getTime() - task.startDate.getTime();
+        const durationMs = task.dueDate.getTime() - task.startDate.getTime();        
 
-        // if (durationMs <= 0) {
-        //     throw new BadRequestException("Invalid task duration");
-        // }
+        if (durationMs <= 0) {
+            throw new BadRequestException("Invalid task duration");
+        }
     
-        return await AutomationModel.create({ ...automation });
+        return await AutomationModel.create({ ...automation, durationMs });
     };
 
     static async runTask(automation: AutomationDocument) {

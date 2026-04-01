@@ -34,7 +34,7 @@ import { useState } from 'react'
 import useGetProjectsInWorkspaceQuery from '@/hooks/api/use-get-projects'
 import { PaginationType } from '@/types/api.type'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteProjectMutationFn } from '@/lib/api'
+import { deleteProjectMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 
 export function NavProjects() {
@@ -50,7 +50,7 @@ export function NavProjects() {
   const { context, open, onOpenDialog, onCloseDialog } = useConfirmDialog()
 
   const [pageNumber] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(10)
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: deleteProjectMutationFn,
@@ -100,14 +100,14 @@ export function NavProjects() {
             variant: 'destructive',
           })
         },
-      }
+      },
     )
   }
   return (
     <>
       <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
         <SidebarGroupLabel className='w-full justify-between pr-0'>
-          <span>پروژه‌ها</span>
+          <span>پروژه / هدف</span>
 
           <PermissionsGuard requiredPermission={Permissions.CREATE_PROJECT}>
             <button

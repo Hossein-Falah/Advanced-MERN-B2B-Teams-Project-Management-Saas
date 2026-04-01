@@ -22,7 +22,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useWorkspaceId from '@/hooks/use-workspace-id'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createProjectMutationFn } from '@/lib/api'
+import { createProjectMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { Loader } from 'lucide-react'
 
@@ -106,7 +106,7 @@ export default function CreateProjectForm({
             ایجاد پروژه
           </h1>
           <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            سازماندهی و مدیریت تسک‌ها، منابع و همکاری تیمی
+            سازماندهی و مدیریت وظیفه ‌ها، منابع و همکاری تیمی
           </p>
         </div>
         <Form {...form}>

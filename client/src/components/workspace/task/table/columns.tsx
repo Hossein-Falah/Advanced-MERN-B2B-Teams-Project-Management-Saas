@@ -19,12 +19,15 @@ import {
 } from '@/lib/helper'
 import { priorities, statuses } from './data'
 import { TaskType } from '@/types/api.type'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import CommentsDialog from './create-comment-dialog'
-import { useState } from 'react'
-export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
-  const [isOpenComments, setIsOpenComments] = useState(false)
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
+export const getColumns = ({
+  projectId,
+  onOpenComments,
+}: {
+  projectId?: string
+  onOpenComments: (task: TaskType) => void
+}): ColumnDef<TaskType>[] => {
   const columns: ColumnDef<TaskType>[] = [
     {
       id: '_id',
@@ -36,7 +39,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label='انتخاب همه'
-          className='translate-y-[2px]'
+          className='translate-y-[2px]  mr-3'
         />
       ),
       cell: ({ row }) => (
@@ -44,7 +47,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label='انتخاب ردیف'
-          className='translate-y-[2px]'
+          className='translate-y-[2px] mr-3 '
         />
       ),
       enableSorting: false,
@@ -52,32 +55,22 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     },
     {
       accessorKey: 'title',
-      meta: { displayName: 'عنوان' }, // نام نمایشی فارسی
+      meta: { displayName: 'عنوان' },
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='عنوان' />
       ),
       cell: ({ row }) => {
         return (
-          <div>
-            <div
-              onClick={() => setIsOpenComments(true)}
-              className='flex flex-wrap space-x-2 rtl:space-x-reverse cursor-pointer'
+          <div
+            onClick={() => onOpenComments(row.original)}
+            className='flex flex-wrap space-x-2 rtl:space-x-reverse cursor-pointer'
+          >
+            <span
+              title={row.original.taskCode}
+              className='block lg:max-w-[220px] max-w-[200px] min-w-[150px] font-medium break-words line-clamp-1'
             >
-              <Badge
-                variant='outline'
-                className='capitalize shrink-0 h-[25px] '
-              >
-                {row.original.taskCode}
-              </Badge>
-              <span className='block lg:max-w-[220px] max-w-[200px] font-medium'>
-                {row.original.title}
-              </span>
-            </div>
-            <CommentsDialog
-              task={row.original}
-              isOpen={isOpenComments}
-              onClose={() => setIsOpenComments(false)}
-            />
+              {row.original.title}
+            </span>
           </div>
         )
       },
@@ -87,7 +80,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
       : [
           {
             accessorKey: 'project',
-            meta: { displayName: 'پروژه' }, // نام نمایشی فارسی
+            meta: { displayName: 'پروژه' },
             header: ({ column }: { column: Column<TaskType, unknown> }) => (
               <DataTableColumnHeader column={column} title='پروژه' />
             ),
@@ -107,7 +100,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
         ]),
     {
       accessorKey: 'assignedTo',
-      meta: { displayName: 'مسئول' }, // نام نمایشی فارسی
+      meta: { displayName: 'مسئول' },
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='مسئول' />
       ),
@@ -116,10 +109,15 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
         const name = assignee?.name || ''
         const initials = getAvatarFallbackText(name)
         const avatarColor = getAvatarColor(name)
+
         return (
           name && (
             <div className='flex items-center gap-1'>
-              <Avatar className='h-6 w-6'>
+              <Avatar toUser={row.original?.assignedTo?.username} className=''>
+                <AvatarImage
+                  src={row.original?.assignedTo?.profilePicture || ''}
+                  alt='تصویر'
+                />
                 <AvatarFallback className={avatarColor}>
                   {initials}
                 </AvatarFallback>
@@ -134,15 +132,15 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     },
     {
       accessorKey: 'dueDate',
-      meta: { displayName: 'تاریخ سررسید' }, // نام نمایشی فارسی
+      meta: { displayName: 'تاریخ سررسید' },
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='تاریخ سررسید' />
       ),
       cell: ({ row }) => {
         return (
-          <span className='lg:max-w-[100px] text-sm'>
+          <span className='lg:max-w-[100px] text-sm '>
             {row.original.dueDate
-              ? formatJalali(new Date(row.original.dueDate), 'PPP', {
+              ? formatJalali(new Date(row.original.dueDate), 'PPP HH:mm', {
                   locale: faIR,
                 })
               : null}
@@ -152,9 +150,13 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     },
     {
       accessorKey: 'status',
-      meta: { displayName: 'وضعیت' }, // نام نمایشی فارسی
+      meta: { displayName: 'وضعیت' },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='وضعیت' />
+        <DataTableColumnHeader
+          className='min-w-[100px]'
+          column={column}
+          title='وضعیت'
+        />
       ),
       cell: ({ row }) => {
         const status = statuses.find(
@@ -179,7 +181,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     },
     {
       accessorKey: 'priority',
-      meta: { displayName: 'اولویت' }, // نام نمایشی فارسی
+      meta: { displayName: 'اولویت' },
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='اولویت' />
       ),
@@ -208,7 +210,7 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
     },
     {
       id: 'actions',
-      meta: { displayName: 'عملیات' }, // نام نمایشی برای ستون عملیات
+      meta: { displayName: 'عملیات' },
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='عملیات' />
       ),

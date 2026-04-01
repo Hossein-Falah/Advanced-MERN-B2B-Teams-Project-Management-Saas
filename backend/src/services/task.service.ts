@@ -11,8 +11,8 @@ import { BadRequestException, NotFoundException } from "../utils/appError";
 import { deleteFile, uploadFileToS3 } from "../utils/s3";
 import { getTaskChanges } from "./task-log.service";
 import { toObjectId } from "../utils/convert-objectId.util";
-import { validateTaskDates } from "../utils/validate-task.util";
 import { TaskFilters, TaskPagination } from "../@types/task.type";
+import { validateTaskDates } from "../utils/validate-task.util";
 
 export const createTaskService = async (
   workspaceId: string | Types.ObjectId,
@@ -50,7 +50,7 @@ export const createTaskService = async (
     }
   }
 
-  // validateTaskDates(startDate, dueDate);
+  validateTaskDates(startDate, dueDate);
 
   const task = new TaskModel({
     title,

@@ -24,6 +24,12 @@ export type UserType = {
   _id: string
   name: string
   email: string
+  username?: string
+  phone?: string
+  jobTitle?: string
+  bio?: string
+  isOnline: boolean
+  lastSeen: string
   profilePicture: string | null
   isActive: true
   lastLogin: null
@@ -107,12 +113,7 @@ export type AllMembersInWorkspaceResponseType = {
   message: string
   members: {
     _id: string
-    userId: {
-      _id: string
-      name: string
-      email: string
-      profilePicture: string | null
-    }
+    userId: UserType
     workspaceId: string
     role: {
       _id: string
@@ -159,6 +160,7 @@ export type ProjectType = {
   createdBy: {
     _id: string
     name: string
+    username: string
     profilePicture: string
   }
   createdAt: string
@@ -237,11 +239,7 @@ export type TaskType = {
   }
   priority: TaskPriorityEnumType
   status: TaskStatusEnumType
-  assignedTo: {
-    _id: string
-    name: string
-    profilePicture: string | null
-  } | null
+  assignedTo: UserType | null
   createdBy?: string
   dueDate: string
   taskCode: string
@@ -251,6 +249,7 @@ export type TaskType = {
 }
 
 export type AllTaskPayloadType = {
+  taskId?: string
   workspaceId: string
   projectId?: string | null
   keyword?: string | null
@@ -266,4 +265,34 @@ export type AllTaskResponseType = {
   message: string
   tasks: TaskType[]
   pagination: PaginationType
+}
+
+export type CommentType = {
+  _id: string
+  id: string
+  content: string
+  attachment?: string
+  task: string
+  workspace: string
+  user: UserType
+  createdAt: string
+  updatedAt: string
+  __v: number
+}
+export type AllCommentResponseType = {
+  message: string
+  comments: {
+    comments: CommentType[]
+    pagination: PaginationType
+  }
+}
+
+export type GetAllCommentParamsType = {
+  taskId: string
+  workspaceId: string
+}
+export type CreateCommentParamsType = {
+  taskId: string
+  workspaceId: string
+  data: FormData
 }

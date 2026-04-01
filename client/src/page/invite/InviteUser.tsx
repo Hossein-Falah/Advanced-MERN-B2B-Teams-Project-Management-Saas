@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { BASE_ROUTE } from '@/routes/common/routePaths'
 import useAuth from '@/hooks/api/use-auth'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { invitedUserJoinWorkspaceMutationFn } from '@/lib/api'
+import { invitedUserJoinWorkspaceMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 
 const InviteUser = () => {

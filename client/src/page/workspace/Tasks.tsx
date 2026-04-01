@@ -6,8 +6,8 @@ export default function Tasks() {
     <div className='w-full h-full flex-col space-y-8 pt-3' dir='rtl'>
       <div className='flex items-center justify-between space-y-2'>
         <div className='flex flex-col gap-2'>
-          <h2 className='text-2xl font-bold tracking-tight'>همه تسک‌ها</h2>
-          <p className='text-muted-foreground'>لیست تسک‌های این فضای کاری</p>
+          <h2 className='text-2xl font-bold tracking-tight'>همه وظیفه ‌ها</h2>
+          <p className='text-muted-foreground'>لیست وظیفه ‌های این فضای کاری</p>
         </div>
         <CreateTaskDialog />
       </div>

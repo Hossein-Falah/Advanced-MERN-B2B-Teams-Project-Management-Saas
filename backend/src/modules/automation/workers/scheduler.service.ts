@@ -9,7 +9,7 @@ export const scheduler = async () => {
         nextRunAt: { $lte: now }
     }).limit(100);    
 
-    for (const automation of automations) {
-        await AutomationService.runTask(automation);
-    }
+    await Promise.all(
+        automations.map(automation => AutomationService.runTask(automation))
+    )
 }

@@ -101,7 +101,11 @@ app.use(errorHandler);
 schedule.scheduleJob("*/1 * * * *", async () => {
   console.log("runs every minute");
 
-  await scheduler();
+  try {
+    await scheduler();
+  } catch (error) {
+    console.log(error);
+  }
 })
 
 server.listen(config.PORT, async () => {

@@ -21,7 +21,7 @@ import { useAuthContext } from '@/context/auth-provider'
 import useWorkspaceId from '@/hooks/use-workspace-id'
 import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { changeWorkspaceMemberRoleMutationFn } from '@/lib/api'
+import { changeWorkspaceMemberRoleMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { Permissions } from '@/constant'
 
@@ -80,7 +80,6 @@ const AllMembers = () => {
       },
     })
   }
-
   return (
     <div className='grid gap-6 pt-2' dir='rtl'>
       {isPending ? (
@@ -97,7 +96,7 @@ const AllMembers = () => {
             className='flex items-center justify-between space-x-4 rtl:space-x-reverse'
           >
             <div className='flex items-center space-x-4 rtl:space-x-reverse'>
-              <Avatar className='h-8 w-8'>
+              <Avatar toUser={member.userId?.username} className='h-8 w-8'>
                 <AvatarImage
                   src={member.userId?.profilePicture || ''}
                   alt='تصویر'
@@ -157,7 +156,7 @@ const AllMembers = () => {
                                       onSelect={() => {
                                         handleSelect(
                                           role._id,
-                                          member.userId._id
+                                          member.userId._id,
                                         )
                                       }}
                                     >
@@ -166,12 +165,12 @@ const AllMembers = () => {
                                       </p>
                                       <p className='text-sm text-muted-foreground'>
                                         {role.name === 'ADMIN' &&
-                                          'می‌تواند پروژه‌ها و تسک‌ها را مشاهده، ایجاد و ویرایش کند و تنظیمات را مدیریت نماید.'}
+                                          'می‌تواند پروژه‌ها و وظیفه ‌ها را مشاهده، ایجاد و ویرایش کند و تنظیمات را مدیریت نماید.'}
                                         {role.name === 'MEMBER' &&
-                                          'فقط می‌تواند تسک‌های ایجادشده توسط خود را مشاهده و ویرایش کند.'}
+                                          'فقط می‌تواند وظیفه ‌های ایجادشده توسط خود را مشاهده و ویرایش کند.'}
                                       </p>
                                     </CommandItem>
-                                  )
+                                  ),
                               )}
                             </CommandGroup>
                           </>

@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { TaskPriorityEnum, TaskStatusEnum } from '@/constant'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { getAllTasksQueryFn } from '@/lib/api'
+import { getAllTasksQueryFn } from '@/lib/api/api'
 import {
   getAvatarColor,
   getAvatarFallbackText,
@@ -46,7 +46,7 @@ const RecentTasks = () => {
          text-sm text-muted-foreground
           text-center py-5'
         >
-          هنوز تسکی ایجاد نشده است
+          هنوز وظیفه ی ایجاد نشده است
         </div>
       )}
 
@@ -60,7 +60,7 @@ const RecentTasks = () => {
               key={task._id}
               className='p-4 flex items-center justify-between hover:bg-gray-50 transition-colors'
             >
-              {/* اطلاعات تسک */}
+              {/* اطلاعات وظیفه  */}
               <div className='flex flex-col space-y-1 flex-grow'>
                 <span className='text-sm capitalize text-gray-600 font-medium'>
                   {task.taskCode}
@@ -76,7 +76,7 @@ const RecentTasks = () => {
                 </span>
               </div>
 
-              {/* وضعیت تسک */}
+              {/* وضعیت وظیفه  */}
               <div className='text-sm font-medium '>
                 <Badge
                   variant={TaskStatusEnum[task.status]}
@@ -86,7 +86,7 @@ const RecentTasks = () => {
                 </Badge>
               </div>
 
-              {/* اولویت تسک */}
+              {/* اولویت وظیفه  */}
               <div className='text-sm mr-2'>
                 <Badge
                   variant={TaskPriorityEnum[task.priority]}
@@ -98,7 +98,7 @@ const RecentTasks = () => {
 
               {/* مسئول */}
               <div className='flex items-center space-x-2 mr-2 rtl:space-x-reverse'>
-                <Avatar className='h-8 w-8'>
+                <Avatar toUser={task.assignedTo?.username} className='h-8 w-8'>
                   <AvatarImage
                     src={task.assignedTo?.profilePicture || ''}
                     alt={task.assignedTo?.name}
