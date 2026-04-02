@@ -1,25 +1,6 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { compareValue, hashValue } from "../utils/bcrypt";
-
-export interface UserDocument extends Document {
-  name: string;
-  email: string;
-  password?: string;
-  profilePicture: string | null;
-  isActive: boolean;
-  lastLogin: Date | null;
-  username?: string;
-  phone?: string;
-  bio?: string;
-  jobTitle?: string;
-  isOnline?: string | null;
-  lastSeen?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  currentWorkspace: mongoose.Types.ObjectId | null;
-  comparePassword(value: string): Promise<boolean>;
-  omitPassword(): Omit<UserDocument, "password">;
-}
+import { UserDocument } from "../modules/user/interfaces/user.interface";
 
 const userSchema = new Schema<UserDocument>(
   {
@@ -76,6 +57,46 @@ const userSchema = new Schema<UserDocument>(
     },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date, default: null },
+    region: {
+      type: String,
+      default: "Asia/Tehran"
+    },
+    weekStartDay: {
+      type: Number,
+      default: 1
+    },
+    workSchedule: {
+      workingDays: {
+        type: [Number],
+        default: [1, 2, 3, 4, 5]
+      },
+      startHour: {
+        type: Number,
+        default: 9,
+        min: 0,
+        max: 23
+      },
+      endHour: {
+        type: Number,
+        default: 18,
+        min: 0,
+        max: 23
+      }
+    },
+    notifConditions: {
+      onCreateTask: { type: Boolean, default: true },
+      onUpdateTask: { type: Boolean, default: true },
+      onMention: { type: Boolean, default: true },
+      onAutomationAction: { type: Boolean, default: true },
+      onMessage: { type: Boolean, default: true }
+    },
+    smsConditions: {
+      onCreateTask: { type: Boolean, default: false },
+      onUpdateTask: { type: Boolean, default: false },
+      onMention: { type: Boolean, default: false },
+      onAutomationAction: { type: Boolean, default: false },
+      onMessage: { type: Boolean, default: false }
+    }
   },
   {
     timestamps: true,

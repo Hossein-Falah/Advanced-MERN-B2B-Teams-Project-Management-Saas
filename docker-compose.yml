@@ -1,6 +1,6 @@
 services:
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: taskmanager_mongo
     restart: always
     ports:

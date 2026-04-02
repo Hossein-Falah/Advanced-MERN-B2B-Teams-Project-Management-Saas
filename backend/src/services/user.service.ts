@@ -25,18 +25,81 @@ export const updateUserProfileService = async (
     phone?: string;
     bio?: string;
     jobTitle?: string
+
+    region?: string;
+    weekStartDay?: number;
+
+    workSchedule?: {
+      workingDays?: number[];
+      startHour?: number;
+      endHour?: number;
+    };
+
+    notifConditions?: {
+      onCreateTask?: boolean;
+      onUpdateTask?: boolean;
+      onMention?: boolean;
+      onAutomationAction?: boolean;
+      onMessage?: boolean;
+    };
+
+    smsConditions?: {
+      onCreateTask?: boolean;
+      onUpdateTask?: boolean;
+      onMention?: boolean;
+      onAutomationAction?: boolean;
+      onMessage?: boolean;
+    };
   },
   file?: Express.Multer.File
 ) => {
-  const { name, username, phone, bio, jobTitle } = data;
+  const {
+    name, username, phone,
+    bio, jobTitle,
+    region, weekStartDay,
+
+    workSchedule,
+    notifConditions,
+    smsConditions
+  } = data;
 
   const updateData: Record<string, any> = {
     ...(name && { name }),
     ...(username && { username }),
     ...(phone && { phone }),
     ...(bio && { bio }),
-    ...(jobTitle && { jobTitle })
+    ...(jobTitle && { jobTitle }),
+    ...(region && { region }),
+    ...(weekStartDay !== undefined && { weekStartDay })
   };
+
+  if (workSchedule) {
+    updateData.workSchedule = {
+      ...(workSchedule.workingDays && { workingDays: workSchedule.workingDays }),
+      ...(workSchedule.startHour !== undefined && { startHour: workSchedule.startHour }),
+      ...(workSchedule.endHour !== undefined && { endHour: workSchedule.endHour })
+    };
+  }
+
+  if (notifConditions) {
+    updateData.notifConditions = {
+      ...(notifConditions.onCreateTask !== undefined && { onCreateTask: notifConditions.onCreateTask }),
+      ...(notifConditions.onUpdateTask !== undefined && { onUpdateTask: notifConditions.onUpdateTask }),
+      ...(notifConditions.onMention !== undefined && { onMention: notifConditions.onMention }),
+      ...(notifConditions.onAutomationAction !== undefined && { onAutomationAction: notifConditions.onAutomationAction }),
+      ...(notifConditions.onMessage !== undefined && { onMessage: notifConditions.onMessage })
+    };
+  }
+
+  if (smsConditions) {
+    updateData.smsConditions = {
+      ...(smsConditions.onCreateTask !== undefined && { onCreateTask: smsConditions.onCreateTask }),
+      ...(smsConditions.onUpdateTask !== undefined && { onUpdateTask: smsConditions.onUpdateTask }),
+      ...(smsConditions.onMention !== undefined && { onMention: smsConditions.onMention }),
+      ...(smsConditions.onAutomationAction !== undefined && { onAutomationAction: smsConditions.onAutomationAction }),
+      ...(smsConditions.onMessage !== undefined && { onMessage: smsConditions.onMessage })
+    };
+  }
 
   if (file) {
     const attachmentUrl = await uploadFileToS3(file, "profile");
