@@ -53,11 +53,11 @@ export class AutomationService {
         await automation.save();
     };
 
-    static async getAutomations(page = 1, limit = 10) {
+    static async getAutomations(page = 1, limit = 10, workspaceId: Types.ObjectId, userId: Types.ObjectId) {
         const skip = (page - 1) * limit;
 
         const [data, total] = await Promise.all([
-            AutomationModel.find()
+            AutomationModel.find({ workspaceId, userId })
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
@@ -77,14 +77,23 @@ export class AutomationService {
         };
     }
 
-    static async getAutomationById(id: Types.ObjectId): Promise<AutomationDocument | null> {
-        const automation = await AutomationModel.findById(id);
+    static async getAutomationById(
+        id: Types.ObjectId, 
+        workspaceId: Types.ObjectId, 
+        userId: Types.ObjectId
+    ): Promise<AutomationDocument | null> {
+        const automation = await AutomationModel.findOne({ _id: id, workspaceId, userId });
         if (!automation) throw new NotFoundException("automation مورد نظر پیدا نشد");
         return automation;
     }
 
-    static async updateAutomation(id: Types.ObjectId, payload: Partial<any>) {
-        await this.getAutomationById(id);
+    static async updateAutomation(
+        id: Types.ObjectId, 
+        payload: Partial<any>,
+        userId: Types.ObjectId,
+        workspaceId: Types.ObjectId
+    ) {
+        await this.getAutomationById(id, workspaceId, userId);
 
         return await AutomationModel.findByIdAndUpdate(
             id,
@@ -93,8 +102,8 @@ export class AutomationService {
         );
     }
 
-    static async deleteAutomation(id: Types.ObjectId) {
-        await this.getAutomationById(id);
+    static async deleteAutomation(id: Types.ObjectId, workspaceId: Types.ObjectId, userId: Types.ObjectId,) {
+        await this.getAutomationById(id, workspaceId, userId);
         return await AutomationModel.findByIdAndDelete(id);
     }
 }

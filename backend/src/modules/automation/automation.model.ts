@@ -4,6 +4,7 @@ import { IntractionType, IntractionTypeEnum } from "../../enums/intraction.enum"
 export interface AutomationDocument extends Document {
     type: IntractionType;
     taskId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
     daysOfWeek: number[];
     timeOfDay: string;
     timezone: string;
@@ -11,6 +12,7 @@ export interface AutomationDocument extends Document {
     nextRunAt: Date | null;
     lastRunAt: Date;
     active: boolean;
+    workspaceId: mongoose.Types.ObjectId;
 }
 
 const automationSchema = new Schema<AutomationDocument>({
@@ -22,6 +24,11 @@ const automationSchema = new Schema<AutomationDocument>({
     taskId: {
         type: Schema.Types.ObjectId,
         ref: "Task",
+        required: true
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
         required: true
     },
     daysOfWeek: {
@@ -48,6 +55,11 @@ const automationSchema = new Schema<AutomationDocument>({
     active: {
         type: Boolean,
         default: true
+    },
+    workspaceId: {
+        type: Schema.Types.ObjectId,
+        ref: "Workspace",
+        required: true
     }
 }, { timestamps: true });
 

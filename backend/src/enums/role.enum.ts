@@ -31,7 +31,11 @@ export const Permissions = {
   VIEW_ONLY: "VIEW_ONLY",
 
   UNDO_TASK: "UNDO_TASK",
-  REDO_TASK: "REDO_TASK"
+  REDO_TASK: "REDO_TASK",
+
+  CREATE_AUTOMATION: "CREATE_AUTOMATION",
+  EDIT_AUTOMATION: "EDIT_AUTOMATION",
+  DELETE_AUTOMATION: "DELETE_AUTOMATION",
 } as const;
 
 export type PermissionType = keyof typeof Permissions;

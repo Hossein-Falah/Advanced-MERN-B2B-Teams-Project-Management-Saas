@@ -9,10 +9,10 @@ import {
 
 const automationRoutes = Router();
 
-automationRoutes.post("/create", createAutomationController);
-automationRoutes.get("/all", getAllAutomationController)
-automationRoutes.get("/getById/:automationId", getOneAutomationController)
-automationRoutes.patch("/update/:automationId", updateAutomationController)
-automationRoutes.delete("/delete/:automationId", deleteAutomationController)
+automationRoutes.post("/workspace/:workspaceId/create", createAutomationController);
+automationRoutes.get("/workspace/:workspaceId/all", getAllAutomationController)
+automationRoutes.get("/workspace/:workspaceId/getById/:automationId", getOneAutomationController)
+automationRoutes.patch("/workspace/:workspaceId/update/:automationId", updateAutomationController)
+automationRoutes.delete("/workspace/:workspaceId/delete/:automationId", deleteAutomationController)
 
 export default automationRoutes;
