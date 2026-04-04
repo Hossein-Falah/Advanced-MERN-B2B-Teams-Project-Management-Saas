@@ -10,6 +10,7 @@ import { AUTH_ROUTES, BASE_ROUTE, PROTECTED_ROUTES } from './routePaths'
 import InviteUser from '@/page/invite/InviteUser'
 import ProfileSettings from '@/page/profile/ProfileSettings'
 import Profile from '@/page/profile/Profile'
+import Automation from '@/page/workspace/Automation'
 
 export const authenticationRoutePaths = [
   { path: AUTH_ROUTES.SIGN_IN, element: <SignIn /> },
@@ -20,6 +21,7 @@ export const authenticationRoutePaths = [
 export const protectedRoutePaths = [
   { path: PROTECTED_ROUTES.WORKSPACE, element: <WorkspaceDashboard /> },
   { path: PROTECTED_ROUTES.TASKS, element: <Tasks /> },
+  { path: PROTECTED_ROUTES.AUTOMATIONS, element: <Automation /> },
   { path: PROTECTED_ROUTES.MEMBERS, element: <Members /> },
   { path: PROTECTED_ROUTES.SETTINGS, element: <Settings /> },
   { path: PROTECTED_ROUTES.PROJECT_DETAILS, element: <ProjectDetails /> },

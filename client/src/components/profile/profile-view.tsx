@@ -34,6 +34,20 @@ const toJalali = (date?: string | number | Date | null) => {
   }
 }
 
+const formatWorkingDays = (days?: number[]) => {
+  if (!days || !days.length) return 'تعریف نشده'
+  const map: Record<number, string> = {
+    0: 'شنبه',
+    1: 'یکشنبه',
+    2: 'دوشنبه',
+    3: 'سه‌شنبه',
+    4: 'چهارشنبه',
+    5: 'پنجشنبه',
+    6: 'جمعه',
+  }
+  return days.map((d) => map[d] ?? d).join('، ')
+}
+
 const ProfileView = () => {
   const { username } = useParams<{ username: string }>()
   const workspaceId = useWorkspaceId()
@@ -57,6 +71,7 @@ const ProfileView = () => {
       return failureCount < 3
     },
   })
+
   // error
   if (isError && (error as any)?.response?.status === 404) {
     return <ProfileViewError />
@@ -69,6 +84,10 @@ const ProfileView = () => {
 
   const user = userData.user
   const achievements = getAchievements(user)
+
+  const workSchedule = user.workSchedule
+
+  const region = user.region
 
   return (
     <div
@@ -190,8 +209,21 @@ const ProfileView = () => {
                     value={user.jobTitle}
                   />
                 )}
-              </div>
 
+                {/* منطقه زمانی و برنامه کاری */}
+                {region && (
+                  <InfoRow icon={Globe} label='منطقه زمانی' value={region} />
+                )}
+              </div>
+              {workSchedule && (
+                <InfoRow
+                  icon={Clock}
+                  label='ساعات کاری'
+                  value={`${formatWorkingDays(
+                    workSchedule.workingDays,
+                  )}، ${workSchedule.startHour}:00 تا ${workSchedule.endHour}:00`}
+                />
+              )}
               <Separator className='my-2' />
 
               {/* درباره من */}
@@ -239,10 +271,16 @@ const ProfileView = () => {
                       <span>{user.phone}</span>
                     </li>
                   )}
+                  {region && (
+                    <li className='flex items-center gap-2'>
+                      <Globe className='h-3 w-3 text-gray-400' />
+                      <span>{region}</span>
+                    </li>
+                  )}
                 </ul>
               </div>
 
-              {/* 🏆 دستاوردها (به‌جای "عضو ورک‌اسپیس") */}
+              {/* 🏆 دستاوردها */}
               <div className='bg-white/70 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-md px-3 py-3'>
                 <h4 className='text-[12px] font-medium mb-2 text-gray-800 dark:text-gray-100'>
                   دستاوردها

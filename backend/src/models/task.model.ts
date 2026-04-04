@@ -78,7 +78,7 @@ const taskSchema = new Schema<TaskDocument>(
     },
     startDate: {
       type: Date,
-      default: null,
+      default: Date.now,
     },
     dueDate: {
       type: Date,

@@ -20,6 +20,28 @@ export type registerType = {
 }
 
 // USER TYPE
+export type WorkScheduleType = {
+  workingDays: number[]
+  startHour: number
+  endHour: number
+}
+
+export type NotifConditionsType = {
+  onCreateTask: boolean
+  onUpdateTask: boolean
+  onMention: boolean
+  onAutomationAction: boolean
+  onMessage: boolean
+}
+
+export type SmsConditionsType = {
+  onCreateTask: boolean
+  onUpdateTask: boolean
+  onMention: boolean
+  onAutomationAction: boolean
+  onMessage: boolean
+}
+
 export type UserType = {
   _id: string
   name: string
@@ -29,18 +51,26 @@ export type UserType = {
   jobTitle?: string
   bio?: string
   isOnline: boolean
-  lastSeen: string
+  lastSeen: string | null
+
   profilePicture: string | null
-  isActive: true
-  lastLogin: null
-  createdAt: Date
-  updatedAt: Date
+  isActive: boolean
+  lastLogin: string | null
+  createdAt: string // یا Date، بسته به جواب API؛ اگر API استرینگ می‌فرستد بهتره string باشه
+  updatedAt: string // همین‌طور این
+
   currentWorkspace: {
     _id: string
     name: string
     owner: string
     inviteCode: string
   }
+
+  // فیلدهای جدید
+  region?: string
+  workSchedule?: WorkScheduleType
+  notifConditions?: NotifConditionsType
+  smsConditions?: SmsConditionsType
 }
 
 export type CurrentUserResponseType = {
@@ -232,6 +262,7 @@ export type TaskType = {
   _id: string
   title: string
   description?: string
+
   project?: {
     _id: string
     emoji: string
@@ -242,6 +273,7 @@ export type TaskType = {
   assignedTo: UserType | null
   createdBy?: string
   dueDate: string
+  startDate: string
   taskCode: string
   createdAt?: string
   updatedAt?: string
@@ -257,6 +289,7 @@ export type AllTaskPayloadType = {
   status?: TaskStatusEnumType | null
   assignedTo?: string | null
   dueDate?: string | null
+  startDate?: string | null
   pageNumber?: number | null
   pageSize?: number | null
 }

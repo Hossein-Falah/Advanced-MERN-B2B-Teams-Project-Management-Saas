@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { format as formatJalali } from 'date-fns-jalali'
 import { faIR } from 'date-fns-jalali/locale'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, ControllerRenderProps } from 'react-hook-form'
 import { CalendarIcon, Loader } from 'lucide-react'
 import {
   Form,
@@ -39,6 +39,126 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { createTaskMutationFn } from '@/lib/api/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
+
+/**
+ * کامپوننت reusable برای انتخاب تاریخ + ساعت + دقیقه
+ */
+type DateTimeFieldProps = {
+  label: string
+  field: ControllerRenderProps<any, any>
+}
+
+function DateTimeField({ label, field }: DateTimeFieldProps) {
+  const value = field.value ? new Date(field.value) : undefined
+
+  const updateDate = (updater: (date: Date) => void) => {
+    const base = value ?? new Date()
+    const newDate = new Date(base)
+    updater(newDate)
+    field.onChange(newDate)
+  }
+
+  return (
+    <FormItem>
+      <FormLabel>{label}</FormLabel>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <FormControl>
+            <Button
+              variant='outline'
+              className={cn(
+                'w-full flex-1 pl-3 text-right font-normal',
+                !value && 'text-muted-foreground',
+              )}
+            >
+              {value ? (
+                formatJalali(value, 'PPP HH:mm', {
+                  locale: faIR,
+                })
+              ) : (
+                <span>انتخاب تاریخ</span>
+              )}
+              <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
+            </Button>
+          </FormControl>
+        </PopoverTrigger>
+
+        <PopoverContent className='w-auto p-3 space-y-3' align='start'>
+          <Calendar
+            mode='single'
+            selected={value}
+            locale={faIR}
+            initialFocus
+            onSelect={(selected) => {
+              if (!selected) return
+
+              const base = value ?? new Date()
+              const newDate = new Date(selected)
+
+              newDate.setHours(base.getHours())
+              newDate.setMinutes(base.getMinutes())
+
+              field.onChange(newDate)
+            }}
+          />
+
+          <div className='flex gap-2'>
+            {/* ساعت */}
+            <div className='flex flex-col gap-1'>
+              <p className='text-xs'>ساعت :</p>
+
+              <Select
+                value={value ? String(value.getHours()) : undefined}
+                onValueChange={(hour) => {
+                  updateDate((d) => d.setHours(Number(hour)))
+                }}
+              >
+                <SelectTrigger className='w-[80px]'>
+                  <SelectValue placeholder='ساعت' />
+                </SelectTrigger>
+
+                <SelectContent className='max-h-[200px]'>
+                  {Array.from({ length: 24 }, (_, i) => i).map((hour) => (
+                    <SelectItem key={hour} value={String(hour)}>
+                      {String(hour).padStart(2, '0')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* دقیقه */}
+            <div className='flex flex-col gap-1'>
+              <p className='text-xs'>دقیقه :</p>
+
+              <Select
+                value={value ? String(value.getMinutes()) : undefined}
+                onValueChange={(minute) => {
+                  updateDate((d) => d.setMinutes(Number(minute)))
+                }}
+              >
+                <SelectTrigger className='w-[80px]'>
+                  <SelectValue placeholder='دقیقه' />
+                </SelectTrigger>
+
+                <SelectContent className='max-h-[200px]'>
+                  {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
+                    <SelectItem key={minute} value={String(minute)}>
+                      {String(minute).padStart(2, '0')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <FormMessage />
+    </FormItem>
+  )
+}
 
 export default function CreateTaskForm(props: {
   projectId?: string
@@ -94,6 +214,7 @@ export default function CreateTaskForm(props: {
     }
   })
 
+  // ---------------- schema فرم با startDate ----------------
   const formSchema = z.object({
     title: z.string().trim().min(1, {
       message: 'عنوان وظیفه  الزامی است',
@@ -117,6 +238,9 @@ export default function CreateTaskForm(props: {
     assignedTo: z.string().trim().min(1, {
       message: 'انتخاب مسئول الزامی است',
     }),
+    startDate: z.date({
+      required_error: 'تاریخ شروع الزامی است',
+    }),
     dueDate: z.date({
       required_error: 'تاریخ سررسید الزامی است',
     }),
@@ -130,7 +254,11 @@ export default function CreateTaskForm(props: {
       description: '',
       attachment: undefined,
       projectId: projectId ? projectId : '',
-    },
+      // startDate و dueDate را خالی می‌گذاریم تا کاربر انتخاب کند
+      // اگر می‌خواهی مقدار اولیه امروز باشد می‌توانی new Date() بگذاری
+      // startDate: new Date(),
+      // dueDate: new Date(),
+    } as any,
   })
 
   const taskStatusList = Object.values(TaskStatusEnum)
@@ -168,7 +296,6 @@ export default function CreateTaskForm(props: {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return
 
-    // ساخت FormData برای ارسال فایل
     const formData = new FormData()
 
     formData.append('workspaceId', workspaceId)
@@ -178,13 +305,13 @@ export default function CreateTaskForm(props: {
     formData.append('assignedTo', values.assignedTo)
     formData.append('status', values.status)
     formData.append('priority', values.priority)
+    formData.append('startDate', values.startDate.toISOString())
     formData.append('dueDate', values.dueDate.toISOString())
 
     if (values.attachment) {
       formData.append('attachment', values.attachment)
     }
 
-    // حالا ارسال
     mutate(
       { workspaceId, projectId: values.projectId, data: formData },
       {
@@ -226,6 +353,7 @@ export default function CreateTaskForm(props: {
         </div>
         <Form {...form}>
           <form className='space-y-3' onSubmit={form.handleSubmit(onSubmit)}>
+            {/* عنوان */}
             <div>
               <FormField
                 control={form.control}
@@ -294,10 +422,7 @@ export default function CreateTaskForm(props: {
                               <Loader className='w-4 h-4 place-self-center flex animate-spin' />
                             </div>
                           )}
-                          <div
-                            className='w-full max-h-[200px]
-                           overflow-y-auto scrollbar'
-                          >
+                          <div className='w-full max-h-[200px] overflow-y-auto scrollbar'>
                             {projectOptions?.map((option) => (
                               <SelectItem
                                 key={option.value}
@@ -335,10 +460,7 @@ export default function CreateTaskForm(props: {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <div
-                          className='w-full max-h-[200px]
-                           overflow-y-auto scrollbar'
-                        >
+                        <div className='w-full max-h-[200px] overflow-y-auto scrollbar'>
                           {membersOptions?.map((option) => (
                             <SelectItem
                               className='cursor-pointer'
@@ -357,142 +479,25 @@ export default function CreateTaskForm(props: {
               />
             </div>
 
+            {/* تاریخ شروع */}
+            <div className='!mt-2'>
+              <FormField
+                control={form.control}
+                name='startDate'
+                render={({ field }) => (
+                  <DateTimeField label='تاریخ شروع' field={field} />
+                )}
+              />
+            </div>
+
             {/* تاریخ سررسید */}
             <div className='!mt-2'>
               <FormField
                 control={form.control}
                 name='dueDate'
-                render={({ field }) => {
-                  const value = field.value ? new Date(field.value) : undefined
-
-                  const updateDate = (updater: (date: Date) => void) => {
-                    const base = value ?? new Date()
-                    const newDate = new Date(base)
-                    updater(newDate)
-                    field.onChange(newDate)
-                  }
-
-                  return (
-                    <FormItem>
-                      <FormLabel>تاریخ سررسید</FormLabel>
-
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant='outline'
-                              className={cn(
-                                'w-full flex-1 pl-3 text-right font-normal',
-                                !value && 'text-muted-foreground',
-                              )}
-                            >
-                              {value ? (
-                                formatJalali(value, 'PPP HH:mm', {
-                                  locale: faIR,
-                                })
-                              ) : (
-                                <span>انتخاب تاریخ</span>
-                              )}
-                              <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-
-                        <PopoverContent
-                          className='w-auto p-3 space-y-3'
-                          align='start'
-                        >
-                          <Calendar
-                            mode='single'
-                            selected={value}
-                            locale={faIR}
-                            initialFocus
-                            onSelect={(selected) => {
-                              if (!selected) return
-
-                              const base = value ?? new Date()
-                              const newDate = new Date(selected)
-
-                              newDate.setHours(base.getHours())
-                              newDate.setMinutes(base.getMinutes())
-
-                              field.onChange(newDate)
-                            }}
-                          />
-
-                          <div className='flex gap-2'>
-                            {/* ساعت */}
-                            <div className='flex flex-col gap-1'>
-                              <p className='text-xs'>ساعت :</p>
-
-                              <Select
-                                value={
-                                  value ? String(value.getHours()) : undefined
-                                }
-                                onValueChange={(hour) => {
-                                  updateDate((d) => d.setHours(Number(hour)))
-                                }}
-                              >
-                                <SelectTrigger className='w-[80px]'>
-                                  <SelectValue placeholder='ساعت' />
-                                </SelectTrigger>
-
-                                <SelectContent className='max-h-[200px]'>
-                                  {Array.from({ length: 24 }, (_, i) => i).map(
-                                    (hour) => (
-                                      <SelectItem
-                                        key={hour}
-                                        value={String(hour)}
-                                      >
-                                        {String(hour).padStart(2, '0')}
-                                      </SelectItem>
-                                    ),
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* دقیقه */}
-                            <div className='flex flex-col gap-1'>
-                              <p className='text-xs'>دقیقه :</p>
-
-                              <Select
-                                value={
-                                  value ? String(value.getMinutes()) : undefined
-                                }
-                                onValueChange={(minute) => {
-                                  updateDate((d) =>
-                                    d.setMinutes(Number(minute)),
-                                  )
-                                }}
-                              >
-                                <SelectTrigger className='w-[80px]'>
-                                  <SelectValue placeholder='دقیقه' />
-                                </SelectTrigger>
-
-                                <SelectContent className='max-h-[200px]'>
-                                  {Array.from(
-                                    { length: 12 },
-                                    (_, i) => i * 5,
-                                  ).map((minute) => (
-                                    <SelectItem
-                                      key={minute}
-                                      value={String(minute)}
-                                    >
-                                      {String(minute).padStart(2, '0')}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-
-                      <FormMessage />
-                    </FormItem>
-                  )
-                }}
+                render={({ field }) => (
+                  <DateTimeField label='تاریخ سررسید' field={field} />
+                )}
               />
             </div>
 
@@ -568,6 +573,8 @@ export default function CreateTaskForm(props: {
                 )}
               />
             </div>
+
+            {/* فایل پیوست */}
             <div>
               <FormField
                 control={form.control}
@@ -585,6 +592,7 @@ export default function CreateTaskForm(props: {
                 )}
               />
             </div>
+
             <Button
               className='flex place-self-start h-[40px] text-white font-semibold'
               type='submit'

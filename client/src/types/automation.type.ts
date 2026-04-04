@@ -2,89 +2,88 @@
 
 // انواع اتوماسیون
 export enum AutomationType {
-  SCHEDULED = 'SCHEDULED', // زمان‌بندی شده
-  TRIGGER_BASED = 'TRIGGER_BASED', // مبتنی بر تریگر
-  CONDITIONAL = 'CONDITIONAL', // شرطی
-  WEBHOOK = 'WEBHOOK', // وب‌هوک
-  EMAIL = 'EMAIL', // ایمیل
-  SMS = 'SMS', // پیامک
-  DATA_SYNC = 'DATA_SYNC', // همگام‌سازی داده
-  REPORT_GENERATION = 'REPORT_GENERATION', // تولید گزارش
-  BACKUP = 'BACKUP', // پشتیبان‌گیری
-  CLEANUP = 'CLEANUP', // پاک‌سازی
-  NOTIFICATION = 'NOTIFICATION', // نوتیفیکیشن
-  APPROVAL_WORKFLOW = 'APPROVAL_WORKFLOW',
+  TASK_REPETITION = 'TASK_REPETITION',
+  SCHEDULED = 'SCHEDULED',
+  TRIGGER_BASED = 'TRIGGER_BASED',
 }
-// درخواست‌ها (Requests)
+
+// ساختار اصلی یک اتوماسیون
+export interface AutomationItem {
+  _id: string
+  type: AutomationType
+  taskId: string
+  daysOfWeek: number[]
+  timeOfDay: string
+  timezone: string
+  nextRunAt: string
+  active: boolean
+  createdAt: string
+  updatedAt: string
+  __v: number
+  lastRunAt?: string
+}
+
+// --------------------
+// Requests
+// --------------------
+
 export interface GetAllAutomationsRequest {
+  workspaceId: string
   page?: number
   limit?: number
-  type?: string
-  status?: string
 }
 
 export interface CreateAutomationRequest {
-  name: string
   type: AutomationType
-  config: Record<string, any>
-  isActive?: boolean
+  taskId: string
+  daysOfWeek: number[]
+  timeOfDay: string
+  timezone: string
+  active?: boolean
 }
 
-export interface UpdateAutomationRequest {
+export interface CreateAutomationApiRequest {
+  workspaceId: string
+  data: CreateAutomationRequest
+}
+
+export type UpdateAutomationRequest = Partial<CreateAutomationRequest> & {
   id: string
-  name?: string
-  config?: Record<string, any>
-  isActive?: boolean
+}
+
+export interface UpdateAutomationApiRequest {
+  workspaceId: string
+  data: UpdateAutomationRequest
 }
 
 export interface DeleteAutomationRequest {
+  workspaceId: string
   id: string
 }
 
-export interface ToggleAutomationRequest {
-  id: string
-}
+// --------------------
+// Responses
+// --------------------
 
-// پاسخ‌ها (Responses)
-export interface AutomationItem {
-  id: string
-  name: string
-  type: AutomationType
-  config: Record<string, any>
-  isActive: boolean
-  createdAt: string
-  updatedAt: string
+export interface PaginationInfo {
+  total: number
+  page: number
+  limit: number
+  pages: number
 }
 
 export interface GetAllAutomationsResponse {
   data: AutomationItem[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
+  pagination: PaginationInfo
 }
 
-export interface GetSingleAutomationResponse {
-  data: AutomationItem
-}
-
-export interface CreateAutomationResponse {
-  data: AutomationItem
-  message: string
-}
-
-export interface UpdateAutomationResponse {
-  data: AutomationItem
-  message: string
-}
+export type GetSingleAutomationResponse = AutomationItem
 
 export interface DeleteAutomationResponse {
   message: string
 }
 
 export interface ToggleAutomationResponse {
-  data: AutomationItem
   message: string
+  data: AutomationItem
 }

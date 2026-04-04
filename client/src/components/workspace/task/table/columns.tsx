@@ -20,6 +20,7 @@ import {
 import { priorities, statuses } from './data'
 import { TaskType } from '@/types/api.type'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { MoveLeftIcon } from 'lucide-react'
 
 export const getColumns = ({
   projectId,
@@ -131,20 +132,34 @@ export const getColumns = ({
       },
     },
     {
-      accessorKey: 'dueDate',
-      meta: { displayName: 'تاریخ سررسید' },
+      id: 'dateRange',
+      meta: { displayName: 'بازه زمانی' },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='تاریخ سررسید' />
+        <DataTableColumnHeader column={column} title='بازه زمانی انجام کار' />
       ),
       cell: ({ row }) => {
+        const start = row.original.startDate
+        const due = row.original.dueDate
+
+        if (!start && !due) return null
+
+        const startDate = start
+          ? formatJalali(new Date(start), 'd MMMM HH:mm', { locale: faIR })
+          : ''
+
+        const dueDate = due
+          ? formatJalali(new Date(due), 'd MMMM HH:mm', { locale: faIR })
+          : ''
+
         return (
-          <span className='lg:max-w-[100px] text-sm '>
-            {row.original.dueDate
-              ? formatJalali(new Date(row.original.dueDate), 'PPP HH:mm', {
-                  locale: faIR,
-                })
-              : null}
-          </span>
+          <div className='flex flex-col text-xs leading-5 min-w-32'>
+            <span>{startDate}</span>
+            {dueDate && (
+              <span className='flex gap-1 items-center text-muted-foreground'>
+                <MoveLeftIcon size={14} /> {dueDate}
+              </span>
+            )}
+          </div>
         )
       },
     },

@@ -40,13 +40,11 @@ export const createTaskController = asyncHandler(
       attachmentUrl = await uploadFileToS3(req.file, "task/attachment");
     }
 
-    const startDate = new Date();
-
     const { task } = await createTaskService(
       workspaceId,
       projectId,
       userId,
-      { ...body, startDate },
+      body,
       attachmentUrl
     );
 

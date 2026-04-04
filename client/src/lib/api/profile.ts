@@ -1,3 +1,4 @@
+// lib/api/profile.ts
 import {
   GetUserProfileRequestType,
   UpdateProfileRequestType,
@@ -7,11 +8,12 @@ import API from '../axios-client'
 
 // تابع اصلی برای به‌روزرسانی پروفایل
 export const updateProfileMutationFn = async (
-  data: UpdateProfileRequestType,
+  data: UpdateProfileRequestType | FormData,
 ): Promise<UpdateProfileResponseType> => {
   const response = await API.patch('/user/update', data)
   return response.data
 }
+
 export const getUserProfileMutationFn = async (
   data: GetUserProfileRequestType,
 ): Promise<UpdateProfileResponseType> => {

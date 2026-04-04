@@ -61,7 +61,7 @@ export const createTaskService = async (
     createdBy: userId,
     workspace: workspaceId,
     project: projectId,
-    startDate,
+    startDate: startDate ?? new Date(),
     dueDate,
     attachment
   });
@@ -108,6 +108,7 @@ export const updateTaskService = async (
     priority?: string;
     status?: string;
     assignedTo?: string | null;
+    startDate?: Date | null;
     dueDate?: Date | null;
   },
   file?: Express.Multer.File | undefined
@@ -139,12 +140,15 @@ export const updateTaskService = async (
     attachmentUrl = await uploadFileToS3(file, "task/attachment");
   }
 
+  const updateData: any = {
+    ...body,
+    ...(attachmentUrl && { attachment: attachmentUrl }),
+    ...(body.startDate !== undefined && { startDate: body.startDate }),
+  }
+
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
-    {
-      ...body,
-      ...(attachmentUrl && { attachment: attachmentUrl }),
-    },
+    updateData,
     { new: true }
   );
 

@@ -30,6 +30,22 @@ export const dueDateSchema = z
     return val instanceof Date ? val : new Date(val);
   });
 
+export const startDateSchema = z
+  .union([z.string(), z.date()])
+  .optional()
+  .refine(
+    (val) => {
+      if (!val) return true;
+      if (val instanceof Date) return !isNaN(val.getTime());
+      return !isNaN(Date.parse(val));
+    },
+    { message: "Invalid date format." }
+  )
+  .transform((val) => {
+    if (!val) return undefined;
+    return val instanceof Date ? val : new Date(val);
+  });
+
 export const taskIdSchema = z.string().trim().min(1);
 
 export const createTaskSchema = z.object({
@@ -39,6 +55,7 @@ export const createTaskSchema = z.object({
   status: statusSchema,
   assignedTo: assignedToSchema,
   dueDate: dueDateSchema,
+  startDate: startDateSchema
 });
 
 export const updateTaskSchema = z.object({
@@ -52,4 +69,5 @@ export const updateTaskSchema = z.object({
   ).optional(),
   assignedTo: assignedToSchema,
   dueDate: dueDateSchema,
+  startDate: startDateSchema
 });

@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   LucideIcon,
@@ -6,70 +6,74 @@ import {
   Users,
   CheckCircle,
   LayoutDashboard,
-} from "lucide-react";
+  GitBranch,
+} from 'lucide-react'
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
-import useWorkspaceId from "@/hooks/use-workspace-id";
-import { useAuthContext } from "@/context/auth-provider";
-import { Permissions } from "@/constant";
+} from '@/components/ui/sidebar'
+import { Link, useLocation } from 'react-router-dom'
+import useWorkspaceId from '@/hooks/use-workspace-id'
+import { useAuthContext } from '@/context/auth-provider'
+import { Permissions } from '@/constant'
 
 type ItemType = {
-  title: string;
-  url: string;
-  icon: LucideIcon;
-};
+  title: string
+  url: string
+  icon: LucideIcon
+}
 
 export function NavMain() {
-  const { hasPermission } = useAuthContext();
+  const { hasPermission } = useAuthContext()
 
-  const canManageSettings = hasPermission(
-    Permissions.MANAGE_WORKSPACE_SETTINGS
-  );
+  const canManageSettings = hasPermission(Permissions.MANAGE_WORKSPACE_SETTINGS)
 
-  const workspaceId = useWorkspaceId();
-  const location = useLocation();
+  const workspaceId = useWorkspaceId()
+  const location = useLocation()
 
-  const pathname = location.pathname;
+  const pathname = location.pathname
 
   const items: ItemType[] = [
     {
-      title: "داشبورد",
+      title: 'داشبورد',
       url: `/workspace/${workspaceId}`,
       icon: LayoutDashboard,
     },
     {
-      title: "وظایف",
+      title: 'وظایف',
       url: `/workspace/${workspaceId}/tasks`,
       icon: CheckCircle,
     },
     {
-      title: "اعضا",
+      title: 'اعضا',
       url: `/workspace/${workspaceId}/members`,
       icon: Users,
+    },
+    {
+      title: 'اتومیشن ها',
+      url: `/workspace/${workspaceId}/automations`,
+      icon: GitBranch,
     },
 
     ...(canManageSettings
       ? [
           {
-            title: "تنظیمات",
+            title: 'تنظیمات',
             url: `/workspace/${workspaceId}/settings`,
             icon: Settings,
           },
         ]
       : []),
-  ];
+  ]
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton isActive={item.url === pathname} asChild>
-              <Link to={item.url} className="!text-[15px]">
+              <Link to={item.url} className='!text-[15px]'>
                 <item.icon />
                 <span>{item.title}</span>
               </Link>
@@ -78,5 +82,5 @@ export function NavMain() {
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  );
+  )
 }
