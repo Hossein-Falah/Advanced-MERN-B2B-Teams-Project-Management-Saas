@@ -5,8 +5,11 @@ export let io: Server;
 
 export const registerSocket = (server: any) => {
     io = new Server(server, {
-        cors: { origin: "*" },
-        transports: ["websocket"]
+        cors: { 
+            origin: "*", 
+            credentials: true
+        },
+        transports: ["websocket"],
     });
 
     io.use((socket, next) => {
