@@ -120,8 +120,7 @@ export const getUserProfileService = async (
   workspaceId: string
 ) => {
 
-  const user = await UserModel.findOne({ username })
-    .select("name username bio jobTitle profilePicture isOnline lastSeen createdAt -password")
+  const user = await UserModel.findOne({ username }, { password: 0 })
     .populate({ path: "currentWorkspace", select: "_id name description" });
 
   if (!user) {
