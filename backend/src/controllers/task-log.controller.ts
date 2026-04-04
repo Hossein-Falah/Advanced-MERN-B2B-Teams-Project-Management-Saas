@@ -11,7 +11,7 @@ export const getTaskLogsController = asyncHandler(
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 20;
         
-            const result = await getTaskLogsService(taskId, page, limit);
+            const result = await getTaskLogsService(taskId as string, page, limit);
         
             return res.status(HTTPSTATUS.OK).json(result);
             

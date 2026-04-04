@@ -58,6 +58,7 @@ export class AutomationService {
 
         const [data, total] = await Promise.all([
             AutomationModel.find({ workspaceId, userId })
+                .populate({ path: "taskId", select: "_id title description" })
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
