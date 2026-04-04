@@ -16,9 +16,11 @@ COPY . .
 
 # inject env
 ARG VITE_API_BASE_URL
+ARG VITE_SOCKET_URL
 
 # set env whene build time
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_SOCKET_URL$=VITE_SOCKET_URL
 
 # Build the React app
 RUN npm run build
