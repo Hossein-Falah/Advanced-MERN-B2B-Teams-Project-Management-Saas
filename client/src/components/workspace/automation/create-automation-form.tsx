@@ -1,9 +1,7 @@
 import { z } from 'zod'
-import { format as formatJalali } from 'date-fns-jalali'
-import { faIR } from 'date-fns-jalali/locale'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { CalendarIcon, Loader } from 'lucide-react'
+import { Loader } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useDebounce } from 'use-debounce'
@@ -14,6 +12,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/ui/form'
 
 import {
@@ -24,21 +23,94 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 
 import useWorkspaceId from '@/hooks/use-workspace-id'
 import { getAllTasksQueryFn } from '@/lib/api/api'
 import { AutomationType } from '@/types/automation.type'
 import { createAutomationMutationFn } from '@/lib/api/automation'
 import { toast } from '@/hooks/use-toast'
+
+/**
+ * کامپوننت reusable برای انتخاب فقط ساعت + دقیقه
+ */
+type TimeFieldProps = {
+  label: string
+  value?: string // "HH:MM"
+  onChange: (val: string) => void
+}
+
+function TimeField({ label, value, onChange }: TimeFieldProps) {
+  const [hourStr, minuteStr] = (value || '00:00').split(':')
+
+  const hour = Number(hourStr) || 0
+  const minute = Number(minuteStr) || 0
+
+  const updateTime = (h: number, m: number) => {
+    const hh = String(h).padStart(2, '0')
+    const mm = String(m).padStart(2, '0')
+    onChange(`${hh}:${mm}`)
+  }
+
+  return (
+    <FormItem>
+      <FormLabel>{label}</FormLabel>
+
+      <div className='flex gap-2'>
+        {/* ساعت */}
+        <div className='flex flex-col gap-1'>
+          <p className='text-xs'>ساعت :</p>
+
+          <Select
+            value={String(hour)}
+            onValueChange={(h) => {
+              updateTime(Number(h), minute)
+            }}
+          >
+            <SelectTrigger className='w-[90px]'>
+              <SelectValue placeholder='ساعت' />
+            </SelectTrigger>
+
+            <SelectContent className='max-h-[200px]'>
+              {Array.from({ length: 24 }, (_, i) => i).map((h) => (
+                <SelectItem key={h} value={String(h)}>
+                  {String(h).padStart(2, '0')}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* دقیقه */}
+        <div className='flex flex-col gap-1'>
+          <p className='text-xs'>دقیقه :</p>
+
+          <Select
+            value={String(minute)}
+            onValueChange={(m) => {
+              updateTime(hour, Number(m))
+            }}
+          >
+            <SelectTrigger className='w-[90px]'>
+              <SelectValue placeholder='دقیقه' />
+            </SelectTrigger>
+
+            <SelectContent className='max-h-[200px]'>
+              {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
+                <SelectItem key={m} value={String(m)}>
+                  {String(m).padStart(2, '0')}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <FormMessage />
+    </FormItem>
+  )
+}
 
 const daysOfWeekOptions = [
   { label: 'شنبه', value: 0 },
@@ -56,13 +128,18 @@ const automationTypeLabels: Record<AutomationType, string> = {
   TRIGGER_BASED: 'مبتنی بر رویداد',
 }
 
+/**
+ * به جای startDateTime اینجا timeOfDay داریم
+ */
 const formSchema = z.object({
   type: z.nativeEnum(AutomationType),
-  taskId: z.string().min(1),
-  daysOfWeek: z.array(z.number()).min(1),
-  startDate: z.date(),
-  hour: z.string(),
-  minute: z.string(),
+  taskId: z.string().min(1, { message: 'انتخاب وظیفه الزامی است' }),
+  daysOfWeek: z
+    .array(z.number())
+    .min(1, { message: 'حداقل یک روز را انتخاب کنید' }),
+  timeOfDay: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/, { message: 'ساعت نامعتبر است (فرمت  HH:MM)' }),
   timezone: z.string().default('Asia/Tehran'),
   active: z.boolean().default(true),
 })
@@ -109,21 +186,13 @@ export default function CreateAutomationForm({
       type: AutomationType.TASK_REPETITION,
       timezone: 'Asia/Tehran',
       daysOfWeek: [],
-      startDate: new Date(),
-      hour: '9',
-      minute: '0',
+      timeOfDay: '09:00',
       active: true,
     },
   })
 
-  const hourOptions = Array.from({ length: 24 }, (_, i) => i)
-  const minuteOptions = Array.from({ length: 12 }, (_, i) => i * 5)
-
   const onSubmit = (values: FormValues) => {
     if (isPending) return
-
-    const hh = String(Number(values.hour)).padStart(2, '0')
-    const mm = String(Number(values.minute)).padStart(2, '0')
 
     mutate(
       {
@@ -132,7 +201,7 @@ export default function CreateAutomationForm({
           type: values.type,
           taskId: values.taskId,
           daysOfWeek: values.daysOfWeek,
-          timeOfDay: `${hh}:${mm}`,
+          timeOfDay: values.timeOfDay, // مستقیماً همون رشته "HH:MM"
           timezone: values.timezone,
           active: values.active,
         },
@@ -140,7 +209,7 @@ export default function CreateAutomationForm({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: ['automations', workspaceId],
+            queryKey: ['all-automations', workspaceId],
           })
 
           toast({
@@ -151,6 +220,13 @@ export default function CreateAutomationForm({
 
           onClose()
         },
+        onError: (error: any) => {
+          toast({
+            title: 'خطا',
+            description: error?.message || 'خطایی رخ داد',
+            variant: 'destructive',
+          })
+        },
       },
     )
   }
@@ -159,17 +235,14 @@ export default function CreateAutomationForm({
     <div className='w-full' dir='rtl'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-          {/* automation type */}
+          {/* نوع اتوماسیون */}
           <FormField
             control={form.control}
             name='type'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>نوع اتوماسیون</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder='انتخاب کنید' />
@@ -183,11 +256,12 @@ export default function CreateAutomationForm({
                     ))}
                   </SelectContent>
                 </Select>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* task select with search */}
+          {/* انتخاب وظیفه + سرچ */}
           <FormField
             control={form.control}
             name='taskId'
@@ -195,10 +269,7 @@ export default function CreateAutomationForm({
               <FormItem>
                 <FormLabel>وظیفه</FormLabel>
 
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder='انتخاب وظیفه' />
@@ -229,11 +300,12 @@ export default function CreateAutomationForm({
                     </div>
                   </SelectContent>
                 </Select>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* days */}
+          {/* روزهای اجرا */}
           <FormField
             control={form.control}
             name='daysOfWeek'
@@ -253,7 +325,9 @@ export default function CreateAutomationForm({
                         onClick={() => {
                           if (selected) {
                             field.onChange(
-                              field.value.filter((d) => d !== day.value),
+                              field.value.filter(
+                                (d: number) => d !== day.value,
+                              ),
                             )
                           } else {
                             field.onChange([...(field.value || []), day.value])
@@ -265,84 +339,23 @@ export default function CreateAutomationForm({
                     )
                   })}
                 </div>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* date */}
+          {/* ساعت اجرا (بدون تاریخ) */}
           <FormField
             control={form.control}
-            name='startDate'
+            name='timeOfDay'
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>تاریخ شروع</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant='outline' className='w-full'>
-                      {formatJalali(field.value, 'PPP', { locale: faIR })}
-                      <CalendarIcon className='mr-auto h-4 w-4' />
-                    </Button>
-                  </PopoverTrigger>
-
-                  <PopoverContent className='w-auto p-0'>
-                    <Calendar
-                      mode='single'
-                      selected={field.value}
-                      locale={faIR}
-                      onSelect={(d) => d && field.onChange(d)}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </FormItem>
+              <TimeField
+                label='ساعت اجرا'
+                value={field.value}
+                onChange={field.onChange}
+              />
             )}
           />
-
-          {/* time */}
-          <div className='flex gap-2'>
-            <FormField
-              control={form.control}
-              name='hour'
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder='ساعت' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {hourOptions.map((h) => (
-                      <SelectItem key={h} value={String(h)}>
-                        {String(h).padStart(2, '0')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='minute'
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder='دقیقه' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {minuteOptions.map((m) => (
-                      <SelectItem key={m} value={String(m)}>
-                        {String(m).padStart(2, '0')}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </div>
 
           <Button type='submit' disabled={isPending}>
             {isPending && <Loader className='animate-spin ml-2' />}

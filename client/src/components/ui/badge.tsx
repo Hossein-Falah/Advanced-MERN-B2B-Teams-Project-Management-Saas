@@ -11,16 +11,24 @@ const badgeVariants = cva(
       variant: {
         default:
           'border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80',
+
         secondary:
           'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
+
         destructive:
           'border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80',
+
+        success:
+          'border-transparent bg-green-100 text-green-700 shadow hover:bg-green-200',
+
         outline: 'text-foreground',
+
         [TaskStatusEnum.BACKLOG]: 'bg-gray-100 text-gray-600',
-        [TaskStatusEnum.TODO]: '  bg-[#DEEBFF] text-[#0052CC]',
+        [TaskStatusEnum.TODO]: 'bg-[#DEEBFF] text-[#0052CC]',
         [TaskStatusEnum.IN_PROGRESS]: 'bg-yellow-100 text-yellow-600',
         [TaskStatusEnum.IN_REVIEW]: 'bg-purple-100 text-purple-500',
         [TaskStatusEnum.DONE]: 'bg-green-100 text-green-600',
+
         [TaskPriorityEnum.HIGH]: 'bg-orange-100 text-orange-600',
         [TaskPriorityEnum.URGENT]: 'bg-red-100 text-red-600',
         [TaskPriorityEnum.MEDIUM]: 'bg-yellow-100 text-yellow-600',
@@ -30,7 +38,7 @@ const badgeVariants = cva(
     defaultVariants: {
       variant: 'default',
     },
-  }
+  },
 )
 
 export interface BadgeProps

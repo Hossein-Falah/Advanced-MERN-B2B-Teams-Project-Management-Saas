@@ -41,10 +41,7 @@ const AutomationTable = () => {
   })
 
   const workspaceId = useWorkspaceId()
-  const columns = getColumns({
-    onDelete: (id) => handleDelete(id),
-    onEdit: (automation) => setSelectedAutomation(automation),
-  })
+  const columns = getColumns({})
 
   const resetAllFilters = () => {
     setFilters({
@@ -79,10 +76,6 @@ const AutomationTable = () => {
 
   const handlePageChange = (page: number) => setPageNumber(page)
   const handlePageSizeChange = (size: number) => setPageSize(size)
-  const handleDelete = async (id: string) => {
-    // Implement delete API call
-    console.log('Delete automation with id:', id)
-  }
 
   return (
     <div className='w-full relative' dir='rtl'>

@@ -60,11 +60,11 @@ export const createAutomationMutationFn = async (
 export const updateAutomationMutationFn = async (
   payload: UpdateAutomationApiRequest,
 ): Promise<GetSingleAutomationResponse> => {
-  const { workspaceId, data } = payload
-  const { id, ...updateFields } = data
+  const { workspaceId, automationId, data } = payload
+  const { ...updateFields } = data
 
   const response = await API.patch(
-    `/automation/workspace/${workspaceId}/update/${id}`,
+    `/automation/workspace/${workspaceId}/update/${automationId}`,
     updateFields,
   )
 
@@ -75,10 +75,10 @@ export const updateAutomationMutationFn = async (
 export const deleteAutomationMutationFn = async (
   data: DeleteAutomationRequest,
 ): Promise<DeleteAutomationResponse> => {
-  const { workspaceId, id } = data
+  const { workspaceId, automationId } = data
 
   const response = await API.delete(
-    `/automation/workspace/${workspaceId}/delete/${id}`,
+    `/automation/workspace/${workspaceId}/delete/${automationId}`,
   )
 
   return response.data

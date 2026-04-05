@@ -1,5 +1,7 @@
 // src/types/automation.type.ts
 
+import { TaskType } from './api.type'
+
 // انواع اتوماسیون
 export enum AutomationType {
   TASK_REPETITION = 'TASK_REPETITION',
@@ -11,7 +13,7 @@ export enum AutomationType {
 export interface AutomationItem {
   _id: string
   type: AutomationType
-  taskId: string
+  taskId: TaskType
   daysOfWeek: number[]
   timeOfDay: string
   timezone: string
@@ -47,18 +49,17 @@ export interface CreateAutomationApiRequest {
   data: CreateAutomationRequest
 }
 
-export type UpdateAutomationRequest = Partial<CreateAutomationRequest> & {
-  id: string
-}
+export type UpdateAutomationRequest = Partial<CreateAutomationRequest> & {}
 
 export interface UpdateAutomationApiRequest {
   workspaceId: string
+  automationId: string
   data: UpdateAutomationRequest
 }
 
 export interface DeleteAutomationRequest {
   workspaceId: string
-  id: string
+  automationId: string
 }
 
 // --------------------
@@ -86,4 +87,19 @@ export interface DeleteAutomationResponse {
 export interface ToggleAutomationResponse {
   message: string
   data: AutomationItem
+}
+
+/**
+ * نوع داده اتوماسیون برای این فرم ادیت
+ * این را با تایپ واقعی‌ات هماهنگ کن
+ */
+export type AutomationEditType = {
+  _id: string
+  type: AutomationType
+  taskId: string | { _id: string }
+  daysOfWeek: number[]
+  timeOfDay: string // "HH:mm"
+  timezone: string
+  active: boolean
+  startDate?: string | Date
 }
