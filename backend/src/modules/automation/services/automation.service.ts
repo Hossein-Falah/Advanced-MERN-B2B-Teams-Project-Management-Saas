@@ -94,7 +94,25 @@ export class AutomationService {
         userId: Types.ObjectId,
         workspaceId: Types.ObjectId
     ) {
-        await this.getAutomationById(id, workspaceId, userId);
+        const automation = await this.getAutomationById(id, workspaceId, userId);
+
+        const scheduleFieldsChanged = 
+            payload?.daysOfWeek || 
+            payload?.timeOfDay || 
+            payload?.timezone ||
+            payload?.active !== undefined
+
+        if (scheduleFieldsChanged) {
+            const daysOfWeek = payload.daysOfWeek ?? automation?.daysOfWeek;
+            const timeOfDay = payload.timeOfDay ?? automation?.timeOfDay;
+            const timezone = payload.timezone ?? automation?.timezone;
+
+            if (payload?.active === false) {
+                payload.nextRunAt = null;
+            } else {
+                payload.nextRunAt = await calculateNextRun(daysOfWeek, timeOfDay, timezone)
+            }
+        }
 
         return await AutomationModel.findByIdAndUpdate(
             id,

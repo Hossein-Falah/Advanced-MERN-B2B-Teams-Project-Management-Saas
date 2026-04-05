@@ -69,6 +69,10 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
 
     Permissions.CREATE_AUTOMATION,
     Permissions.EDIT_AUTOMATION,
-    Permissions.DELETE_AUTOMATION
+    Permissions.DELETE_AUTOMATION,
+
+    Permissions.DELETE_TASK,
+    Permissions.UNDO_TASK,
+    Permissions.REDO_TASK,
   ],
 };
