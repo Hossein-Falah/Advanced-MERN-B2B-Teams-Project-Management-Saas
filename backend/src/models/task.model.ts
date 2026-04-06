@@ -92,7 +92,7 @@ const taskSchema = new Schema<TaskDocument>(
 
 const TaskModel = mongoose.model<TaskDocument>("Task", taskSchema);
 
-taskSchema.index({ workspaceId: 1, projectId: 1 });
+taskSchema.index({ workspace: 1, project: 1, startDate: 1, dueDate: 1 });
 
 taskSchema.path("attachment").get(function (value: string) {
   if (!value) return value;

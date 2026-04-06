@@ -1,3 +1,4 @@
+import { FilterQuery } from "mongoose";
 import { TaskDocument } from "../../models/task.model";
 import { toObjectId } from "../../utils/convert-objectId.util";
 import { AnalyticsRepository } from "./analytics.repository";
@@ -14,12 +15,12 @@ export class AnalyticsService {
         projectId?: string,
         treandRange: number = 7
     ) {
-        const baseFilter: Partial<TaskDocument> = {
+        const baseFilter: FilterQuery<TaskDocument> = {
             workspace: toObjectId(workspaceId),
             ...(projectId && { project: toObjectId(projectId) })
         };
 
-        const personalFilter = { ...baseFilter, assignedTo: toObjectId(userId) };
+        const personalFilter: FilterQuery<TaskDocument> = { ...baseFilter, assignedTo: toObjectId(userId) };
         const teamFilter = baseFilter;
 
         const response: any = { analytics: {} };
@@ -35,7 +36,7 @@ export class AnalyticsService {
         return response;
     }
 
-    private async computeGroupStats(filter: Partial<TaskDocument>, treandRange: number): Promise<AnalyticsGroup> {
+    private async computeGroupStats(filter: FilterQuery<TaskDocument>, treandRange: number): Promise<AnalyticsGroup> {
         const [
             todayTasks,
             overdueTasks,
@@ -45,7 +46,7 @@ export class AnalyticsService {
             this.analyticsRepository.getCreatedStats(filter, treandRange),
             this.analyticsRepository.getOverdueStats(filter, treandRange),
             this.analyticsRepository.getCompletedStats(filter, treandRange),
-            this.analyticsRepository.getInProgressStats(filter, treandRange)
+            this.analyticsRepository.getInProgressStats(filter)
         ]);
 
         return {
