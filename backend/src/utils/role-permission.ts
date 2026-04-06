@@ -34,7 +34,9 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
 
     Permissions.CREATE_AUTOMATION,
     Permissions.EDIT_AUTOMATION,
-    Permissions.DELETE_AUTOMATION
+    Permissions.DELETE_AUTOMATION,
+
+    Permissions.VIEW_ANALYTICS
   ],
   ADMIN: [
     Permissions.ADD_MEMBER,
@@ -56,7 +58,9 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
 
     Permissions.CREATE_AUTOMATION,
     Permissions.EDIT_AUTOMATION,
-    Permissions.DELETE_AUTOMATION
+    Permissions.DELETE_AUTOMATION,
+
+    Permissions.VIEW_ANALYTICS
   ],
   MEMBER: [
     Permissions.VIEW_ONLY,
@@ -74,5 +78,7 @@ export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
     Permissions.DELETE_TASK,
     Permissions.UNDO_TASK,
     Permissions.REDO_TASK,
+
+    Permissions.VIEW_ANALYTICS
   ],
 };

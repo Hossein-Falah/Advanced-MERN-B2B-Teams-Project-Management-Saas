@@ -30,6 +30,7 @@ import notificationRoutes from "./modules/notification/notification.route";
 import mentionRoutes from "./modules/mention/mention.route";
 import automationRoutes from "./modules/automation/automation.route";
 import { scheduler } from "./modules/automation/workers/scheduler.service";
+import analyticsRoutes from "./modules/analytics/analytics.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -95,6 +96,7 @@ app.use(`${BASE_PATH}/comment`, isAuthenticated, commentRoutes);
 app.use(`${BASE_PATH}/notification`, isAuthenticated, notificationRoutes);
 app.use(`${BASE_PATH}/mention`, isAuthenticated, mentionRoutes);
 app.use(`${BASE_PATH}/automation`, isAuthenticated, automationRoutes);
+app.use(`${BASE_PATH}/analytics`, isAuthenticated, analyticsRoutes)
 
 app.use(errorHandler);
 

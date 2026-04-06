@@ -36,6 +36,8 @@ export const Permissions = {
   CREATE_AUTOMATION: "CREATE_AUTOMATION",
   EDIT_AUTOMATION: "EDIT_AUTOMATION",
   DELETE_AUTOMATION: "DELETE_AUTOMATION",
+
+  VIEW_ANALYTICS: "VIEW_ANALYTICS"
 } as const;
 
 export type PermissionType = keyof typeof Permissions;

@@ -92,6 +92,8 @@ const taskSchema = new Schema<TaskDocument>(
 
 const TaskModel = mongoose.model<TaskDocument>("Task", taskSchema);
 
+taskSchema.index({ workspaceId: 1, projectId: 1 });
+
 taskSchema.path("attachment").get(function (value: string) {
   if (!value) return value;
   const bucket = process.env.AWS_S3_BUCKET_NAME;
