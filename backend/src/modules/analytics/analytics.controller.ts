@@ -7,10 +7,11 @@ import { AnalyticsType } from "./types/analytics.type";
 import { getMemberRoleInWorkspace } from "../../services/member.service";
 import { roleGuard } from "../../utils/roleGuard";
 import { Permissions } from "../../enums/role.enum";
+import { profileActivitySchema } from "./analytics.validator";
 
 export class AnalyticsController {
-    constructor(private analyticsService: AnalyticsService) {}
-    
+    constructor(private analyticsService: AnalyticsService) { }
+
     public getWorkspaceAnalytics = async (req: Request, res: Response) => {
         try {
             const userId = req.user?._id;
@@ -36,6 +37,27 @@ export class AnalyticsController {
             console.error(error);
             res.status(500).json({
                 message: "Failed to load analytics",
+            });
+        }
+    }
+
+    public getProfileActivity = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user?._id;
+
+            const { workspaceId, date } = profileActivitySchema.parse(req.query);
+
+            const result = await this.analyticsService.getUserDailyActivity(
+                workspaceId as string,
+                userId as string,
+                date
+            );
+
+            return res.status(HTTPSTATUS.OK).json(result);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                message: "Failed to load profile analytics",
             });
         }
     }

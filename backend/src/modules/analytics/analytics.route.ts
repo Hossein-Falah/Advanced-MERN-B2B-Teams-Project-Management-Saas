@@ -15,4 +15,9 @@ analyticsRoutes.get(
   analyticsController.getWorkspaceAnalytics
 );
 
+analyticsRoutes.get(
+  "/profile/activity",
+  analyticsController.getProfileActivity
+)
+
 export default analyticsRoutes;

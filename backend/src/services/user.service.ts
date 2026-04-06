@@ -140,3 +140,13 @@ export const getUserProfileService = async (
     user
   };
 };
+
+export const getUserById = async (id: string) => {
+  const user = await UserModel.findOne({ _id: id }).select("-password");
+
+  if (!user) {
+    throw new BadRequestException("User not found");
+  }
+
+  return user
+}

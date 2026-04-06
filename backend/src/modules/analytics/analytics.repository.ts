@@ -2,6 +2,7 @@ import { FilterQuery, Model } from "mongoose";
 import { TaskDocument } from "../../models/task.model";
 import { TaskStatusEnum } from "../../enums/task.enum";
 import { calculateTrendFromChart } from "./helper/analytics.helper";
+import { toObjectId } from "../../utils/convert-objectId.util";
 
 export class AnalyticsRepository {
     constructor(private taskModel: Model<TaskDocument>) { }
@@ -161,5 +162,106 @@ export class AnalyticsRepository {
         const pastRangeStart = new Date(startOfToday.getTime() - trendRange * 86400000);
 
         return { now, startOfToday, pastRangeStart };
+    }
+
+    public async getUserDailyActivityAgg(
+        workspaceId: string,
+        userId: string,
+        dayStart: Date,
+        dayEnd: Date,
+        timezone: string
+    ) {
+        return this.taskModel.aggregate([
+            {
+                $match: {
+                    workspace: toObjectId(workspaceId),
+                    assignedTo: toObjectId(userId),
+                    startDate: { $lte: dayEnd },
+                    $or: [
+                        { dueDate: { $gte: dayStart } },
+                        { dueDate: null }
+                    ]
+                }
+            },
+
+            {
+                $addFields: {
+                    start: {
+                        $cond: [
+                            { $lt: ["$startDate", dayStart] },
+                            dayStart,
+                            "$startDate"
+                        ]
+                    },
+                    end: {
+                        $cond: [
+                            {
+                                $or: [
+                                    { $eq: ["$dueDate", null] },
+                                    { $gt: ["$dueDate", dayEnd] }
+                                ]
+                            },
+                            dayEnd,
+                            "$dueDate"
+                        ]
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    startHour: {
+                        $hour: {
+                            date: "$start",
+                            timezone: timezone
+                        }
+                    },
+                    endHour: {
+                        $hour: {
+                            date: "$end",
+                            timezone: timezone
+                        }
+                    }
+                }
+            },
+
+            {
+                $addFields: {
+                    hours: {
+                        $range: [
+                            "$startHour",
+                            { $add: ["$endHour", 1] }
+                        ]
+                    }
+                }
+            },
+
+            { $unwind: "$hours" },
+
+            {
+                $group: {
+                    _id: "$hours",
+                    tasks: {
+                        $push: {
+                            _id: "$_id",
+                            title: "$title"
+                        }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+
+            {
+                $project: {
+                    _id: 0,
+                    hour: { $add: ["$_id", 1] },
+                    count: 1,
+                    tasks: 1
+                }
+            },
+
+            {
+                $sort: { hour: 1 }
+            }
+        ]);
     }
 }
