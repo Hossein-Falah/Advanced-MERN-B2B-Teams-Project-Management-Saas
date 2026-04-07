@@ -6,7 +6,6 @@ import { toObjectId } from "../../utils/convert-objectId.util";
 import { AnalyticsRepository } from "./analytics.repository";
 import { AnalyticsGroup } from "./interfaces/analytics.interface";
 import { AnalyticsType } from "./types/analytics.type";
-import UserModel from "../../models/user.model";
 import { getUserById } from "../../services/user.service";
 
 export class AnalyticsService {

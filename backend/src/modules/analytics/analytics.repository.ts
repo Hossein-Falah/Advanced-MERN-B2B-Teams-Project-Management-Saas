@@ -243,7 +243,9 @@ export class AnalyticsRepository {
                     tasks: {
                         $push: {
                             _id: "$_id",
-                            title: "$title"
+                            title: "$title",
+                            startDate: "$startDate",
+                            dueDate: "$dueDate"
                         }
                     },
                     count: { $sum: 1 }
