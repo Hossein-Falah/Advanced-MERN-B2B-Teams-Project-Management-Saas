@@ -1,7 +1,7 @@
 import "dotenv/config";
 import connectDatabase from "../config/database.config";
-import RoleModel from "../models/roles-permission.model";
 import { RolePermissions } from "../utils/role-permission";
+import RoleModel from "../modules/auth/schema/roles-permission.model";
 
 const seedRoles = async () => {
   console.log("Seeding roles started...");

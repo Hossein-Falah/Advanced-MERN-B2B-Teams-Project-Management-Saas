@@ -1,21 +1,25 @@
 // lib/api/profile.ts
 import {
+  GetProfileActivityAnalyticsRequest,
+  GetProfileActivityAnalyticsResponse,
   GetUserProfileRequestType,
   UpdateProfileRequestType,
   UpdateProfileResponseType,
+  GetWorkspaceAnalyticsRequest,
+  GetWorkspaceAnalyticsResponse,
 } from '@/types/profile.type'
 import API from '../axios-client'
 
 // تابع اصلی برای به‌روزرسانی پروفایل
 export const updateProfileMutationFn = async (
-  data: UpdateProfileRequestType | FormData,
+  data: UpdateProfileRequestType | FormData
 ): Promise<UpdateProfileResponseType> => {
   const response = await API.patch('/user/update', data)
   return response.data
 }
 
 export const getUserProfileMutationFn = async (
-  data: GetUserProfileRequestType,
+  data: GetUserProfileRequestType
 ): Promise<UpdateProfileResponseType> => {
   const baseUrl = `user/profile`
   const queryParams = new URLSearchParams()
@@ -24,5 +28,45 @@ export const getUserProfileMutationFn = async (
   const url = queryParams.toString() ? `${baseUrl}?${queryParams}` : baseUrl
 
   const response = await API.get(url)
+  return response.data
+}
+
+// دریافت آنالیتیکس اکتیویتی پروفایل
+export const getProfileActivityAnalyticsQueryFn = async (
+  params: GetProfileActivityAnalyticsRequest
+): Promise<GetProfileActivityAnalyticsResponse> => {
+  const { workspaceId, date, projectId } = params
+
+  const searchParams = new URLSearchParams()
+
+  searchParams.append('workspaceId', workspaceId)
+  searchParams.append('date', date)
+
+  projectId && searchParams.append('projectId', projectId)
+
+  const url = `/analytics/profile/activity?${searchParams.toString()}`
+
+  const response = await API.get(url)
+
+  return response.data
+}
+
+/* ======  🔹🔹🔹  API جدید Analytics Workspace  🔹🔹🔹  ====== */
+
+export const getWorkspaceAnalyticsQueryFn = async (
+  params: GetWorkspaceAnalyticsRequest
+): Promise<GetWorkspaceAnalyticsResponse> => {
+  const { workspaceId, type = 'all', treandRange = 5, projectId } = params
+
+  const searchParams = new URLSearchParams()
+
+  searchParams.append('type', type)
+  searchParams.append('treandRange', String(treandRange))
+  projectId && searchParams.append('projectId', String(projectId))
+
+  const url = `/analytics/workspace/${workspaceId}?${searchParams.toString()}`
+
+  const response = await API.get(url)
+
   return response.data
 }

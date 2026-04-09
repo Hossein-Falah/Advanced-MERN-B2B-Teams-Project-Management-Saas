@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { IntractionType, IntractionTypeEnum } from "../../enums/intraction.enum";
+import { IntractionType, IntractionTypeEnum } from "../../common/enums/intraction.enum";
 
 export interface AutomationDocument extends Document {
     type: IntractionType;

@@ -1,5 +1,7 @@
+import { getContainer } from "../../../app/container";
 import AutomationModel from "../automation.model";
-import { AutomationService } from "../services/automation.service";
+
+const { automationService } = getContainer();
 
 export const scheduler = async () => {
     const now = new Date();    
@@ -10,6 +12,6 @@ export const scheduler = async () => {
     }).limit(100);    
 
     await Promise.all(
-        automations.map(automation => AutomationService.runTask(automation))
+        automations.map(automation =>  automationService.runTask(automation))
     )
 }

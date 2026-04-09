@@ -1,14 +1,9 @@
 import { Router } from "express";
-import { AnalyticsController } from "./analytics.controller";
-import { AnalyticsService } from "./analytics.service";
-import { AnalyticsRepository } from "./analytics.repository";
-import TaskModel from "../../models/task.model";
+import { getContainer } from "../../app/container";
 
 const analyticsRoutes = Router();
 
-const analyticsRepository = new AnalyticsRepository(TaskModel);
-const analyticsService = new AnalyticsService(analyticsRepository);
-const analyticsController = new AnalyticsController(analyticsService);
+const { analyticsController } = getContainer()
 
 analyticsRoutes.get(
   "/workspace/:workspaceId",

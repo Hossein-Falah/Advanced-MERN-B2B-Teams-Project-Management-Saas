@@ -1,5 +1,5 @@
 // profile.type.ts
-import { UserType } from './api.type'
+import { TaskType, UserType } from './api.type'
 
 // تایپ‌های جدید برای فیلدهای اضافه‌شده
 
@@ -52,4 +52,60 @@ export interface GetUserProfileRequestType {
   email?: string
   phone?: string
   id?: string
+}
+
+// درخواست گرفتن اکتیویتی پروفایل
+export interface GetProfileActivityAnalyticsRequest {
+  workspaceId: string
+  date: string // مثال: "2026-04-06"
+  projectId?: string
+}
+
+// یک تسک در لیست tasks
+
+// یک آیتم اکتیویتی در یک ساعت مشخص
+export interface ProfileActivityItem {
+  tasks: TaskType[]
+  count: number
+  hour: number // 1 تا 24
+}
+
+// پاسخ API (آرایه‌ای از آیتم‌ها)
+export type GetProfileActivityAnalyticsResponse = ProfileActivityItem[]
+
+/* ======  🔹🔹🔹  API جدید Analytics Workspace  🔹🔹🔹  ====== */
+
+// امروز، دیرکرد، تکمیل‌شده، در حال انجام
+export interface AnalyticsMetric {
+  value: number
+  total?: number
+  trend: number
+  chartData: number[]
+}
+
+// ساختار بخش team و personal
+export interface AnalyticsGroup {
+  todayTasks: AnalyticsMetric
+  overdueTasks: AnalyticsMetric
+  completedTasks: AnalyticsMetric
+  inProgressTasks: AnalyticsMetric
+}
+
+// کل analytics
+export interface WorkspaceAnalytics {
+  team: AnalyticsGroup
+  personal: AnalyticsGroup
+}
+
+// درخواست API
+export interface GetWorkspaceAnalyticsRequest {
+  workspaceId: string
+  type?: 'all' | 'team' | 'personal' // بر اساس کوئری type=all
+  projectId?: string
+  treandRange?: number // طبق پارامتر treandRange=5
+}
+
+// پاسخ API
+export interface GetWorkspaceAnalyticsResponse {
+  analytics: WorkspaceAnalytics
 }

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { NotificationType, NotificationTypeEnum } from "../../enums/notification.enum";
+import { NotificationType, NotificationTypeEnum } from "../../common/enums/notification.enum";
 
 export interface NotificationDocument extends Document {
     type: NotificationType;

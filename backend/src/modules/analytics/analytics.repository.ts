@@ -1,8 +1,8 @@
 import { FilterQuery, Model } from "mongoose";
-import { TaskDocument } from "../../models/task.model";
-import { TaskStatusEnum } from "../../enums/task.enum";
+import { TaskStatusEnum } from "../../common/enums/task.enum";
 import { calculateTrendFromChart } from "./helper/analytics.helper";
 import { toObjectId } from "../../utils/convert-objectId.util";
+import { TaskDocument } from "../task/task.model";
 
 export class AnalyticsRepository {
     constructor(private taskModel: Model<TaskDocument>) { }

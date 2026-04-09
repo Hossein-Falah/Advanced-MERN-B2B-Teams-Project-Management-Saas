@@ -1,4 +1,4 @@
-import ProfileSetting from '@/components/profile/profile-setting'
+import ProfileSetting from '@/components/profile/profile-setting/profile-setting'
 import { Separator } from '@/components/ui/separator'
 
 export default function ProfileSettings() {

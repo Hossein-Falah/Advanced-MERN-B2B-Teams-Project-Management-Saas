@@ -35,6 +35,7 @@ const ICON_TEXT = {
 export interface AnalyticsCardProps {
   title: string
   value: number
+  totalValue?: number
   isLoading: boolean
   kind: AnalyticsKind
   trend?: number
@@ -45,6 +46,7 @@ export interface AnalyticsCardProps {
 const AnalyticsCard = ({
   title,
   value,
+  totalValue,
   isLoading,
   kind,
   trend,
@@ -59,20 +61,20 @@ const AnalyticsCard = ({
         'relative overflow-hidden rounded-2xl border bg-gradient-to-br p-4',
         'backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300',
         'group cursor-default',
-        COLORS[kind],
+        COLORS[kind]
       )}
     >
       <div
         className={cn(
           'pointer-events-none absolute -top-10 -left-10 h-24 w-24 rounded-full blur-3xl opacity-40',
-          ICON_TEXT[kind],
+          ICON_TEXT[kind]
         )}
       />
 
       <div
         className={cn(
           'pointer-events-none absolute -bottom-6 -right-6 opacity-[0.09]',
-          ICON_TEXT[kind],
+          ICON_TEXT[kind]
         )}
       >
         <Activity size={110} />
@@ -92,7 +94,7 @@ const AnalyticsCard = ({
                     'inline-flex items-center gap-1 rounded-full px-2 py-[2px] text-[10px] font-semibold',
                     isPositive
                       ? 'bg-emerald-500/10 text-emerald-600'
-                      : 'bg-red-500/10 text-red-600',
+                      : 'bg-red-500/10 text-red-600'
                   )}
                 >
                   {isPositive ? (
@@ -112,7 +114,7 @@ const AnalyticsCard = ({
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-xl border text-[13px]',
               'bg-background/60 backdrop-blur-sm shadow-xs',
-              ICON_TEXT[kind],
+              ICON_TEXT[kind]
             )}
           >
             <Activity size={14} />
@@ -121,7 +123,7 @@ const AnalyticsCard = ({
 
         <div className='flex items-end justify-between gap-2'>
           <div className='flex flex-col'>
-            <span className='text-[11px] text-muted-foreground/80'>مجموع</span>
+            <span className='text-[11px] text-muted-foreground/80'>مقدار</span>
 
             <div className='text-3xl font-extrabold tracking-tight'>
               {isLoading ? (
@@ -130,6 +132,17 @@ const AnalyticsCard = ({
                 value.toLocaleString('fa-IR')
               )}
             </div>
+
+            {!isLoading && totalValue !== undefined && (
+              <div className='mt-1 flex items-center gap-2 text-[11px] text-muted-foreground/80'>
+                <span>
+                  تعداد کل :{' '}
+                  <span className='font-semibold'>
+                    {totalValue.toLocaleString('fa-IR')}
+                  </span>
+                </span>
+              </div>
+            )}
           </div>
 
           {chartData && chartData.length > 1 && (

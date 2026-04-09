@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { IntractionTypeEnum } from "../../enums/intraction.enum";
+import { IntractionTypeEnum } from "../../common/enums/intraction.enum";
 
 export const automationValidatorSchema = z.object({
     type: z.enum(Object.keys(IntractionTypeEnum) as [keyof typeof IntractionTypeEnum]),

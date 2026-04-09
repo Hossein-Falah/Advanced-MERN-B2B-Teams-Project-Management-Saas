@@ -1,15 +1,13 @@
 import { Router } from "express";
-import {
-    getAllNotificationController,
-    readAllNotificationController,
-    readNotificationController
-} from "../../controllers/notification.controller";
+import { getContainer } from "../../app/container";
 
 const notificationRoutes = Router();
 
-notificationRoutes.get("/all", getAllNotificationController);
-notificationRoutes.post("/read/:notificationId", readNotificationController);
-notificationRoutes.post("/read-all", readAllNotificationController);
+const { notificationController } = getContainer()
+
+notificationRoutes.get("/all", notificationController.getAllNotificationController);
+notificationRoutes.post("/read/:notificationId", notificationController.readNotificationController);
+notificationRoutes.post("/read-all", notificationController.readAllNotificationController);
 
 
 export default notificationRoutes;

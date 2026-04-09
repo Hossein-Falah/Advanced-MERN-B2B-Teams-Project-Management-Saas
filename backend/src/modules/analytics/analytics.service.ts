@@ -1,15 +1,18 @@
 import { DateTime } from "luxon";
 import { FilterQuery } from "mongoose";
 
-import { TaskDocument } from "../../models/task.model";
 import { toObjectId } from "../../utils/convert-objectId.util";
 import { AnalyticsRepository } from "./analytics.repository";
 import { AnalyticsGroup } from "./interfaces/analytics.interface";
 import { AnalyticsType } from "./types/analytics.type";
-import { getUserById } from "../../services/user.service";
+import { TaskDocument } from "../task/task.model";
+import { UserService } from "../user/user.service";
 
 export class AnalyticsService {
-    constructor(private analyticsRepository: AnalyticsRepository) { }
+    constructor(
+        private analyticsRepository: AnalyticsRepository,
+        private userService: UserService
+    ) { }
 
     async generateAnalytics(
         workspaceId: string,
@@ -65,7 +68,7 @@ export class AnalyticsService {
         userId: string,
         date?: Date
     ) {
-        const user = await getUserById(userId);
+        const user = await this.userService.getUserById(userId);
 
         const baseDate = date ?? new Date();
 
@@ -100,6 +103,8 @@ export class AnalyticsService {
             hours[item.hour - 1] = item;
         }
 
-        return hours;
+        return {
+            analytics: hours
+        }
     }
 }

@@ -48,3 +48,31 @@ export interface UserDocument extends Document {
     comparePassword(value: string): Promise<boolean>;
     omitPassword(): Omit<UserDocument, "password">;
 }
+
+
+interface IWorkSchedule {
+    workingDays?: number[];
+    startHour?: number;
+    endHour?: number;
+}
+
+interface IConditions {
+    onCreateTask?: boolean;
+    onUpdateTask?: boolean;
+    onMention?: boolean;
+    onAutomationAction?: boolean;
+    onMessage?: boolean;
+}
+
+export interface IUpdateUserProfileInput {
+    name?: string;
+    username?: string;
+    phone?: string;
+    bio?: string;
+    jobTitle?: string;
+    region?: string;
+    weekStartDay?: number;
+    workSchedule?: IWorkSchedule;
+    notifConditions?: IConditions;
+    smsConditions?: IConditions;
+}

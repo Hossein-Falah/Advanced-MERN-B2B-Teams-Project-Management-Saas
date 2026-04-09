@@ -1,23 +1,34 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../../middlewares/asyncHandler.middleware";
 import { MentionService } from "./mention.service";
+import { workspaceIdSchema } from "../workspace/workspace.validation";
+import { ResponseHandler } from "../../common/response/response-handler";
 import { HTTPSTATUS } from "../../config/http.config";
-import { workspaceIdSchema } from "../../validation/workspace.validation";
+import { MESSAGES } from "../../common/constants/message.constant";
 
-export const mentionUsersController = asyncHandler(
-    async (req: Request, res: Response) => {
-        const { query } = req.query; // user search query
-
-        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
-
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 20;
-
-        const mention = await MentionService.getMentionUsers(workspaceId, query as string, page, limit);
-
-        return res.status(HTTPSTATUS.OK).json({
-            message: "get user successfully",
-            mention
-        });
-    }
-);
+export class MentionController {
+    constructor(private mentionService: MentionService) {}
+  
+    mentionUsers = async (req: Request, res: Response) => {
+      const query = req.query.query as string;
+  
+      const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+  
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 20;
+  
+      const mention = await this.mentionService.getMentionUsers(
+        workspaceId,
+        query,
+        page,
+        limit
+      );
+  
+      return ResponseHandler.send(res, {
+        statusCode: HTTPSTATUS.OK,
+        code: MESSAGES.USER.MENTION_FETCHED.code,
+        message: MESSAGES.USER.MENTION_FETCHED.message,
+        data: mention,
+      });
+    };
+  }
+  

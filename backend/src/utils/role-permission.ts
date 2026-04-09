@@ -2,7 +2,7 @@ import {
   Permissions,
   PermissionType,
   RoleType,
-} from "../enums/role.enum";
+} from "../common/enums/role.enum";
 
 export const RolePermissions: Record<RoleType, Array<PermissionType>> = {
   OWNER: [

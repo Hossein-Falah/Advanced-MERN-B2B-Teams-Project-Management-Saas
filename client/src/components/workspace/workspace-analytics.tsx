@@ -1,69 +1,37 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import AnalyticsCard from './common/analytics-card'
 import { MoveLeftIcon } from 'lucide-react'
-
-const fakeData = {
-  analytics: {
-    team: {
-      todayTasks: {
-        value: 24,
-        trend: 12,
-        chartData: [2, 5, 4, 7, 6, 9, 8],
-      },
-      overdueTasks: {
-        value: 6,
-        trend: -5,
-        chartData: [10, 9, 8, 7, 6, 5, 4],
-      },
-      completedTasks: {
-        value: 80,
-        trend: 18,
-        chartData: [3, 4, 6, 8, 7, 9, 11],
-      },
-      inProgressTasks: {
-        value: 14,
-        trend: 3,
-        chartData: [1, 3, 2, 4, 3, 5, 4],
-      },
-    },
-    personal: {
-      todayTasks: {
-        value: 5,
-        trend: 7,
-        chartData: [1, 2, 2, 3, 4, 4, 5],
-      },
-      overdueTasks: {
-        value: 1,
-        trend: -2,
-        chartData: [5, 5, 4, 4, 3, 3, 2],
-      },
-      completedTasks: {
-        value: 18,
-        trend: 15,
-        chartData: [2, 3, 4, 6, 7, 8, 9],
-      },
-      inProgressTasks: {
-        value: 3,
-        trend: 4,
-        chartData: [1, 2, 3, 3, 4, 4, 5],
-      },
-    },
-  },
-}
+import { getWorkspaceAnalyticsQueryFn } from '@/lib/api/dashboard'
+import useWorkspaceId from '@/hooks/use-workspace-id'
 
 const WorkspaceAnalytics = () => {
   const [activeTab, setActiveTab] = useState<'team' | 'personal'>('personal')
 
-  // فعلاً فیک دیتا؛ بعداً اینجا به‌جای fakeData می‌تونی
-  // useQuery با type=activeTab رو صدا بزنی
-  const data = fakeData
-  const isPending = false
+  const workspaceId = useWorkspaceId()
 
-  const team = data.analytics.team
-  const personal = data.analytics.personal
+  const { data, isLoading, isError, error, isFetching } = useQuery({
+    queryKey: ['workspaceAnalytics', workspaceId, activeTab],
+    queryFn: () =>
+      getWorkspaceAnalyticsQueryFn({
+        workspaceId,
+        type: activeTab,
+        treandRange: 5,
+      }),
+    enabled: !!workspaceId,
+    retry: (failureCount, err: any) => {
+      if (err?.response?.status === 404) return false
+      return failureCount < 3
+    },
+  })
+
+  const isPending = isLoading || isFetching
+
+  const team = data?.analytics?.team
+  const personal = data?.analytics?.personal
 
   return (
     <div className='space-y-6'>
@@ -82,92 +50,108 @@ const WorkspaceAnalytics = () => {
             این آمار مربوط به این فضای کار میباشد
           </p>
         </div>
-        {/* تب آمار تیم */}
+
+        {isError && (
+          <p className='text-xs text-red-500'>
+            خطا در دریافت آمار فضای کار
+            {(error as any)?.message && `: ${(error as any).message}`}
+          </p>
+        )}
+
+        {/* آمار تیم */}
         <TabsContent value='team' className='space-y-3'>
           <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
             <AnalyticsCard
               isLoading={isPending}
               title='وظایف امروز تیم'
-              value={team.todayTasks.value}
+              value={team?.todayTasks?.value ?? 0}
+              totalValue={team?.todayTasks?.total ?? 0}
               kind='total'
-              trend={team.todayTasks.trend}
+              trend={team?.todayTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={team.todayTasks.chartData}
+              chartData={team?.todayTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف عقب‌افتاده تیم'
-              value={team.overdueTasks.value}
+              title='وظایف عقب‌افتاده امروز تیم'
+              value={team?.overdueTasks?.value ?? 0}
+              totalValue={team?.todayTasks?.total ?? 0}
               kind='overdue'
-              trend={team.overdueTasks.trend}
+              trend={team?.overdueTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={team.overdueTasks.chartData}
+              chartData={team?.overdueTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف انجام‌شده تیم'
-              value={team.completedTasks.value}
+              title='وظایف انجام‌شده امروز تیم'
+              value={team?.completedTasks?.value ?? 0}
+              totalValue={team?.todayTasks?.total ?? 0}
               kind='completed'
-              trend={team.completedTasks.trend}
+              trend={team?.completedTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={team.completedTasks.chartData}
+              chartData={team?.completedTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف در حال انجام تیم'
-              value={team.inProgressTasks.value}
+              title='وظایف در حال انجام امروز تیم'
+              value={team?.inProgressTasks?.value ?? 0}
+              totalValue={team?.todayTasks?.total ?? 0}
               kind='inprogress'
-              trend={team.inProgressTasks.trend}
+              trend={team?.inProgressTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={team.inProgressTasks.chartData}
+              chartData={team?.inProgressTasks?.chartData ?? []}
             />
           </div>
         </TabsContent>
 
-        {/* تب آمار شخصی */}
+        {/* آمار شخصی */}
         <TabsContent value='personal' className='space-y-3'>
           <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
             <AnalyticsCard
               isLoading={isPending}
               title='وظایف امروز شما'
-              value={personal.todayTasks.value}
+              value={personal?.todayTasks?.value ?? 0}
+              totalValue={personal?.todayTasks?.total ?? 0}
               kind='total'
-              trend={personal.todayTasks.trend}
+              trend={personal?.todayTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={personal.todayTasks.chartData}
+              chartData={personal?.todayTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف عقب‌افتاده شما'
-              value={personal.overdueTasks.value}
+              title='وظایف عقب‌افتاده امروز شما'
+              value={personal?.overdueTasks?.value ?? 0}
+              totalValue={personal?.todayTasks?.total ?? 0}
               kind='overdue'
-              trend={personal.overdueTasks.trend}
+              trend={personal?.overdueTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={personal.overdueTasks.chartData}
+              chartData={personal?.overdueTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف انجام‌شده شما'
-              value={personal.completedTasks.value}
+              title='وظایف انجام‌شده امروز شما'
+              value={personal?.completedTasks?.value ?? 0}
+              totalValue={personal?.todayTasks?.total ?? 0}
               kind='completed'
-              trend={personal.completedTasks.trend}
+              trend={personal?.completedTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={personal.completedTasks.chartData}
+              chartData={personal?.completedTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف در حال انجام شما'
-              value={personal.inProgressTasks.value}
+              title='وظایف در حال انجام امروز شما'
+              value={personal?.inProgressTasks?.value ?? 0}
+              totalValue={personal?.todayTasks?.total ?? 0}
               kind='inprogress'
-              trend={personal.inProgressTasks.trend}
+              trend={personal?.inProgressTasks?.trend ?? 0}
               trendLabel='نسبت به هفته قبل'
-              chartData={personal.inProgressTasks.chartData}
+              chartData={personal?.inProgressTasks?.chartData ?? []}
             />
           </div>
         </TabsContent>

@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import UserModel from "../models/user.model";
+import UserModel from "../modules/user/user.model";
 
 export let io: Server;
 

@@ -1,5 +1,5 @@
 import z from "zod";
-import { workspaceIdSchema } from "../../validation/workspace.validation";
+import { workspaceIdSchema } from "../workspace/workspace.validation";
 
 export const DateSchema = z
     .union([z.string(), z.date()])

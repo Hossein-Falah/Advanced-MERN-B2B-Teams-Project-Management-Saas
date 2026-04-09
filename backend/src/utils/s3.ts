@@ -1,7 +1,7 @@
 import { extname } from "path";
 import { randomUUID } from "crypto";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { BadRequestException, ServiceUnavailableException } from "./appError";
+import { BadRequestException, ServiceUnavailableException } from "../common/errors/app-error";
 
 const s3Client = new S3Client({
     credentials: {

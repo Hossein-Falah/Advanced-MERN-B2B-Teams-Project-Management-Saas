@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { mentionUsersController } from "./mention.controller";
+import { getContainer } from "../../app/container";
 
 const mentionRoutes = Router();
 
-mentionRoutes.get("/workspace/:workspaceId", mentionUsersController);
+const { mentionController } = getContainer();
+
+mentionRoutes.get("/workspace/:workspaceId", mentionController.mentionUsers);
 
 export default mentionRoutes;

@@ -1,0 +1,103 @@
+import mongoose, { Document, Schema } from "mongoose";
+import { TaskPriorityEnum, TaskPriorityEnumType, TaskStatusEnum, TaskStatusEnumType } from "../../common/enums/task.enum";
+import { generateTaskCode } from "../../utils/uuid";
+
+export interface TaskDocument extends Document {
+  taskCode: string;
+  title: string;
+  description: string | null;
+  project: mongoose.Types.ObjectId;
+  workspace: mongoose.Types.ObjectId;
+  status: TaskStatusEnumType;
+  priority: TaskPriorityEnumType;
+  assignedTo: mongoose.Types.ObjectId | null;
+  createdBy: mongoose.Types.ObjectId;
+  attachment: string;
+  startDate: Date | null;
+  dueDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const taskSchema = new Schema<TaskDocument>(
+  {
+    taskCode: {
+      type: String,
+      unique: true,
+      default: generateTaskCode,
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    attachment: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
+    },
+    workspace: {
+      type: Schema.Types.ObjectId,
+      ref: "Workspace",
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(TaskStatusEnum),
+      default: TaskStatusEnum.TODO,
+    },
+    priority: {
+      type: String,
+      enum: Object.values(TaskPriorityEnum),
+      default: TaskPriorityEnum.MEDIUM,
+    },
+    assignedTo: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    startDate: {
+      type: Date,
+      default: Date.now,
+    },
+    dueDate: {
+      type: Date,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const TaskModel = mongoose.model<TaskDocument>("Task", taskSchema);
+
+taskSchema.index({ workspace: 1, project: 1, startDate: 1, dueDate: 1 });
+
+taskSchema.index({ workspace: 1, assignedTo: 1, startDate: 1, dueDate: 1 });
+
+taskSchema.path("attachment").get(function (value: string) {
+  if (!value) return value;
+  const bucket = process.env.AWS_S3_BUCKET_NAME;
+  const endpoint = process.env.AWS_ENDPOINT;
+  return `https://${bucket}.${endpoint}/${value}`;
+});
+
+taskSchema.set("toJSON", { getters: true });
+
+export default TaskModel;

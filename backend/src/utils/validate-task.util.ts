@@ -1,4 +1,4 @@
-import { BadRequestException } from "./appError";
+import { BadRequestException } from "../common/errors/app-error";
 
 export const validateTaskDates = (startDate?: Date | null, dueDate?: Date | null) => {
     if (startDate && dueDate) {

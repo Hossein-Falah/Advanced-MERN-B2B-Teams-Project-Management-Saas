@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { BadRequestException } from "./appError";
+import { BadRequestException } from "../common/errors/app-error";
 
 export const toObjectId = (id: string | Types.ObjectId): Types.ObjectId => {
     if (id instanceof Types.ObjectId) return id;

@@ -153,6 +153,7 @@
 * {
   direction: rtl;
   text-align: right;
+  outline: none !important;
   font-family: IranSans !important;
 }
 html,

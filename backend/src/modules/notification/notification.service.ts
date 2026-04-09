@@ -1,9 +1,15 @@
-import NotificationModel, { NotificationDocument } from "./notification.model";
+import { Model } from "mongoose";
+
+import { NotificationDocument } from "./notification.model";
 import { io } from "../../socket";
 
 export class NotificationService {
-    static async create(data: Partial<NotificationDocument>) {
-        let notification = await NotificationModel.create(data);
+    constructor(
+        private notificationModel: Model<NotificationDocument>,
+    ) {}
+
+    public async create(data: Partial<NotificationDocument>) {
+        let notification = await this.notificationModel.create(data);
 
         notification = await notification.populate([
             { path: "sender", select: "id name email username profilePicture -password" },
@@ -24,8 +30,8 @@ export class NotificationService {
         return notification;
     }
 
-    static async markAsRead(notificationId: string, userId: string) {
-        const notification = await NotificationModel.findOneAndUpdate(
+    public async markAsRead(notificationId: string, userId: string) {
+        const notification = await this.notificationModel.findOneAndUpdate(
             { _id: notificationId, receiver: userId },
             { read: true },
             { new: true }
@@ -34,10 +40,10 @@ export class NotificationService {
         return notification;
     }
 
-    static async getAllNotifications(userId: string, page: number = 1, limit: number = 20) {
+    public async getAllNotifications(userId: string, page: number = 1, limit: number = 20) {
         const skip = (page - 1) * limit;
 
-        const notifications = await NotificationModel
+        const notifications = await this.notificationModel
             .find({ receiver: userId }, { receiver: 0 })
             .sort({ createdAt: -1 })
             .skip(skip)
@@ -45,12 +51,12 @@ export class NotificationService {
             .populate({ path: "sender", select: "id name email username profilePicture -password" })
             .populate({ path: "task", select: "_id title description" })
 
-        const unreadCount = await NotificationModel.countDocuments({
+        const unreadCount = await this.notificationModel.countDocuments({
             receiver: userId,
             read: false
         });
 
-        const total = await NotificationModel.countDocuments({ receiver: userId });
+        const total = await this.notificationModel.countDocuments({ receiver: userId });
 
         return {
             notifications,
@@ -64,8 +70,8 @@ export class NotificationService {
         };
     }
 
-    static async markAllAsRead(userId: string) {
-        await NotificationModel.updateMany(
+    public async markAllAsRead(userId: string) {
+        await this.notificationModel.updateMany(
             { receiver: userId, read: false },
             { read: true }
         );

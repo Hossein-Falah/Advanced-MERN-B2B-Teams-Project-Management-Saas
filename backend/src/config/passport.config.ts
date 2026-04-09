@@ -4,12 +4,11 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as LocalStrategy } from "passport-local";
 
 import { config } from "./app.config";
-import { NotFoundException } from "../utils/appError";
-import { ProviderEnum } from "../enums/account-provider.enum";
-import {
-  loginOrCreateAccountService,
-  verifyUserService,
-} from "../services/auth.service";
+import { ProviderEnum } from "../common/enums/account-provider.enum";
+import { AppError, NotFoundException } from "../common/errors/app-error";
+import { getContainer } from "../app/container";
+
+const { authService } = getContainer();
 
 passport.use(
   new GoogleStrategy(
@@ -23,12 +22,12 @@ passport.use(
     async (req: Request, accessToken, refreshToken, profile, done) => {
       try {
         const { email, sub: googleId, picture } = profile._json;
-    
+
         if (!googleId) {
           throw new NotFoundException("Google ID (sub) is missing");
         }
 
-        const { user } = await loginOrCreateAccountService({
+        const { user } = await authService.loginOrCreateAccount({
           provider: ProviderEnum.GOOGLE,
           displayName: profile.displayName,
           providerId: googleId,
@@ -50,12 +49,16 @@ passport.use(
       passwordField: "password",
       session: true,
     },
-    async (email, password, done) => {
+    async (email, password, done) => {     
       try {
-        const user = await verifyUserService({ email, password });
+        const user = await authService.verifyUser({ email, password });
         return done(null, user);
-      } catch (error: any) {
-        return done(error, false, { message: error?.message });
+      } catch (error: any) {        
+        if (error instanceof AppError) {
+          return done(null, false, { message: error.message });
+        }
+
+        return done(error);
       }
     }
   )

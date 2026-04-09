@@ -1,18 +1,14 @@
 import { Router } from "express";
-import { 
-    createAutomationController, 
-    deleteAutomationController, 
-    getAllAutomationController, 
-    getOneAutomationController, 
-    updateAutomationController
-} from "./automation.controller";
+import { getContainer } from "../../app/container";
 
 const automationRoutes = Router();
 
-automationRoutes.post("/workspace/:workspaceId/create", createAutomationController);
-automationRoutes.get("/workspace/:workspaceId/all", getAllAutomationController)
-automationRoutes.get("/workspace/:workspaceId/getById/:automationId", getOneAutomationController)
-automationRoutes.patch("/workspace/:workspaceId/update/:automationId", updateAutomationController)
-automationRoutes.delete("/workspace/:workspaceId/delete/:automationId", deleteAutomationController)
+const { automationController } = getContainer()
+
+automationRoutes.get("/workspace/:workspaceId/all", automationController.getAutomations);
+automationRoutes.post("/workspace/:workspaceId/create", automationController.createAutomation);
+automationRoutes.get("/workspace/:workspaceId/getById/:automationId", automationController.getAutomation);
+automationRoutes.patch("/workspace/:workspaceId/update/:automationId", automationController.updateAutomation);
+automationRoutes.delete("/workspace/:workspaceId/delete/:automationId", automationController.deleteAutomation);
 
 export default automationRoutes;
