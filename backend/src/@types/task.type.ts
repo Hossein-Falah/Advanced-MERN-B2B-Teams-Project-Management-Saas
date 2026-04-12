@@ -1,4 +1,4 @@
-type TaskFilters = {
+export type TaskFilters = {
     projectId?: string;
     status?: string[];
     priority?: string[];
@@ -7,13 +7,3 @@ type TaskFilters = {
     keyword?: string;
     dueDate?: string;
 };
-
-type TaskPagination = {
-    pageSize: number;
-    pageNumber: number;
-};
-
-export {
-    TaskFilters,
-    TaskPagination
-}

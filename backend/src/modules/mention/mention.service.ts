@@ -4,6 +4,7 @@ import { NotificationService } from "../notification/notification.service";
 import { toObjectId } from "../../utils/convert-objectId.util";
 import { UserDocument } from "../user/interfaces/user.interface";
 import { MemberDocument } from "../member/member.model";
+import { PaginationFilter } from "../../common/types/pagination.type";
 
 export class MentionService {
     constructor(
@@ -53,7 +54,7 @@ export class MentionService {
         );
     }
 
-    public async getMentionUsers(workspace: string, query: string, page: number = 1, limit: number = 20) {
+    public async getMentionUsers({ page = 1, limit = 10 }: PaginationFilter, workspace: string, query: string) {
         const skip = (page - 1) * limit;
 
         const members = await this.memberModel.find({
@@ -61,16 +62,15 @@ export class MentionService {
         })
             .populate("userId", { password: 0 });
 
-        const userIds = members.map(m => m.userId);
+        const userIds = members.map(m => m.userId);        
 
         if (userIds.length === 0) {
             return {
                 users: [],
                 pagination: {
-                    total: 0,
                     page,
                     limit,
-                    pages: 0
+                    total: 0
                 }
             };
         }
@@ -96,10 +96,9 @@ export class MentionService {
         return {
             users,
             pagination: {
-                total,
                 page,
                 limit,
-                pages: Math.ceil(total / limit),
+                total
             },
         };
     }

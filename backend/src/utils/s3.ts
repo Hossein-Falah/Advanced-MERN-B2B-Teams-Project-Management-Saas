@@ -30,9 +30,7 @@ export const uploadFileToS3 = async (file: Express.Multer.File, folderName: stri
         await s3Client.send(command);
 
         return key;
-    } catch (error: any) {
-        console.log(error);
-        
+    } catch (error: any) {        
         if (error.code === "ENOTFOUND" || error.name === "TimeoutError") {
             throw new ServiceUnavailableException("این سرویس فعلا در دسترس نیست لطفا بعدا تلاش کنید");
         }

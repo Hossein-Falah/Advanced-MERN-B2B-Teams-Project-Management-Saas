@@ -5,12 +5,13 @@ import { MESSAGES } from "../../common/constants/message.constant";
 import { toObjectId } from "../../utils/convert-objectId.util";
 import { TaskStatusEnum } from "../../common/enums/task.enum";
 import { TaskDocument } from "../task/task.model";
+import { PaginationFilter } from "../../common/types/pagination.type";
 
 export class ProjectService {
   constructor(
     private projectModel: Model<ProjectDocument>,
     private taskModel: Model<TaskDocument>
-  ) {};
+  ) { };
 
   async createProject(
     userId: string,
@@ -35,26 +36,34 @@ export class ProjectService {
   }
 
   async getProjectsInWorkspace(
-    workspaceId: string,
-    page: number,
-    limit: number,
+    { page, limit }: PaginationFilter,
+    workspaceId: string
   ) {
-    const totalCount = await this.projectModel.countDocuments({
-      workspace: workspaceId,
-    });
-
     const skip = (page - 1) * limit;
 
-    const projects = await this.projectModel.find({
-      workspace: workspaceId,
-    })
-      .skip(skip)
-      .limit(limit)
-      .populate("createdBy", "_id name profilePicture -password")
-      .sort({ createdAt: -1 });
+    const [projects, totalCount] = await Promise.all([
+      this.projectModel.find({
+        workspace: workspaceId,
+      })
+        .skip(skip)
+        .limit(limit)
+        .populate("createdBy", "_id name profilePicture -password")
+        .sort({ createdAt: -1 }),
+      this.projectModel.countDocuments({
+        workspace: workspaceId,
+      })
+    ])
 
 
-    return { projects, totalCount };
+
+    return { 
+      projects, 
+      pagination: {
+        page,
+        limit,
+        totalCount
+      }
+    };
   }
 
   async getProjectById(workspaceId: string, projectId: string) {

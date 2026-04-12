@@ -46,8 +46,6 @@ export const startDateSchema = z
     return val instanceof Date ? val : new Date(val);
   });
 
-export const taskIdSchema = z.string().trim().min(1);
-
 export const createTaskSchema = z.object({
   title: titleSchema,
   description: descriptionSchema,
@@ -70,4 +68,54 @@ export const updateTaskSchema = z.object({
   assignedTo: assignedToSchema,
   dueDate: dueDateSchema,
   startDate: startDateSchema
+});
+
+// objectId validator
+export const objectIdSchema = z
+  .string()
+  .regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format");
+
+// Real query array: ?status=A&status=B
+const toArray = (val: string | string[] | undefined) => {
+  if (!val) return undefined;
+  return Array.isArray(val) ? val : [val];
+};
+
+export const taskQuerySchema = z.object({
+  projectId: objectIdSchema.optional(),
+
+  taskId: objectIdSchema.optional(),
+
+  assignedTo: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform(toArray)
+    .pipe(z.array(objectIdSchema).optional()),
+
+  status: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform(toArray)
+    .pipe(z.array(z.nativeEnum(TaskStatusEnum)).optional()),
+
+
+  priority: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform(toArray)
+    .pipe(z.array(z.nativeEnum(TaskPriorityEnum)).optional()),
+
+  keyword: z.string().optional(),
+
+  dueDate: z.string().optional(),
+
+  page: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v) : 1)),
+
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v) : 10)),
 });

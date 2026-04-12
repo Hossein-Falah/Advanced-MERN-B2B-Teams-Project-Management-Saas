@@ -11,6 +11,7 @@ import { toObjectId } from "../../utils/convert-objectId.util";
 import { ProjectDocument } from "../project/project.model";
 import { TaskDocument } from "../task/task.model";
 import { BadRequestException, NotFoundException } from "../../common/errors/app-error";
+import { PaginationFilter } from "../../common/types/pagination.type";
 
 export class WorkspaceService {
   constructor(
@@ -20,7 +21,7 @@ export class WorkspaceService {
     private memberModel: Model<MemberDocument>,
     private projectModel: Model<ProjectDocument>,
     private taskModel: Model<TaskDocument>
-  ) {}
+  ) { }
   // CREATE WORKSPACE
 
   public async createWorkspace(
@@ -63,17 +64,30 @@ export class WorkspaceService {
   }
 
   // GET USER WORKSPACES
-  public async getAllWorkspacesUserIsMember(userId: string) {
-    const memberships = await this.memberModel.find({ userId })
-      .populate("workspaceId")
-      .select("-password")
-      .exec();
+  public async getAllWorkspacesUserIsMember({ page, limit }: PaginationFilter, userId: string) {
+    const skip = (page - 1) * limit;
+
+    const [memberships, totalCount] = await Promise.all([
+      this.memberModel.find({ userId })
+        .populate("workspaceId")
+        .select("-password")
+        .skip(skip)
+        .limit(limit),
+      this.memberModel.countDocuments({ userId })
+    ])
 
     const workspaces = memberships.map(
       (membership) => membership.workspaceId
     );
 
-    return { workspaces };
+    return {
+      workspaces,
+      pagination: {
+        page,
+        limit,
+        totalCount
+      }
+    };
   }
 
   // GET WORKSPACE BY ID
@@ -95,16 +109,31 @@ export class WorkspaceService {
   }
 
   // GET WORKSPACE MEMBERS
-  public async getWorkspaceMembers(workspaceId: string) {
-    const members = await this.memberModel.find({ workspaceId })
-      .populate("userId", { password: 0 })
-      .populate("role", "name");
+  public async getWorkspaceMembers({ page, limit }: PaginationFilter, workspaceId: string) {
+    const skip = (page - 1) * limit;
+
+    const [members, total] = await Promise.all([
+      this.memberModel.find({ workspaceId })
+        .populate("userId", { password: 0 })
+        .populate("role", "name")
+        .skip(skip)
+        .limit(limit),
+      this.memberModel.countDocuments({ workspaceId })
+    ])
 
     const roles = await this.roleModel.find({}, { name: 1, _id: 1 })
       .select("-permission")
       .lean();
 
-    return { members, roles };
+    return { 
+      members, 
+      roles,
+      pagination: {
+        page,
+        limit,
+        total
+      }
+    };
   }
 
   // WORKSPACE ANALYTICS

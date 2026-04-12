@@ -57,7 +57,8 @@ export function getContainer() {
     );
     const taskService = new TaskService(
         ProjectModel, MemberModel, TaskModel, 
-        TaskLogModel, notificationService, taskLogService
+        TaskLogModel, CommentModel, AutomationModel, 
+        notificationService, taskLogService
     );
     const automationService = new AutomationService(
         AutomationModel, taskService
@@ -76,7 +77,7 @@ export function getContainer() {
     // ---- Instantiate Controllers ----
     const analyticsController = new AnalyticsController(analyticsService, memberService);
     const authController = new AuthController(authService);
-    const automationController = new AutomationController(automationService, memberService);
+    const automationController = new AutomationController(memberService, automationService);
     const commentController = new CommentController(commentService, memberService);
     const memberController = new MemberController(memberService);
     const notificationController = new NotificationController(notificationService);

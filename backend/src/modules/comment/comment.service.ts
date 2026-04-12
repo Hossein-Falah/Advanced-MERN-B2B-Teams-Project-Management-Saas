@@ -6,6 +6,7 @@ import { toObjectId } from "../../utils/convert-objectId.util";
 import { deleteFile, uploadFileToS3 } from "../../utils/s3";
 import { MentionService } from "../mention/mention.service";
 import { BadRequestException, NotFoundException } from "../../common/errors/app-error";
+import { PaginationFilter } from "../../common/types/pagination.type";
 
 export class CommentService {
     constructor(
@@ -54,7 +55,6 @@ export class CommentService {
         commentId: string,
         taskId: string
     ) {
-
         const comment = await this.commentModel.findOneAndDelete({
             _id: commentId,
             task: taskId,
@@ -70,6 +70,8 @@ export class CommentService {
         if (comment.attachment) {
             await deleteFile(comment.attachment);
         }
+
+        return comment
     }
 
     async updateComment(
@@ -121,17 +123,16 @@ export class CommentService {
             );
         }
 
-        return updated;
+        return { comment: updated };
     }
 
     async getAllComments(
         workspaceId: string,
         taskId: string,
-        pagination: { pageSize: number; pageNumber: number }
+        pagination: PaginationFilter
     ) {
-
-        const { pageSize, pageNumber } = pagination;
-        const skip = (pageNumber - 1) * pageSize;
+        const { page, limit } = pagination;
+        const skip = (page - 1) * limit;
 
         const query = {
             workspace: workspaceId,
@@ -141,7 +142,7 @@ export class CommentService {
         const [comments, totalCount] = await Promise.all([
             this.commentModel.find(query)
                 .skip(skip)
-                .limit(pageSize)
+                .limit(limit)
                 .sort({ createdAt: -1 })
                 .populate({
                     path: "user",
@@ -152,15 +153,12 @@ export class CommentService {
             this.commentModel.countDocuments(query),
         ]);
 
-        const totalPages = Math.ceil(totalCount / pageSize);
-
         return {
             comments,
             pagination: {
-                pageSize,
-                pageNumber,
-                totalCount,
-                totalPages,
+                page,
+                limit,
+                totalCount
             },
         };
     }

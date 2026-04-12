@@ -32,6 +32,4 @@ commentRoutes.delete(
   commentController.deleteComment
 );
 
-
-
 export default commentRoutes;

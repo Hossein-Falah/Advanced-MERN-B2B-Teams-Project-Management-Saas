@@ -6,20 +6,20 @@ const workspaceRoutes = Router();
 const { workspaceController } = getContainer();
 
 workspaceRoutes.post("/create/new", workspaceController.createWorkspace);
-workspaceRoutes.put("/update/:id", workspaceController.updateWorkspaceById);
+workspaceRoutes.put("/update/:workspaceId", workspaceController.updateWorkspaceById);
 
 workspaceRoutes.put(
-  "/change/member/role/:id",
+  "/change/member/role/:workspaceId",
   workspaceController.changeWorkspaceMemberRole
 );
 
-workspaceRoutes.delete("/delete/:id", workspaceController.deleteWorkspaceById);
+workspaceRoutes.delete("/delete/:workspaceId", workspaceController.deleteWorkspaceById);
 
 workspaceRoutes.get("/all", workspaceController.getAllWorkspacesUserIsMember);
 
-workspaceRoutes.get("/members/:id", workspaceController.getWorkspaceMembers);
-workspaceRoutes.get("/analytics/:id", workspaceController.getWorkspaceAnalytics);
+workspaceRoutes.get("/members/:workspaceId", workspaceController.getWorkspaceMembers);
+workspaceRoutes.get("/analytics/:workspaceId", workspaceController.getWorkspaceAnalytics);
 
-workspaceRoutes.get("/:id", workspaceController.getWorkspaceById);
+workspaceRoutes.get("/:workspaceId", workspaceController.getWorkspaceById);
 
 export default workspaceRoutes;

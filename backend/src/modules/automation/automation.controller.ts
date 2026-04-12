@@ -1,6 +1,5 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AutomationService } from "./services/automation.service";
-import { workspaceIdSchema } from "../workspace/workspace.validation";
 import { automationValidatorSchema, updateAutomationValidatorSchema } from "./automation.validation";
 import { MemberService } from "../member/member.service";
 import { roleGuard } from "../../utils/roleGuard";
@@ -10,140 +9,164 @@ import { toObjectId } from "../../utils/convert-objectId.util";
 import { ResponseHandler } from "../../common/response/response-handler";
 import { HTTPSTATUS } from "../../config/http.config";
 import { MESSAGES } from "../../common/constants/message.constant";
-import { taskIdSchema } from "../task/task.validation";
+import { automationIdSchema, workspaceIdSchema } from "../../common/validator/common.validator";
+import { paginationQuerySchema } from "../../common/validator/pagination.validator";
+import { buildPaginationMeta } from "../../utils/pagination-meta";
 
 export class AutomationController {
     constructor(
+        private memberService: MemberService,
         private automationService: AutomationService,
-        private memberService: MemberService
     ) { }
 
-    async createAutomation(req: Request, res: Response) {
-        const userId = req.user?._id;
+    public createAutomation = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.user?._id;
 
-        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+            const workspaceID = workspaceIdSchema.parse(req.params.workspaceId);
 
-        const { taskId, type, daysOfWeek, timeOfDay } =
-            automationValidatorSchema.parse(req.body);
+            const { taskId, type, daysOfWeek, timeOfDay } =
+                automationValidatorSchema.parse(req.body);
 
-        const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceId);
+            const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID);   
+            roleGuard(role, [Permissions.CREATE_AUTOMATION]);
 
-        roleGuard(role, [Permissions.CREATE_AUTOMATION]);
+            const nextRunAt = await calculateNextRun(daysOfWeek, timeOfDay);
 
-        const nextRunAt = await calculateNextRun(daysOfWeek, timeOfDay);
+            const automation = await this.automationService.create({
+                taskId: toObjectId(taskId),
+                userId,
+                type,
+                daysOfWeek,
+                timeOfDay,
+                nextRunAt,
+                workspaceId: toObjectId(workspaceID),
+            });
 
-        const automation = await this.automationService.create({
-            taskId: toObjectId(taskId),
-            userId,
-            type,
-            daysOfWeek,
-            timeOfDay,
-            nextRunAt,
-            workspaceId: toObjectId(workspaceId),
-        });
-
-        return ResponseHandler.send(res, {
-            statusCode: HTTPSTATUS.OK,
-            code: MESSAGES.AUTOMATION.CREATED.code,
-            message: MESSAGES.AUTOMATION.CREATED.message,
-            data: automation,
-        });
+            return ResponseHandler.send(res, {
+                statusCode: HTTPSTATUS.OK,
+                code: MESSAGES.AUTOMATION.CREATED.code,
+                message: MESSAGES.AUTOMATION.CREATED.message,
+                data: { automation },
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 
-    async getAutomations(req: Request, res: Response) {
-        const userId = req.user?._id;
+    public getAutomations = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.user?._id;
 
-        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+            const { workspaceId } = req.params;
 
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
+            const paginationFilter = paginationQuerySchema.parse(req.query)
 
-        const automation = await this.automationService.getAutomations(
-            page,
-            limit,
-            toObjectId(workspaceId),
-            userId
-        );
+            const workspaceID = workspaceIdSchema.parse(workspaceId);
 
-        return ResponseHandler.send(res, {
-            statusCode: HTTPSTATUS.OK,
-            code: MESSAGES.AUTOMATION.FETCHED.code,
-            message: MESSAGES.AUTOMATION.FETCHED.message,
-            data: automation,
-        });
+            const { automations, pagination } = await this.automationService.getAutomations(
+                paginationFilter,
+                toObjectId(workspaceID),
+                userId,
+            );
+
+            return ResponseHandler.send(res, {
+                statusCode: HTTPSTATUS.OK,
+                code: MESSAGES.AUTOMATION.FETCHED.code,
+                message: MESSAGES.AUTOMATION.FETCHED.message,
+                data: { automations },
+                meta: buildPaginationMeta(pagination.page, pagination.limit, pagination.total)
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 
-    async getAutomation(req: Request, res: Response) {
-        const userId = req.user?._id;
+    public getAutomation = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.user?._id;
 
-        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+            const { workspaceId, automationId } = req.params;
 
-        const automationId = taskIdSchema.parse(req.params.automationId);
+            const workspaceID = workspaceIdSchema.parse(workspaceId);
+            const automationID = automationIdSchema.parse(automationId);
 
-        const automation = await this.automationService.getAutomationById(
-            toObjectId(automationId),
-            toObjectId(workspaceId),
-            userId
-        );
+            const automation = await this.automationService.getAutomationById(
+                toObjectId(automationID),
+                toObjectId(workspaceID),
+                userId
+            );
 
-        return ResponseHandler.send(res, {
-            statusCode: HTTPSTATUS.OK,
-            code: MESSAGES.AUTOMATION.FETCHED_ONE.code,
-            message: MESSAGES.AUTOMATION.FETCHED_ONE.message,
-            data: automation,
-        });
+            return ResponseHandler.send(res, {
+                statusCode: HTTPSTATUS.OK,
+                code: MESSAGES.AUTOMATION.FETCHED_ONE.code,
+                message: MESSAGES.AUTOMATION.FETCHED_ONE.message,
+                data: { automation },
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 
-    async updateAutomation(req: Request, res: Response) {
-        const userId = req.user?._id;
+    public updateAutomation = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.user?._id;
 
-        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+            const { workspaceId, automationId } = req.params;
 
-        const automationId = taskIdSchema.parse(req.params.automationId);
+            const workspaceID = workspaceIdSchema.parse(workspaceId);
+            const automationID = automationIdSchema.parse(automationId);
 
-        const body = updateAutomationValidatorSchema.parse(req.body);
+            const body = updateAutomationValidatorSchema.parse(req.body);
 
-        const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceId);
+            const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID);
 
-        roleGuard(role, [Permissions.EDIT_AUTOMATION]);
+            roleGuard(role, [Permissions.EDIT_AUTOMATION]);
 
-        const automation = await this.automationService.updateAutomation(
-            toObjectId(automationId),
-            body,
-            toObjectId(userId),
-            toObjectId(workspaceId)
-        );
+            const automation = await this.automationService.updateAutomation(
+                toObjectId(automationID),
+                body,
+                toObjectId(userId),
+                toObjectId(workspaceID)
+            );
 
-        return ResponseHandler.send(res, {
-            statusCode: HTTPSTATUS.OK,
-            code: MESSAGES.AUTOMATION.UPDATED.code,
-            message: MESSAGES.AUTOMATION.UPDATED.message,
-            data: automation,
-        });
+            return ResponseHandler.send(res, {
+                statusCode: HTTPSTATUS.OK,
+                code: MESSAGES.AUTOMATION.UPDATED.code,
+                message: MESSAGES.AUTOMATION.UPDATED.message,
+                data: { automation },
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 
-    async deleteAutomation(req: Request, res: Response) {
-        const userId = req.user?._id;
+    public deleteAutomation = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.user?._id;
 
-        const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
+            const { workspaceId, automationId } = req.params;
 
-        const automationId = taskIdSchema.parse(req.params.automationId);
+            const workspaceID = workspaceIdSchema.parse(workspaceId);
+            const automationID = automationIdSchema.parse(automationId);
 
-        const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceId);
+            const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID);
+            roleGuard(role, [Permissions.DELETE_AUTOMATION]);
 
-        roleGuard(role, [Permissions.DELETE_AUTOMATION]);
+            const automation = await this.automationService.deleteAutomation(
+                toObjectId(automationID),
+                toObjectId(workspaceID),
+                userId
+            );
 
-        await this.automationService.deleteAutomation(
-            toObjectId(automationId),
-            toObjectId(workspaceId),
-            userId
-        );
-
-        return ResponseHandler.send(res, {
-            statusCode: HTTPSTATUS.OK,
-            code: MESSAGES.AUTOMATION.DELETED.code,
-            message: MESSAGES.AUTOMATION.DELETED.message,
-            data: null,
-        });
+            return ResponseHandler.send(res, {
+                statusCode: HTTPSTATUS.OK,
+                code: MESSAGES.AUTOMATION.DELETED.code,
+                message: MESSAGES.AUTOMATION.DELETED.message,
+                data: { automation },
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 }

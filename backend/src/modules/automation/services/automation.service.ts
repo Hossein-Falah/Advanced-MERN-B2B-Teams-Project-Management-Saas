@@ -5,6 +5,7 @@ import { AutomationDocument } from "../automation.model";
 import { BadRequestException, NotFoundException } from "../../../common/errors/app-error";
 import { TaskService } from "../../task/task.service";
 import { MESSAGES } from "../../../common/constants/message.constant";
+import { PaginationFilter } from "../../../common/types/pagination.type";
 
 export class AutomationService {
     constructor(
@@ -60,10 +61,14 @@ export class AutomationService {
         await automation.save();
     };
 
-    public async getAutomations(page = 1, limit = 10, workspaceId: Types.ObjectId, userId: Types.ObjectId) {
+    public async getAutomations(
+        { page, limit }: PaginationFilter,
+        workspaceId: Types.ObjectId, 
+        userId: Types.ObjectId, 
+    ) {
         const skip = (page - 1) * limit;
 
-        const [data, total] = await Promise.all([
+        const [automations, total] = await Promise.all([
             this.automationModel.find({ workspaceId, userId })
                 .populate({ path: "taskId", select: "_id title description" })
                 .sort({ createdAt: -1 })
@@ -71,16 +76,15 @@ export class AutomationService {
                 .limit(limit)
                 .lean(),
 
-            this.automationModel.countDocuments()
+            this.automationModel.countDocuments({ workspaceId, userId })
         ]);
 
         return {
-            data,
+            automations,
             pagination: {
-                total,
                 page,
                 limit,
-                pages: Math.ceil(total / limit)
+                total
             }
         };
     }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { memberIdSchema, roleIdSchema } from "../../common/validator/common.validator";
 
 export const nameSchema = z
   .string()
@@ -8,14 +9,9 @@ export const nameSchema = z
 
 export const descriptionSchema = z.string().trim().optional();
 
-export const workspaceIdSchema = z
-  .string()
-  .trim()
-  .min(1, { message: "Workspace ID is required" });
-
 export const changeRoleSchema = z.object({
-  roleId: z.string().trim().min(1),
-  memberId: z.string().trim().min(1),
+  roleId: roleIdSchema,
+  memberId: memberIdSchema
 });
 
 export const createWorkspaceSchema = z.object({

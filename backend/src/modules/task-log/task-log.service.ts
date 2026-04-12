@@ -4,6 +4,7 @@ import { TaskLogDocument } from "./task-log.model";
 import { TaskLogCreateType } from "./types/task-log.type";
 import { MESSAGES } from "../../common/constants/message.constant";
 import { NotFoundException } from "../../common/errors/app-error";
+import { PaginationFilter } from "../../common/types/pagination.type";
 
 export class TaskLogService {
     constructor(
@@ -76,7 +77,7 @@ export class TaskLogService {
         return updatedTask;
     }
 
-    async getTaskLogs(taskId: string, page = 1, limit = 20) {
+    async getTaskLogs({ page, limit }: PaginationFilter, taskId: string) {
         const skip = (page - 1) * limit;
 
         const logs = await this.taskLogModel.find({ task: taskId })
@@ -90,9 +91,9 @@ export class TaskLogService {
         return {
             logs,
             pagination: {
-                total,
                 page,
                 limit,
+                total
             },
         };
     }

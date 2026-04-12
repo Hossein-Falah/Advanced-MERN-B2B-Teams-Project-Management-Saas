@@ -13,7 +13,7 @@ export class MemberService {
     private roleModel: Model<RoleDocument>
   ) { }
 
-  public async getMemberRoleInWorkspace(userId: string, workspaceId: string) {
+  public async getMemberRoleInWorkspace(userId: string, workspaceId: string) {    
     const workspace = await this.workspaceModel.findById(workspaceId);
     if (!workspace) {
       throw new NotFoundException(

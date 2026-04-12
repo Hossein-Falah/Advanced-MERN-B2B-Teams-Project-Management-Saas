@@ -29,8 +29,3 @@ export interface TaskFilters {
     keyword?: string;
     dueDate?: Date | string;
 }
-
-export interface TaskPagination {
-    page: number;
-    limit: number;
-}

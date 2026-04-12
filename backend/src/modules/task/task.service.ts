@@ -1,5 +1,5 @@
 import { Model, Types } from "mongoose";
-import { CreateTaskInput, TaskPagination, UpdateTaskInput } from "./interface/task.interface";
+import { CreateTaskInput, UpdateTaskInput } from "./interface/task.interface";
 import { ProjectDocument } from "../project/project.model";
 import { MemberDocument } from "../member/member.model";
 import { TaskDocument } from "./task.model";
@@ -15,6 +15,9 @@ import { toObjectId } from "../../utils/convert-objectId.util";
 import { NotificationType, NotificationTypeEnum } from "../../common/enums/notification.enum";
 import { NotificationService } from "../notification/notification.service";
 import { TaskLogService } from "../task-log/task-log.service";
+import { CommentDocument } from "../comment/comment.model";
+import { PaginationFilter } from "../../common/types/pagination.type";
+import { AutomationDocument } from "../automation/automation.model";
 
 export class TaskService {
   constructor(
@@ -22,6 +25,8 @@ export class TaskService {
     private memberModel: Model<MemberDocument>,
     private taskModel: Model<TaskDocument>,
     private taskLogModel: Model<TaskLogDocument>,
+    private commentModel: Model<CommentDocument>,
+    private automationModel: Model<AutomationDocument>,
     private notificationService: NotificationService,
     private taskLogService: TaskLogService
   ) {};
@@ -196,13 +201,13 @@ export class TaskService {
       });
     }
 
-    return { updatedTask };
+    return { task: updatedTask };
   }
 
   public async getAllTasks(
     workspaceId: string,
     filters: TaskFilters,
-    pagination: TaskPagination
+    pagination: PaginationFilter
   ) {
     const query: any = {
       workspace: workspaceId,
@@ -274,14 +279,24 @@ export class TaskService {
       _id: taskId,
       workspace: workspaceId,
     });
-
-    if (task?.attachment) await deleteFile(task.attachment);
-
+    
     if (!task) {
       throw new NotFoundException(
         MESSAGES.TASK.TASK_NOT_IN_WORKSPACE.message
       );
     }
+
+    await this.commentModel.deleteMany({ 
+      task: taskId, 
+      workspace: workspaceId, 
+      user: userId
+    });
+
+    await this.automationModel.deleteMany({
+      taskId: task,
+      workspaceId: workspaceId,
+      userId: userId
+    });
 
     await this.taskLogModel.create({
       task: task._id,
@@ -291,7 +306,7 @@ export class TaskService {
       changes: [],
     });
 
-    return;
+    return task;
   }
 
   public async undoTask(taskId: Types.ObjectId, logId: Types.ObjectId) {
@@ -309,12 +324,12 @@ export class TaskService {
       update[change.field] = change.oldValue;
     });
 
-    await this.taskModel.findByIdAndUpdate(taskId, { $set: update });
+    const task = await this.taskModel.findByIdAndUpdate(taskId, { $set: update });
 
     log.isUndone = true;
     await log.save();
 
-    return { success: true };
+    return { task };
   }
 
   public async redoTask(taskId: Types.ObjectId, logId: Types.ObjectId) {
@@ -332,12 +347,12 @@ export class TaskService {
       update[change.field] = change.newValue;
     });
 
-    await this.taskModel.findByIdAndUpdate(taskId, { $set: update });
+    const task = await this.taskModel.findByIdAndUpdate(taskId, { $set: update });
 
     log.isUndone = false;
     await log.save();
 
-    return { success: true };
+    return { task };
   }
 
   public async getTaskByObjectId(id: Types.ObjectId) {

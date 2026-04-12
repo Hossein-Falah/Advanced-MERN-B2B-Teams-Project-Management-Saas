@@ -1,7 +1,8 @@
 import { Model } from "mongoose";
 
-import { NotificationDocument } from "./notification.model";
 import { io } from "../../socket";
+import { NotificationDocument } from "./notification.model";
+import { PaginationFilter } from "../../common/types/pagination.type";
 
 export class NotificationService {
     constructor(
@@ -40,7 +41,7 @@ export class NotificationService {
         return notification;
     }
 
-    public async getAllNotifications(userId: string, page: number = 1, limit: number = 20) {
+    public async getAllNotifications({ page, limit }: PaginationFilter, userId: string) {
         const skip = (page - 1) * limit;
 
         const notifications = await this.notificationModel
@@ -64,8 +65,7 @@ export class NotificationService {
             pagination: {
                 total,
                 page,
-                limit,
-                pages: Math.ceil(total / limit),
+                limit
             },
         };
     }
