@@ -34,6 +34,7 @@ export class TaskLogService {
             "priority",
             "assignedTo",
             "attachment",
+            "startDate",
             "dueDate",
         ];
 
