@@ -10,7 +10,7 @@ export class NotificationService {
     ) {}
 
     public async create(data: Partial<NotificationDocument>) {
-        let notification = await this.notificationModel.create(data);
+        let notification = await this.notificationModel.create(data);        
 
         notification = await notification.populate([
             { path: "sender", select: "id name email username profilePicture -password" },
@@ -24,6 +24,8 @@ export class NotificationService {
                 sender: notification.sender,
                 task: notification.task,
                 comment: notification.comment,
+                workspace: notification.workspace,
+                read: notification.read,
                 createdAt: notification.createdAt
             });
         }
