@@ -3,6 +3,8 @@ import { Model } from "mongoose";
 import { io } from "../../socket";
 import { NotificationDocument } from "./notification.model";
 import { PaginationFilter } from "../../common/types/pagination.type";
+import { NotFoundException } from "../../common/errors/app-error";
+import { MESSAGES } from "../../common/constants/message.constant";
 
 export class NotificationService {
     constructor(
@@ -77,5 +79,25 @@ export class NotificationService {
             { receiver: userId, read: false },
             { read: true }
         );
+    }
+
+    public async removeNotification(userId: string, taskId: string) {
+        const notification = await this.checkExistNotificationByTaskId(taskId);
+
+        const { deletedCount, acknowledged } = await this.notificationModel.deleteOne({ task: taskId, receiver: userId });
+        
+        if (io && deletedCount > 0 && acknowledged) {
+            
+            io.to(`user:${notification?.receiver}`).emit("notification:deleted", { 
+                taskId,
+                notificationId: notification?._id
+            })
+        }
+    }
+
+    private async checkExistNotificationByTaskId(taskId: string): Promise<NotificationDocument | null> {
+        const notification = await this.notificationModel.findOne({ task: taskId });
+        if (!notification) throw new NotFoundException(MESSAGES.NOTIFICATION.NOT_FOUND.message);
+        return notification;
     }
 }

@@ -338,6 +338,10 @@ export const MESSAGES = {
             code: "NOTIFICATIONS_READ_ALL",
             message: "All notifications marked as read",
         },
+        NOT_FOUND: {
+            code: "NOTIFICATION_NOT_FOUND",
+            message: "Notification remove successfully"
+        }
     },
     TASK_LOG: {
         FETCHED: {

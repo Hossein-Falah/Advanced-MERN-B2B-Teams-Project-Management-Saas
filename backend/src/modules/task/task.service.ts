@@ -298,6 +298,8 @@ export class TaskService {
       userId: userId
     });
 
+    await this.notificationService.removeNotification(userId, taskId);
+
     await this.taskLogModel.create({
       task: task._id,
       workspace: workspaceId,

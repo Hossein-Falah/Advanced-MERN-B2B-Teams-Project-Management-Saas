@@ -1,7 +1,8 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import { NotificationType, NotificationTypeEnum } from "../../common/enums/notification.enum";
 
 export interface NotificationDocument extends Document {
+    _id: Types.ObjectId,
     type: NotificationType;
     receiver: mongoose.Types.ObjectId;
     sender: mongoose.Types.ObjectId;
