@@ -49,7 +49,7 @@ export class AnalyticsService {
             completedTasks,
             inProgressTasks
         ] = await Promise.all([
-            this.analyticsRepository.getCreatedStats(filter, treandRange),
+            this.analyticsRepository.getTodayTasksStats(filter, treandRange),
             this.analyticsRepository.getOverdueStats(filter, treandRange),
             this.analyticsRepository.getCompletedStats(filter, treandRange),
             this.analyticsRepository.getInProgressStats(filter)

@@ -1,11 +1,23 @@
 import { FilterQuery, Model } from "mongoose";
 import { TaskStatusEnum } from "../../common/enums/task.enum";
-import { calculateTrendFromChart } from "./helper/analytics.helper";
 import { toObjectId } from "../../utils/convert-objectId.util";
 import { TaskDocument } from "../task/task.model";
+import { calculateTrendFromChart } from "./helper/analytics.helper";
 
 export class AnalyticsRepository {
     constructor(private taskModel: Model<TaskDocument>) { }
+  
+    private getDateRanges(days: number) {
+        const now = new Date();
+
+        const startOfToday = new Date(now);
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const pastRangeStart = new Date(startOfToday);
+        pastRangeStart.setDate(pastRangeStart.getDate() - days);
+
+        return { now, startOfToday, pastRangeStart };
+    }
 
     private async getStats(
         filter: FilterQuery<TaskDocument>,
@@ -14,60 +26,60 @@ export class AnalyticsRepository {
     ) {
         const { startOfToday, pastRangeStart } = this.getDateRanges(trendRange);
 
-        const [stats, chart] = await Promise.all([
-            this.taskModel.aggregate([
-                {
-                    $match: {
-                        ...filter,
-                        [dateField]: {
-                            $gte: pastRangeStart,
-                            $lt: new Date()
-                        }
+        const totalPromise = this.taskModel.countDocuments(filter);
+
+        const statsPromise = this.taskModel.aggregate([
+            {
+                $match: {
+                    ...filter,
+                    [dateField]: {
+                        $gte: pastRangeStart,
+                        $lt: new Date()
                     }
-                },
-                {
-                    $group: {
-                        _id: null,
-
-                        total: { $sum: 1 },
-
-                        today: {
-                            $sum: {
-                                $cond: [
-                                    { $gte: [`$${dateField}`, startOfToday] },
-                                    1,
-                                    0
-                                ]
-                            }
-                        },
-
-                        pastRange: {
-                            $sum: {
-                                $cond: [
-                                    { $lt: [`$${dateField}`, startOfToday] },
-                                    1,
-                                    0
-                                ]
-                            }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    today: {
+                        $sum: {
+                            $cond: [
+                                { $gte: [`$${dateField}`, startOfToday] },
+                                1,
+                                0
+                            ]
                         }
                     }
                 }
-            ]),
-            this.getDailyChart(filter, trendRange, dateField)
+            }
         ]);
 
-        const result = stats[0] || { today: 0, total: 0, pastRange: 0 };
+        const chartPromise = this.getDailyChart(
+            filter,
+            trendRange,
+            dateField
+        );
+
+        const [stats, chart, total] = await Promise.all([
+            statsPromise,
+            chartPromise,
+            totalPromise
+        ]);
+
+        const today = chart.length ? chart[chart.length - 1] : 0;
+        const trend = calculateTrendFromChart(chart, trendRange);
 
         return {
-            value: result.today,
-            total: result.total,
-            trend: calculateTrendFromChart(chart),
+            value: stats[0]?.today ?? 0,
+            total,
+            trend,
             chartData: chart
         };
     }
 
-    async getCreatedStats(filter: FilterQuery<TaskDocument>, trendRange: number) {
-        return this.getStats(filter, "createdAt", trendRange);
+
+    async getTodayTasksStats(filter: FilterQuery<TaskDocument>, trendRange: number) {
+        return this.getStats(filter, "startDate", trendRange);
     }
 
     async getCompletedStats(filter: FilterQuery<TaskDocument>, trendRange: number) {
@@ -79,21 +91,6 @@ export class AnalyticsRepository {
             "updatedAt",
             trendRange
         );
-    }
-
-    async getInProgressStats(filter: FilterQuery<TaskDocument>) {
-        const value = await this.taskModel.countDocuments({
-            ...filter,
-            status: {
-                $in: [TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.IN_REVIEW]
-            }
-        });
-
-        return {
-            value,
-            trend: 0,
-            chartData: []
-        };
     }
 
     async getOverdueStats(filter: FilterQuery<TaskDocument>, trendRange: number) {
@@ -110,13 +107,26 @@ export class AnalyticsRepository {
         );
     }
 
-    async getDailyChart(filter: FilterQuery<TaskDocument>, trendRange: number, dateField: string) {
-        const now = new Date();
+    async getInProgressStats(filter: FilterQuery<TaskDocument>) {
+        const value = await this.taskModel.countDocuments({
+            ...filter,
+            status: {
+                $in: [TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.IN_REVIEW]
+            }
+        });
 
+        return { value, trend: 0, chartData: [] };
+    }
+  
+    async getDailyChart(
+        filter: FilterQuery<TaskDocument>,
+        trendRange: number,
+        dateField: string
+    ) {
+        const now = new Date();
         const start = new Date(now);
         start.setDate(start.getDate() - trendRange);
         start.setHours(0, 0, 0, 0);
-
 
         const data = await this.taskModel.aggregate([
             {
@@ -138,30 +148,17 @@ export class AnalyticsRepository {
             }
         ]);
 
-        const map = new Map(data.map(d => [d._id, d.count]));
-
+        const map = new Map(data.map(i => [i._id, i.count]));
         const result: number[] = [];
 
         for (let i = trendRange - 1; i >= 0; i--) {
-            const date = new Date(Date.now() - i * 86400000)
+            const d = new Date(now.getTime() - i * 86400000)
                 .toISOString()
                 .slice(0, 10);
-
-            result.push(map.get(date) || 0);
+            result.push(map.get(d) ?? 0);
         }
 
         return result;
-    }
-
-    private getDateRanges(trendRange: number) {
-        const now = new Date();
-
-        const startOfToday = new Date(now);
-        startOfToday.setHours(0, 0, 0, 0);
-
-        const pastRangeStart = new Date(startOfToday.getTime() - trendRange * 86400000);
-
-        return { now, startOfToday, pastRangeStart };
     }
 
     public async getUserDailyActivityAgg(
