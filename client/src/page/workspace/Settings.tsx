@@ -4,16 +4,20 @@ import EditWorkspaceForm from '@/components/workspace/edit-workspace-form'
 import DeleteWorkspaceCard from '@/components/workspace/settings/delete-workspace-card'
 import { Permissions } from '@/constant'
 import withPermission from '@/hoc/with-permission'
+import { useTranslation } from 'react-i18next'
 
 const Settings = () => {
+  const { t } = useTranslation()
+
   return (
-    <div className='w-full h-auto py-2'>
+    <div className='w-full h-auto py-2' dir='rtl'>
       <WorkspaceHeader />
       <Separator className='my-4 ' />
+
       <main>
         <div className='w-full max-w-3xl mx-auto py-3'>
           <h2 className='text-[20px] leading-[30px] font-semibold mb-3'>
-            تنظیمات فضای کار
+            {t('workspaces.editWorkspace.mainPage.title')}
           </h2>
 
           <div className='flex flex-col pt-0.5 px-0 '>

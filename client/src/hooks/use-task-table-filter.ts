@@ -3,8 +3,8 @@ import {
   TaskPriorityEnumType,
   TaskStatusEnum,
   TaskStatusEnumType,
-} from "@/constant";
-import { parseAsString, parseAsStringEnum, useQueryStates } from "nuqs";
+} from '@/constant/task'
+import { parseAsString, parseAsStringEnum, useQueryStates } from 'nuqs'
 
 const useTaskTableFilter = () => {
   return useQueryStates({
@@ -17,7 +17,7 @@ const useTaskTableFilter = () => {
     keyword: parseAsString,
     projectId: parseAsString,
     assigneeId: parseAsString,
-  });
-};
+  })
+}
 
-export default useTaskTableFilter;
+export default useTaskTableFilter

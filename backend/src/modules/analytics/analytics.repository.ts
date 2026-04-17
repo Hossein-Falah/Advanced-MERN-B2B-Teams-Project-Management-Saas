@@ -6,7 +6,7 @@ import { calculateTrendFromChart } from "./helper/analytics.helper";
 
 export class AnalyticsRepository {
     constructor(private taskModel: Model<TaskDocument>) { }
-  
+
     private getDateRanges(days: number) {
         const now = new Date();
 
@@ -117,7 +117,7 @@ export class AnalyticsRepository {
 
         return { value, trend: 0, chartData: [] };
     }
-  
+
     async getDailyChart(
         filter: FilterQuery<TaskDocument>,
         trendRange: number,
@@ -262,5 +262,145 @@ export class AnalyticsRepository {
                 $sort: { hour: 1 }
             }
         ]);
+    }
+
+    async getTasksCreatedDaily(
+        workspaceId: string,
+        startDate: Date,
+        endDate: Date,
+        projectId?: string
+    ) {        
+        const match: FilterQuery<TaskDocument> = {
+            workspace: toObjectId(workspaceId),
+            createdAt: { $gte: startDate, $lte: endDate },
+            ...(projectId && { project: toObjectId(projectId) })
+        };        
+
+        return this.taskModel.aggregate([
+            { $match: match },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } },
+            { $project: { date: "$_id", count: 1, _id: 0 } }
+        ]);
+    }
+
+    async getTasksCompletedDaily(
+        workspaceId: string,
+        startDate: Date,
+        endDate: Date,
+        projectId?: string
+    ): Promise<{ date: string; count: number }[]> {
+        const match: FilterQuery<TaskDocument> = {
+            workspace: toObjectId(workspaceId),
+            status: TaskStatusEnum.DONE,
+            updatedAt: { $gte: startDate, $lte: endDate },
+            ...(projectId && { project: toObjectId(projectId) })
+        };
+        
+        const aggregation = await this.taskModel.aggregate([
+            { $match: match },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+                    count: { $sum: 1 },
+                },
+            },
+            { $sort: { _id: 1 } },
+            { $project: { date: "$_id", count: 1, _id: 0 } },
+        ]);
+        return aggregation;
+    }
+
+
+    async getProjectsProgress(workspaceId: string): Promise<any[]> {
+        const aggregation = await this.taskModel.aggregate([
+            { $match: { workspace: toObjectId(workspaceId) } },
+            {
+                $group: {
+                    _id: "$project",
+                    total_tasks: { $sum: 1 },
+                    completed_tasks: {
+                        $sum: { $cond: [{ $eq: ["$status", TaskStatusEnum.DONE] }, 1, 0] },
+                    },
+                },
+            },
+            {
+                $lookup: {
+                    from: "projects",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "projectInfo",
+                },
+            },
+            { $unwind: { path: "$projectInfo", preserveNullAndEmptyArrays: false } },
+            {
+                $project: {
+                    project_id: "$_id",
+                    project_name: "$projectInfo.name",
+                    total_tasks: 1,
+                    completed_tasks: 1,
+                    progress_percent: {
+                        $round: [
+                            {
+                                $cond: [
+                                    { $eq: ["$total_tasks", 0] },
+                                    0,
+                                    { $multiply: [{ $divide: ["$completed_tasks", "$total_tasks"] }, 100] }
+                                ]
+                            },
+                            2
+                        ]
+                    },
+                },
+            },
+            { $sort: { project_name: 1 } },
+        ]);
+        return aggregation;
+    }
+
+    async getUsersAssignedCount(
+        workspaceId: string,
+        startDate: Date,
+        endDate: Date
+    ): Promise<any[]> {
+        const aggregation = await this.taskModel.aggregate([
+            {
+                $match: {
+                    workspace: toObjectId(workspaceId),
+                    assignedTo: { $ne: null },
+                    createdAt: { $gte: startDate, $lte: endDate },
+                },
+            },
+            {
+                $group: {
+                    _id: "$assignedTo",
+                    assigned_count: { $sum: 1 },
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "userInfo",
+                },
+            },
+            { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: false } },
+            {
+                $project: {
+                    user_id: "$_id",
+                    user_name: "$userInfo.name",
+                    assigned_count: 1,
+                    _id: 0,
+                },
+            },
+            { $sort: { assigned_count: -1 } },
+        ]);
+        return aggregation;
     }
 }

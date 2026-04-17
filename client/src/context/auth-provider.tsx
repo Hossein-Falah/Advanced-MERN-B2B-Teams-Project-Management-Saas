@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     isFetching,
     refetch: refetchAuth,
   } = useAuth()
-  const user = authData?.user
+  const user = authData?.data?.user
 
   const {
     data: workspaceData,
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     refetch: refetchWorkspace,
   } = useGetWorkspaceQuery(workspaceId)
 
-  const workspace = workspaceData?.workspace
+  const workspace = workspaceData?.data?.workspace
 
   useEffect(() => {
     if (workspaceError) {

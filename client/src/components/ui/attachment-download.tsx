@@ -1,15 +1,18 @@
 // attachment-download.tsx
 import { Download, Paperclip } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type AttachmentDownloadProps = {
   url?: string
-  label?: string
+  labelKey?: string // کلید ترجمه برای لیبل
 }
 
 const AttachmentDownload = ({
   url,
-  label = 'دانلود فایل پیوست',
+  labelKey = 'attachmentDownload.label',
 }: AttachmentDownloadProps) => {
+  const { t } = useTranslation()
+
   if (!url) return null
 
   return (
@@ -21,12 +24,12 @@ const AttachmentDownload = ({
     >
       <div className='flex items-center gap-2 min-w-0'>
         <Paperclip className='h-4 w-4 shrink-0 text-muted-foreground' />
-        <span className='truncate'>{label}</span>
+        <span className='truncate'>{t(labelKey)}</span>
       </div>
 
       <div className='flex items-center gap-1 text-primary shrink-0'>
         <Download className='h-4 w-4' />
-        <span className='text-xs'>دانلود</span>
+        <span className='text-xs'>{t('attachmentDownload.button')}</span>
       </div>
     </a>
   )

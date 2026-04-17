@@ -9,8 +9,11 @@ import useWorkspaceId from '@/hooks/use-workspace-id'
 import { deleteWorkspaceMutationFn } from '@/lib/api/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const DeleteWorkspaceCard = () => {
+  const { t } = useTranslation()
+
   const { workspace } = useAuthContext()
   const navigate = useNavigate()
 
@@ -29,27 +32,31 @@ const DeleteWorkspaceCard = () => {
         queryClient.invalidateQueries({
           queryKey: ['userWorkspaces'],
         })
+        toast({
+          title: t('workspaces.deleteWorkspace.toast.successTitle'),
+          description: t('workspaces.deleteWorkspace.toast.successDescription'),
+          variant: 'success',
+        })
         navigate(`/workspace/${data.currentWorkspace}`)
+
         setTimeout(() => onCloseDialog(), 100)
       },
-      onError: (error) => {
+      onError: () => {
         toast({
-          title: 'خطا',
-          description: error.message,
+          title: t('workspaces.deleteWorkspace.toast.errorTitle'),
+          description: t('workspaces.deleteWorkspace.toast.errorDescription'),
           variant: 'destructive',
         })
       },
     })
   }
+
   return (
     <>
       <div className='w-full' dir='rtl'>
         <div className='mb-5 border-b'>
-          <h1
-            className='text-[17px] tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5
-           text-center sm:text-right'
-          >
-            حذف فضای کاری
+          <h1 className='text-[17px] tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5 text-center sm:text-right'>
+            {t('workspaces.deleteWorkspace.title')}
           </h1>
         </div>
 
@@ -59,19 +66,15 @@ const DeleteWorkspaceCard = () => {
         >
           <div className='flex flex-col items-start justify-between py-0'>
             <div className='flex-1 mb-2'>
-              <p>
-                حذف یک فضای کاری یک اقدام دائمی است و قابل بازگشت نیست. پس از
-                حذف فضای کاری، تمام داده‌های مرتبط با آن، از جمله پروژه‌ها،
-                وظیفه ‌ها و نقش‌های اعضا، برای همیشه پاک خواهند شد. لطفاً با
-                احتیاط عمل کنید و از انجام عمدی این کار مطمئن شوید.
-              </p>
+              <p>{t('workspaces.deleteWorkspace.description')}</p>
             </div>
+
             <Button
               className='shrink-0 flex place-self-end h-[40px]'
               variant='destructive'
               onClick={onOpenDialog}
             >
-              حذف فضای کاری
+              {t('workspaces.deleteWorkspace.deleteButton')}
             </Button>
           </div>
         </PermissionsGuard>
@@ -82,10 +85,12 @@ const DeleteWorkspaceCard = () => {
         isLoading={isPending}
         onClose={onCloseDialog}
         onConfirm={handleConfirm}
-        title={`حذف فضای کاری ${workspace?.name}`}
-        description={`آیا از حذف این فضای کاری مطمئن هستید؟ این عمل قابل بازگشت نیست.`}
-        confirmText='حذف'
-        cancelText='انصراف'
+        title={t('workspaces.deleteWorkspace.confirm.title', {
+          name: workspace?.name,
+        })}
+        description={t('workspaces.deleteWorkspace.confirm.description')}
+        confirmText={t('workspaces.deleteWorkspace.confirm.confirmText')}
+        cancelText={t('workspaces.deleteWorkspace.confirm.cancelText')}
       />
     </>
   )

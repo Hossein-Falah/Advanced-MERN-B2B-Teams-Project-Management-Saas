@@ -1,25 +1,39 @@
-import {
-  PermissionType,
-  TaskPriorityEnumType,
-  TaskStatusEnumType,
-} from '@/constant'
+import { PermissionType } from '@/constant'
+import { TaskPriorityEnumType, TaskStatusEnumType } from '@/constant/task'
 
-export type loginType = { email: string; password: string }
-export type LoginResponseType = {
-  message: string
-  user: {
-    _id: string
-    currentWorkspace: string
-  }
+// ************* BASE RESPONSE ********************
+export type PaginationType = {
+  total: number
+  page: number
+  totalPages: number
+  skip: number
+  limit: number
 }
+
+export type ResponseType<T = unknown> = {
+  success: boolean
+  code: string
+  statusCode: string
+  message?: string
+  data?: T
+  meta?: PaginationType
+}
+
+// ************* AUTH ********************
+export type loginType = { email: string; password: string }
+
+export type LoginResponseType = ResponseType<{
+  user: { _id: string; currentWorkspace: string }
+}>
 
 export type registerType = {
   name: string
   email: string
   password: string
+  phone: string
 }
 
-// USER TYPE
+// ************* USER ********************
 export type WorkScheduleType = {
   workingDays: number[]
   startHour: number
@@ -56,8 +70,8 @@ export type UserType = {
   profilePicture: string | null
   isActive: boolean
   lastLogin: string | null
-  createdAt: string // یا Date، بسته به جواب API؛ اگر API استرینگ می‌فرستد بهتره string باشه
-  updatedAt: string // همین‌طور این
+  createdAt: string
+  updatedAt: string
 
   currentWorkspace: {
     _id: string
@@ -66,19 +80,17 @@ export type UserType = {
     inviteCode: string
   }
 
-  // فیلدهای جدید
   region?: string
   workSchedule?: WorkScheduleType
   notifConditions?: NotifConditionsType
   smsConditions?: SmsConditionsType
 }
 
-export type CurrentUserResponseType = {
-  message: string
+export type CurrentUserResponseType = ResponseType<{
   user: UserType
-}
+}>
 
-//******** */ WORLSPACE TYPES ****************
+//******** */ WORKSPACE TYPES ****************
 // ******************************************
 export type WorkspaceType = {
   _id: string
@@ -101,15 +113,13 @@ export type EditWorkspaceType = {
   }
 }
 
-export type CreateWorkspaceResponseType = {
-  message: string
+export type CreateWorkspaceResponseType = ResponseType<{
   workspace: WorkspaceType
-}
+}>
 
-export type AllWorkspaceResponseType = {
-  message: string
+export type AllWorkspaceResponseType = ResponseType<{
   workspaces: WorkspaceType[]
-}
+}>
 
 export type WorkspaceWithMembersType = WorkspaceType & {
   members: {
@@ -126,10 +136,9 @@ export type WorkspaceWithMembersType = WorkspaceType & {
   }[]
 }
 
-export type WorkspaceByIdResponseType = {
-  message: string
+export type WorkspaceByIdResponseType = ResponseType<{
   workspace: WorkspaceWithMembersType
-}
+}>
 
 export type ChangeWorkspaceMemberRoleType = {
   workspaceId: string
@@ -139,8 +148,12 @@ export type ChangeWorkspaceMemberRoleType = {
   }
 }
 
-export type AllMembersInWorkspaceResponseType = {
-  message: string
+export type RoleType = {
+  _id: string
+  name: string
+}
+
+export type AllMembersInWorkspaceResponseType = ResponseType<{
   members: {
     _id: string
     userId: UserType
@@ -153,31 +166,15 @@ export type AllMembersInWorkspaceResponseType = {
     createdAt: string
   }[]
   roles: RoleType[]
-}
+}>
 
-export type AnalyticsResponseType = {
-  message: string
+export type AnalyticsResponseType = ResponseType<{
   analytics: {
     totalTasks: number
     overdueTasks: number
     completedTasks: number
   }
-}
-
-export type PaginationType = {
-  totalCount: number
-  pageSize: number
-  pageNumber: number
-  totalPages: number
-  skip: number
-  limit: number
-}
-
-export type RoleType = {
-  _id: string
-  name: string
-}
-// *********** MEMBER ****************
+}>
 
 //******** */ PROJECT TYPES ****************
 //****************************************** */
@@ -206,10 +203,9 @@ export type CreateProjectPayloadType = {
   }
 }
 
-export type ProjectResponseType = {
-  message: 'Project created successfully'
+export type ProjectResponseType = ResponseType<{
   project: ProjectType
-}
+}>
 
 export type EditProjectPayloadType = {
   workspaceId: string
@@ -230,11 +226,9 @@ export type AllProjectPayloadType = {
   skip?: boolean
 }
 
-export type AllProjectResponseType = {
-  message: string
+export type AllProjectResponseType = ResponseType<{
   projects: ProjectType[]
-  pagination: PaginationType
-}
+}>
 
 // SINGLE PROJECT IN WORKSPACE TYPE
 export type ProjectByIdPayloadType = {
@@ -250,7 +244,6 @@ export type CreateTaskPayloadType = {
   data: FormData
 }
 
-//added new for edtiting of task
 export type EditTaskPayloadType = {
   taskId: string
   workspaceId: string
@@ -294,11 +287,9 @@ export type AllTaskPayloadType = {
   pageSize?: number | null
 }
 
-export type AllTaskResponseType = {
-  message: string
+export type AllTaskResponseType = ResponseType<{
   tasks: TaskType[]
-  pagination: PaginationType
-}
+}>
 
 export type CommentType = {
   _id: string
@@ -312,18 +303,16 @@ export type CommentType = {
   updatedAt: string
   __v: number
 }
-export type AllCommentResponseType = {
-  message: string
-  comments: {
-    comments: CommentType[]
-    pagination: PaginationType
-  }
-}
+
+export type AllCommentResponseType = ResponseType<{
+  comments: CommentType[]
+}>
 
 export type GetAllCommentParamsType = {
   taskId: string
   workspaceId: string
 }
+
 export type CreateCommentParamsType = {
   taskId: string
   workspaceId: string

@@ -10,6 +10,7 @@ export const AUTH_ROUTES = {
 
 export const PROTECTED_ROUTES = {
   WORKSPACE: '/workspace/:workspaceId',
+  ANALYTICS: '/workspace/:workspaceId/analytics',
   TASKS: '/workspace/:workspaceId/tasks',
   AUTOMATIONS: '/workspace/:workspaceId/automations',
   MEMBERS: '/workspace/:workspaceId/members',

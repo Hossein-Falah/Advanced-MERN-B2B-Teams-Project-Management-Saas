@@ -13,6 +13,7 @@ import { logoutMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const LogoutDialog = (props: {
   isOpen: boolean
@@ -20,6 +21,7 @@ const LogoutDialog = (props: {
 }) => {
   const { isOpen, setIsOpen } = props
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const queryClient = useQueryClient()
 
@@ -32,44 +34,47 @@ const LogoutDialog = (props: {
       navigate('/')
       setIsOpen(false)
     },
-    onError: (error) => {
+    onError: () => {
       toast({
-        title: 'خطا',
-        description: error.message,
+        title: t('sidebar.sidebar.logoutDialog.errorTitle'),
+        description: t('sidebar.sidebar.logoutDialog.errorMessage'),
         variant: 'destructive',
       })
     },
   })
 
-  // Handle logout action
   const handleLogout = useCallback(() => {
     if (isPending) return
     mutate()
   }, [isPending, mutate])
 
   return (
-    <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>آیا مطمئن هستید می‌خواهید خارج شوید؟</DialogTitle>
-            <DialogDescription>
-              با این کار نشست فعلی شما پایان می‌یابد و برای دسترسی دوباره باید
-              دوباره وارد شوید.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button disabled={isPending} type='button' onClick={handleLogout}>
-              {isPending && <Loader className='animate-spin' />}
-              خروج از حساب
-            </Button>
-            <Button type='button' onClick={() => setIsOpen(false)}>
-              انصراف
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('sidebar.logoutDialog.title')}</DialogTitle>
+          <DialogDescription>
+            {t('sidebar.logoutDialog.description')}
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className=' gap-2'>
+          <Button
+            className='bg-red-600 hover:bg-red-500'
+            disabled={isPending}
+            type='button'
+            onClick={handleLogout}
+          >
+            {isPending && <Loader className='animate-spin' />}
+            {t('sidebar.logoutDialog.confirm')}
+          </Button>
+
+          <Button type='button' onClick={() => setIsOpen(false)}>
+            {t('sidebar.logoutDialog.cancel')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

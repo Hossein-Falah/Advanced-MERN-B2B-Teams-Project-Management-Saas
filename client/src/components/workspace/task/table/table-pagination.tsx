@@ -15,6 +15,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+// i18n
+import { useTranslation } from 'react-i18next'
+
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
   pageNumber: number
@@ -32,8 +35,9 @@ export function DataTablePagination<TData>({
   onPageChange,
   onPageSizeChange,
 }: DataTablePaginationProps<TData>) {
+  const { t } = useTranslation()
+
   const pageIndex = table.getState().pagination.pageIndex
-  //const pageSize = table.getState().pagination.pageSize;
   const pageCount = Math.ceil(totalCount / pageSize)
 
   const handlePageSizeChange = (size: number) => {
@@ -46,7 +50,7 @@ export function DataTablePagination<TData>({
     onPageChange?.(index + 1)
   }
 
-  const start = (pageNumber - 1) * pageSize + 1
+  const start = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1
   const end = Math.min(pageNumber * pageSize, totalCount)
 
   return (
@@ -56,12 +60,19 @@ export function DataTablePagination<TData>({
     >
       {/* نمایش X تا Y از Z ردیف */}
       <div className='flex-1 text-sm text-muted-foreground'>
-        نمایش {start} تا {end} از {totalCount}
+        {t('tasks.table.pagination.range', {
+          start,
+          end,
+          total: totalCount,
+        })}
       </div>
+
       <div className='flex flex-col lg:flex-row lg:items-center space-y-2 lg:space-x-8 lg:space-y-0 rtl:space-x-reverse'>
         {/* انتخاب تعداد ردیف در هر صفحه */}
         <div className='flex items-center space-x-2 rtl:space-x-reverse'>
-          <p className='text-sm font-medium'>تعداد ردیف در هر صفحه</p>
+          <p className='text-sm font-medium'>
+            {t('tasks.table.pagination.rowsPerPage')}
+          </p>
           <Select
             value={`${pageSize}`}
             onValueChange={(value) => handlePageSizeChange(Number(value))}
@@ -82,7 +93,10 @@ export function DataTablePagination<TData>({
         {/* اطلاعات صفحه و کنترل‌ها */}
         <div className='flex items-center'>
           <div className='flex lg:w-[100px] items-center justify-center text-sm font-medium'>
-            صفحه {pageIndex + 1} از {pageCount}
+            {t('tasks.table.pagination.pageInfo', {
+              page: pageIndex + 1,
+              pageCount: pageCount || 1,
+            })}
           </div>
 
           {/* دکمه‌های صفحه‌بندی */}
@@ -93,7 +107,9 @@ export function DataTablePagination<TData>({
               onClick={() => handlePageChange(0)}
               disabled={pageIndex === 0}
             >
-              <span className='sr-only'>رفتن به صفحه اول</span>
+              <span className='sr-only'>
+                {t('tasks.table.pagination.firstPage')}
+              </span>
               <ChevronsRight />
             </Button>
             <Button
@@ -101,17 +117,21 @@ export function DataTablePagination<TData>({
               onClick={() => handlePageChange(pageIndex - 1)}
               disabled={pageIndex === 0}
             >
-              <span className='sr-only'>رفتن به صفحه قبل</span>
+              <span className='sr-only'>
+                {t('tasks.table.pagination.previousPage')}
+              </span>
               <ChevronRight />
-              قبلی
+              {t('tasks.table.pagination.prevLabel')}
             </Button>
             <Button
               variant='outline'
               onClick={() => handlePageChange(pageIndex + 1)}
               disabled={pageIndex >= pageCount - 1}
             >
-              <span className='sr-only'>رفتن به صفحه بعد</span>
-              بعدی
+              <span className='sr-only'>
+                {t('tasks.table.pagination.nextPage')}
+              </span>
+              {t('tasks.table.pagination.nextLabel')}
               <ChevronLeft />
             </Button>
             <Button
@@ -120,7 +140,9 @@ export function DataTablePagination<TData>({
               onClick={() => handlePageChange(pageCount - 1)}
               disabled={pageIndex >= pageCount - 1}
             >
-              <span className='sr-only'>رفتن به صفحه آخر</span>
+              <span className='sr-only'>
+                {t('tasks.table.pagination.lastPage')}
+              </span>
               <ChevronsLeft />
             </Button>
           </div>

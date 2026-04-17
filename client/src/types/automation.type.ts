@@ -1,6 +1,6 @@
 // src/types/automation.type.ts
 
-import { TaskType } from './api.type'
+import { TaskType, ResponseType } from './api.type'
 
 // انواع اتوماسیون
 export enum AutomationType {
@@ -13,7 +13,7 @@ export enum AutomationType {
 export interface AutomationItem {
   _id: string
   type: AutomationType
-  taskId: TaskType
+  taskId?: TaskType
   daysOfWeek: number[]
   timeOfDay: string
   timezone: string
@@ -63,31 +63,24 @@ export interface DeleteAutomationRequest {
 }
 
 // --------------------
-// Responses
+// Responses (همه extend از ResponseType)
 // --------------------
 
-export interface PaginationInfo {
-  total: number
-  page: number
-  limit: number
-  pages: number
-}
+export type GetAllAutomationsResponse = ResponseType<{
+  automations: AutomationItem[]
+}>
 
-export interface GetAllAutomationsResponse {
-  data: AutomationItem[]
-  pagination: PaginationInfo
-}
+export type GetSingleAutomationResponse = ResponseType<{
+  automation: AutomationItem
+}>
 
-export type GetSingleAutomationResponse = AutomationItem
-
-export interface DeleteAutomationResponse {
+export type DeleteAutomationResponse = ResponseType<{
   message: string
-}
+}>
 
-export interface ToggleAutomationResponse {
-  message: string
-  data: AutomationItem
-}
+export type ToggleAutomationResponse = ResponseType<{
+  automation: AutomationItem
+}>
 
 /**
  * نوع داده اتوماسیون برای این فرم ادیت

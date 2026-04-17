@@ -30,6 +30,10 @@ import { ChevronDown } from 'lucide-react'
 import TableSkeleton from '@/components/skeleton-loaders/table-skeleton'
 import { DataTablePagination } from './table-pagination'
 
+// اگر از next-i18next استفاده می‌کنی:
+import { useTranslation } from 'react-i18next'
+// اگر کتابخونه‌ات چیز دیگه‌ایه، این خط رو با نسخه خودت جایگزین کن.
+
 interface PaginationProps {
   totalCount: number
   pageNumber: number
@@ -59,11 +63,14 @@ export function DataTable<TData, TValue>({
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   )
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  // i18n
+  const { t } = useTranslation()
 
   const table = useReactTable({
     data,
@@ -85,14 +92,16 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
   })
+
   return (
     <div className='w-full space-y-2' dir='rtl'>
       <div className='block w-full lg:flex lg:items-center lg:justify-between'>
-        {filtersToolbar && <div className='flex-1'> {filtersToolbar}</div>}
+        {filtersToolbar && <div className='flex-1'>{filtersToolbar}</div>}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='outline' className='mr-auto w-full lg:w-auto'>
-              ستون‌ها <ChevronDown />
+              {t('tasks.table.columns.columns')}
+              <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
@@ -131,7 +140,7 @@ export function DataTable<TData, TValue>({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
                       </TableHead>
                     )
@@ -150,7 +159,7 @@ export function DataTable<TData, TValue>({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     ))}
@@ -162,7 +171,7 @@ export function DataTable<TData, TValue>({
                     colSpan={columns.length}
                     className='h-24 text-center'
                   >
-                    نتیجه‌ای یافت نشد.
+                    {t('tasks.table.noResults')}
                   </TableCell>
                 </TableRow>
               )}

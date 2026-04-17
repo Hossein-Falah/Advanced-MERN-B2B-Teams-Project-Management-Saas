@@ -1,0 +1,972 @@
+{
+  "common": {
+    "search": "Search",
+    "back": "Back",
+    "tryAgain": "Try Again",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "appName": "Teleman",
+    "success": "Success",
+    "error": "Error",
+    "delete": "Delete",
+    "openMenu": "Open Menu",
+    "loading": "Loading...",
+    "createdBy": "Created by",
+    "reset": "Reset",
+    "unknown": "Unknown"
+  },
+  "plan": {
+    "free": "Free"
+  },
+  "roles": {
+    "ADMIN": "Admin",
+    "MEMBER": "Member",
+    "OWNER": "Owner",
+    "roleDescriptions": {
+      "ADMIN": "Can view, create, and edit projects and tasks, and manage settings.",
+      "MEMBER": "Can only view and edit tasks created by themselves."
+    }
+  },
+  "days": {
+    "0": "Saturday",
+    "1": "Sunday",
+    "2": "Monday",
+    "3": "Tuesday",
+    "4": "Wednesday",
+    "5": "Thursday",
+    "6": "Friday"
+  },
+  "sidebar": {
+    "brand": "Teleman",
+    "editProfile": "Edit Profile",
+    "logout": "Logout",
+    "logoutDialog": {
+      "title": "Are you sure you want to log out?",
+      "description": "This will end your current session, and you will need to log in again to regain access.",
+      "confirm": "Logout",
+      "cancel": "Cancel",
+      "errorTitle": "Error",
+      "errorMessage": "An error occurred while logging out. Please try again."
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "tasks": "Tasks",
+      "members": "Members",
+      "automations": "Automations",
+      "settings": "Settings"
+    },
+    "navProjects": {
+      "title": "Project / Goal",
+      "emptyDescription": "No projects exist in this workspace yet. Projects you create will be displayed here.",
+      "createProject": "Create Project",
+      "more": "More",
+      "viewProject": "View Project",
+      "deleteProject": "Delete Project",
+      "loadingMore": "Loading more...",
+      "deleteDialog": {
+        "title": "Delete Project",
+        "description": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+        "defaultItem": "This item",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      }
+    },
+    "workspaceSwitcher": {
+      "title": "Workspaces",
+      "noWorkspace": "No workspace selected",
+      "createWorkspace": "Create New Workspace"
+    }
+  },
+  "auth": {
+    "googleOAuth": {
+      "googleLogin": "Login with Google",
+      "failure": {
+        "title": "Authentication Failed",
+        "description": "Your login with Google account was unsuccessful. Please try again.",
+        "backToLogin": "Back to Login Page"
+      }
+    },
+    "validation": {
+      "nameRequired": "Name is required.",
+      "emailInvalid": "The entered email is invalid.",
+      "emailRequired": "Email is required.",
+      "passwordRequired": "Password is required."
+    },
+    "termsText": "By signing up or logging in, you agree to all our terms",
+    "termsLink": "Terms and Policies",
+    "privacyLink": "Privacy Policy",
+    "signIn": {
+      "title": "Welcome Back",
+      "description": "Log in with email or phone number",
+      "loginWithGoogle": "Login with Google",
+      "orLoginWith": "Or log in with",
+      "emailLabel": "Email",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot your password?",
+      "loginButton": "Login",
+      "noAccount": "Don't have an account?",
+      "signup": "Sign Up",
+      "termsText": "By signing up or logging in, you agree to all our terms",
+      "termsLink": "Terms and Policies",
+      "privacyLink": "Privacy Policy",
+      "validation": {
+        "emailInvalid": "The entered email is invalid.",
+        "emailRequired": "Email is required.",
+        "passwordRequired": "Password is required."
+      }
+    },
+    "signup": {
+      "title": "Create Account",
+      "description": "Sign up with email or phone number",
+      "googleSignup": "Sign up with Google",
+      "orSignupWith": "Or sign up with",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "Password",
+      "submit": "Sign Up",
+      "haveAccount": "Already have an account?",
+      "login": "Login"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or may have been moved.",
+    "back": "Back",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "header": {
+    "dashboard": "Dashboard",
+    "pageLabel": {
+      "profile": "Profile",
+      "profile_settings": "Profile Settings",
+      "project": "Project",
+      "settings": "Settings",
+      "tasks": "Tasks",
+      "members": "Members"
+    }
+  },
+  "notifications": {
+    "item": {
+      "defaultUser": "User",
+      "title": {
+        "taskAssigned": "{{name}} assigned a task to you",
+        "taskUpdated": "{{name}} updated a task",
+        "mention": "{{name}} mentioned you",
+        "default": "New Notification"
+      },
+      "description": {
+        "default": "Click this notification for more details."
+      },
+      "taskLabel": "Task:"
+    },
+    "title": "Notifications",
+    "empty": "You have no notifications yet.",
+    "unreadCount": "{{count}} unread notifications",
+    "readAll": "Mark All as Read",
+    "loadingMore": "Loading more notifications...",
+    "showMore": "Show More Notifications",
+    "allShown": "All notifications displayed",
+    "showingCount": "{{shown}} of {{total}} notifications"
+  },
+  "profileSetting": {
+    "title": "Edit User Profile",
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailInvalid": "Email is invalid",
+      "phoneInvalid": "Phone number is invalid",
+      "usernameMin": "Username must be at least 3 characters",
+      "bioMax": "Bio must not exceed 500 characters",
+      "jobTitleMax": "Job title must not exceed 100 characters"
+    },
+    "image": {
+      "errorTitle": "Error",
+      "onlyImage": "Please select only an image file",
+      "maxSize": "File size must not exceed 5 MB",
+      "label": "Profile Image",
+      "hint": "JPG/PNG/GIF — Max 5MB",
+      "button": "Select Image",
+      "changeAria": "Change Image",
+      "alt": "Profile Image"
+    },
+    "toast": {
+      "updateSuccess": "Profile updated successfully",
+      "updateErrorTitle": "Error",
+      "updateErrorFallback": "Error updating profile"
+    },
+    "tabs": {
+      "profile": "Profile",
+      "work": "Work",
+      "notify": "Notifications"
+    },
+    "actions": {
+      "viewProfile": "View Profile",
+      "viewProfileShort": "Profile",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "save": "Save",
+      "savingShort": "Saving..."
+    },
+    "fields": {
+      "name": {
+        "label": "Full Name",
+        "placeholder": "Full Name"
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "Username"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "example@domain.com"
+      },
+      "phone": {
+        "label": "Phone Number",
+        "placeholder": "09123456789"
+      },
+      "jobTitle": {
+        "label": "Job Title",
+        "placeholder": "e.g., Product Designer"
+      },
+      "bio": {
+        "label": "Bio",
+        "placeholder": "About yourself...",
+        "counter": "{{count}}/500"
+      },
+      "region": {
+        "label": "Time Zone",
+        "placeholder": "Select time zone",
+        "tehran": "Asia/Tehran"
+      },
+      "workSchedule": {
+        "title": "Work Settings",
+        "subtitle": "Used for scheduling and submissions.",
+        "workingDays": "Working Days",
+        "startHour": "Start Time",
+        "endHour": "End Time"
+      },
+      "notify": {
+        "title": "Notification Settings",
+        "subtitle": "Specify the delivery method for each item.",
+        "inAppTitle": "In-App",
+        "smsTitle": "SMS",
+        "allOn": "All On",
+        "allOff": "All Off",
+        "custom": "Custom",
+        "items": {
+          "onCreateTask": "Task Creation",
+          "onUpdateTask": "Task Update",
+          "onMention": "Mention",
+          "onAutomationAction": "Automation",
+          "onMessage": "Message"
+        },
+        "toggles": {
+          "allInAppAria": "Toggle all notifications",
+          "allSmsAria": "Toggle all SMS"
+        }
+      }
+    }
+  },
+  "profileView": {
+    "title": "User Profile",
+    "summary": {
+      "totalTasks": "Total Tasks",
+      "maxPerHour": "Max Per Hour",
+      "avgPerHour": "Avg Per Hour",
+      "errors": {
+        "loadFailed": "Failed to load activities",
+        "unknown": "An unknown error occurred"
+      }
+    },
+    "activity": {
+      "title": "24-Hour Activity Statistics",
+      "chartTabs": {
+        "bar": "Bar",
+        "pie": "Pie",
+        "line": "Line",
+        "area": "Area"
+      },
+      "tooltip": {
+        "hourRange": "Hour {{startHour}}:00 - {{endHour}}:00",
+        "count": "Activity count: {{count}}"
+      },
+      "error": {
+        "generic": "There was a problem retrieving activity statistics.",
+        "notFound": "No data found for this user on this date.",
+        "unexpected": "An unexpected error occurred. Please try again later."
+      }
+    },
+    "online": "Online",
+    "offline": "Offline",
+    "activity24h": "24-Hour Statistics",
+    "activityDialog": {
+      "title": "24-Hour Activity Statistics"
+    },
+    "imageAlt": "Profile image of {{name}}",
+    "memberSince": "Member since {{date}}",
+    "lastSeen": "Last seen: {{date}}",
+    "to": "to",
+    "workSchedule": {
+      "notDefined": "Not defined"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "username": "Username",
+      "email": "Email",
+      "phone": "Phone Number",
+      "jobTitle": "Job Title",
+      "region": "Time Zone",
+      "workSchedule": "Work Hours"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "empty": "No achievements yet",
+      "member_1_month": "🎉 Over 1 month membership",
+      "member_1_year": "🏅 Over 1 year with us",
+      "member_10_years": "👑 Over 10 years membership",
+      "online_now": "🟢 Active now",
+      "active_last_24h": "🔥 Active user (in the last 24 hours)",
+      "profile_completed": "⭐ Profile almost complete"
+    },
+    "about": {
+      "title": "About Me",
+      "empty": "No bio has been added yet."
+    },
+    "error": {
+      "title": "User with this name not found",
+      "description": "User with name @{{username}} was not found in this space. Would you like to search for another name?",
+      "searchPlaceholder": "e.g., ali or testuser"
+    }
+  },
+  "ui": {
+    "fileDrop": {
+      "dragOrClick": "Drag file or click",
+      "allowedFormats": "Allowed formats: jpg, png, pdf, ...",
+      "changeFile": "Click to change again"
+    },
+    "timeField": {
+      "hourLabel": "Hour:",
+      "minuteLabel": "Minute:",
+      "hourPlaceholder": "Hour",
+      "minutePlaceholder": "Minute",
+      "errors": {
+        "required": "Time is required.",
+        "invalidFormat": "Invalid time format.",
+        "outOfRange": "Selected time is out of range.",
+        "default": "An error occurred. Please try again."
+      }
+    },
+    "attachmentDownload": {
+      "label": "Download Attachment File",
+      "button": "Download",
+      "error": "Unable to download the file."
+    },
+    "datePicker": {
+      "selectDate": "Select Date",
+      "label": "Date"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "previousPage": "Go to previous page",
+      "nextPage": "Go to next page",
+      "morePages": "More pages"
+    },
+    "sidebar": {
+      "menu": "Menu",
+      "toggle": "Toggle Sidebar",
+      "errors": {
+        "hookOutsideProvider": "The useSidebar hook must be used inside a SidebarProvider."
+      }
+    }
+  },
+  "automations": {
+    "mainPage": {
+      "title": "All Automations",
+      "description": "List of automations in this workspace"
+    },
+    "columns": {
+      "type": "Type",
+      "taskTitle": "Task Title",
+      "daysOfWeek": "Days of Week",
+      "time": "Execution Time",
+      "nextRun": "Next Run",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "columns": "Columns",
+      "noResult": "No results found",
+      "pageInfo": "Page {{page}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next",
+      "sortAsc": "Ascending",
+      "sortDesc": "Descending",
+      "hide": "Hide"
+    },
+    "title": "Manage Automations",
+    "createNewAutomationButton": "New Automation",
+    "createNewAutomationTitle": "Create New Automation",
+    "form": {
+      "type": {
+        "label": "Automation Type",
+        "placeholder": "Select automation type"
+      },
+      "task": {
+        "label": "Task",
+        "placeholder": "Select task",
+        "searchPlaceholder": "Search task..."
+      },
+      "daysOfWeek": {
+        "label": "Execution Days"
+      },
+      "timeOfDay": {
+        "label": "Execution Time"
+      },
+      "active": {
+        "label": "Automation Status",
+        "placeholder": "Select status"
+      },
+      "submit": "Create Automation",
+      "edit": {
+        "title": "Edit and Update Automation",
+        "submit": "Save Changes"
+      }
+    },
+    "types": {
+      "TASK_REPETITION": "Task Repetition",
+      "SCHEDULED": "Scheduled",
+      "TRIGGER_BASED": "Event-Based",
+      "UNKNOWN": "Unknown"
+    },
+    "validation": {
+      "taskRequired": "Task selection is required",
+      "daysRequired": "At least one day must be selected",
+      "invalidTime": "Invalid time (format HH:MM)"
+    },
+    "toast": {
+      "createSuccess": {
+        "title": "Success",
+        "description": "Automation created successfully"
+      },
+      "createError": {
+        "title": "Error",
+        "description": "Failed to create automation. Please try again."
+      },
+      "updateSuccess": {
+        "title": "Success",
+        "description": "Automation updated successfully"
+      },
+      "updateError": {
+        "title": "Error",
+        "description": "Failed to update automation. Please try again."
+      },
+      "deleteSuccess": {
+        "title": "Success",
+        "description": "Automation deleted successfully"
+      },
+      "deleteError": {
+        "title": "Error",
+        "description": "Failed to delete automation. Please try again."
+      },
+      "loadError": {
+        "title": "Error",
+        "description": "Unable to load automation list. Please try again later."
+      }
+    },
+    "actions": {
+      "edit": "Edit Item",
+      "delete": "Delete Automation"
+    },
+    "messages": {
+      "deleteSuccess": "Automation deleted successfully"
+    },
+    "errors": {
+      "deleteFailed": "Failed to delete automation",
+      "unknown": "An unknown error occurred. Please try again later.",
+      "network": "Server connection error. Check your internet connection.",
+      "forbidden": "You do not have permission to access this section.",
+      "notFound": "Requested information not found.",
+      "validation": "Some entered information is invalid. Please check."
+    },
+    "deleteDialog": {
+      "title": "Delete Automation",
+      "description": "Are you sure you want to delete automation {{name}}?"
+    },
+    "ui": {
+      "filterPlaceholder": "Filter automations...",
+      "statusFilterTitle": "Status",
+      "resetFilters": "Reset",
+      "editDialogTitle": "Edit Automation",
+      "editDialogClose": "Close"
+    }
+  },
+  "analytics": {
+    "value": "Value",
+    "totalCount": "Total Count",
+    "previousPeriod": "Compared to previous period",
+    "previousWeek": "Compared to previous week",
+    "teamTab": "Team Statistics",
+    "personalTab": "My Statistics",
+    "projectScopeHint": "These statistics relate to this project",
+    "teamTodayTasks": "Team's Today Tasks",
+    "personalTodayTasks": "Your Today Tasks",
+    "teamOverdueTasks": "Team's Overdue Tasks Today",
+    "personalOverdueTasks": "Your Overdue Tasks Today",
+    "teamCompletedTasks": "Team's Completed Tasks Today",
+    "personalCompletedTasks": "Your Completed Tasks Today",
+    "teamInProgressTasks": "Team's In Progress Tasks Today",
+    "personalInProgressTasks": "Your In Progress Tasks Today",
+    "workspaceScopeHint": "These statistics relate to this workspace",
+    "loading": "Loading...",
+    "error": {
+      "loadFailed": "Error loading workspace statistics",
+      "unexpected": "An unexpected error occurred"
+    }
+  },
+  "members": {
+    "mainPage": {
+      "title": "Workspace Members",
+      "description": "Workspace members can view all workspace projects and tasks, join them, and create new tasks in the workspace."
+    },
+    "joinedAtLabel": "Joined at",
+    "avatarAlt": "User Image",
+    "changeRole": {
+      "successTitle": "Success",
+      "successDescription": "Member role changed successfully.",
+      "errorTitle": "Error",
+      "errorDescription": "Failed to change member role. Please try again.",
+      "searchPlaceholder": "Select new role...",
+      "noRoleFound": "No role found."
+    },
+    "invite": {
+      "title": "Invite Members to Join",
+      "description": "Anyone with the invitation link can join this workspace. You can deactivate the invitation link at any time and create a new link for this workspace.",
+      "linkLabel": "Invitation Link",
+      "copySuccessTitle": "Copied",
+      "copySuccessDescription": "Invitation link copied to clipboard"
+    }
+  },
+  "projects": {
+    "projecUntitled": "Untitled Project",
+    "createProject": {
+      "title": "Create Project",
+      "subtitle": "Organize and manage tasks, resources, and team collaboration",
+      "emojiLabel": "Select Emoji",
+      "nameLabel": "Project Title",
+      "namePlaceholder": "Website Redesign",
+      "descriptionLabel": "Project Description",
+      "descriptionPlaceholder": "Project description",
+      "optional": "Optional",
+      "submit": "Create",
+      "validation": {
+        "nameRequired": "Project title is required"
+      },
+      "toast": {
+        "successTitle": "Success",
+        "successDescription": "Project created successfully",
+        "errorTitle": "Error",
+        "errorDescription": "Failed to create project. Please try again."
+      }
+    },
+    "editProject": {
+      "title": "Edit Project",
+      "subtitle": "Update project details for better task management",
+      "emojiLabel": "Select Emoji",
+      "nameLabel": "Project Title",
+      "namePlaceholder": "Project title",
+      "descriptionLabel": "Project Description",
+      "descriptionPlaceholder": "Project description",
+      "optional": "Optional",
+      "submit": "Update",
+      "validation": {
+        "nameRequired": "Project title is required"
+      },
+      "toast": {
+        "successTitle": "Success",
+        "successDescription": "Project updated successfully",
+        "errorTitle": "Error",
+        "errorDescription": "Failed to update project. Please try again."
+      }
+    },
+    "recentProjects": {
+      "empty": "No projects yet",
+      "createdBy": "Created by"
+    }
+  },
+  "workspaces": {
+    "mainPage": {
+      "title": "My Dashboard",
+      "subtitle": "Here's an overview of this workspace!",
+      "newProject": "New Project",
+      "recentProjects": "Recent Projects",
+      "recentTasks": "Recent Tasks",
+      "recentMembers": "Recent Members"
+    },
+    "deleteWorkspace": {
+      "title": "Delete Workspace",
+      "description": "Deleting a workspace is a permanent action and cannot be undone. After deleting the workspace, all related data, including projects, tasks, and member roles, will be permanently deleted. Please proceed with caution and ensure you intend to do this.",
+      "deleteButton": "Delete Workspace",
+      "toast": {
+        "errorTitle": "Error",
+        "errorDescription": "Failed to delete workspace. Please try again."
+      },
+      "confirm": {
+        "title": "Delete Workspace {{name}}",
+        "description": "Are you sure you want to delete this workspace? This action cannot be undone.",
+        "confirmText": "Delete",
+        "cancelText": "Cancel"
+      }
+    },
+    "createWorkspace": {
+      "title": "Let's Create a Workspace",
+      "subtitle": "Increase your productivity with easy access for everyone to projects in one place.",
+      "nameLabel": "Workspace Name",
+      "namePlaceholder": "Company or team name",
+      "nameDescription": "This is the name of your company, team, or organization.",
+      "descriptionLabel": "Workspace Description",
+      "descriptionPlaceholder": "Our team organizes marketing projects and tasks here.",
+      "descriptionHelp": "Engage members with a few words about your workspace.",
+      "optional": "Optional",
+      "submit": "Create Workspace",
+      "validation": {
+        "nameRequired": "Workspace name is required"
+      },
+      "toast": {
+        "errorTitle": "Error",
+        "errorDescription": "Failed to create workspace. Please try again."
+      }
+    },
+    "editWorkspace": {
+      "mainPage": { "title": "Workspace Settings" },
+      "title": "Edit Workspace",
+      "nameLabel": "Workspace Name",
+      "namePlaceholder": "Company or team name",
+      "descriptionLabel": "Workspace Description",
+      "descriptionPlaceholder": "Our team organizes marketing projects and tasks here.",
+      "optional": "Optional",
+      "submit": "Update Workspace",
+      "validation": {
+        "nameRequired": "Workspace name is required"
+      },
+      "toast": {
+        "errorTitle": "Error",
+        "errorDescription": "Failed to update workspace. Please try again."
+      }
+    }
+  },
+  "tasks": {
+    "mainPage": {
+      "title": "All Tasks",
+      "description": "List of tasks in this workspace"
+    },
+    "taskLogs": {
+      "noLogSelected": "Select one of the logs from the right list to view details.",
+      "headerTitle": "Change Details",
+      "changesByUserAndDate": "These changes were recorded by {{userName}} on {{date}}.",
+      "fallbackUser": "User",
+      "undo": {
+        "loading": "Undoing...",
+        "label": {
+          "desktop": "Undo",
+          "mobile": "Undo"
+        }
+      },
+      "redo": {
+        "loading": "Applying...",
+        "label": {
+          "desktop": "Apply New Value",
+          "mobile": "Apply"
+        }
+      },
+      "changeType": {
+        "edit": "Edit Change",
+        "create": "Creation Change"
+      },
+      "previousValue": {
+        "label": "Previous Value"
+      },
+      "newValue": {
+        "label": "New Value"
+      },
+      "noChangesForLog": "No changes recorded for this log.",
+      "loading": "Loading task history...",
+      "empty": "No history recorded for this task yet.",
+      "actions": {
+        "create": "Create Task",
+        "update": "Update Task",
+        "delete": "Delete Task",
+        "other": "Action"
+      },
+      "changesCount": "{{count}} changes",
+      "itemAriaLabel": "{{action}} action by {{user}} (ID {{id}})",
+      "unknownUser": "Unknown User",
+      "title": "Change History - {{title}}",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "status": "Status",
+        "priority": "Priority",
+        "dueDate": "Due Date",
+        "assignedTo": "Assignee",
+        "attachment": "Attachment",
+        "startDate": "Start Date"
+      },
+      "common": {
+        "empty": "—",
+        "invalidDate": "Invalid date",
+        "user": "User"
+      },
+      "errors": {
+        "undoFailed": "Failed to undo the change. Please try again.",
+        "redoFailed": "Failed to reapply this change. Please try again.",
+        "fetchFailed": "Failed to fetch change history. Please refresh the page."
+      }
+    },
+    "comment": {
+      "form": {
+        "contentRequired": "Comment text is required",
+        "placeholder": "Write your comment or feedback...",
+        "submit": "Submit Comment",
+        "successTitle": "Success",
+        "successDescription": "Comment submitted successfully",
+        "errorTitle": "Error",
+        "errorDescription": "Failed to submit comment"
+      },
+      "attachment": {
+        "dropOrSelect": "Drag file here or select",
+        "selectFile": "Select File"
+      },
+      "mention": {
+        "loading": "Loading...",
+        "noUserFound": "No user found",
+        "noUsername": "Anonymous User"
+      }
+    },
+    "table": {
+      "columnHeader": {
+        "sortAsc": "Ascending",
+        "sortDesc": "Descending",
+        "hideColumn": "Hide Column"
+      },
+      "columns": {
+        "columns": "Columns",
+        "selectAll": "Select All",
+        "selectRow": "Select Row",
+        "title": "Title",
+        "project": "Project",
+        "assignee": "Assignee",
+        "dateRange": "Task Execution Period",
+        "status": "Status",
+        "priority": "Priority",
+        "actions": "Actions",
+        "avatarAlt": "Image"
+      },
+      "filter": {
+        "searchPlaceholder": "Search {{title}}",
+        "noResults": "No results found",
+        "clearFilters": "Clear Filters"
+      },
+      "noResults": "No results found.",
+      "pagination": {
+        "range": "Showing {{start}} to {{end}} of {{total}}",
+        "rowsPerPage": "Rows per page",
+        "pageInfo": "Page {{page}} of {{pageCount}}",
+        "firstPage": "Go to first page",
+        "previousPage": "Go to previous page",
+        "nextPage": "Go to next page",
+        "lastPage": "Go to last page",
+        "prevLabel": "Previous",
+        "nextLabel": "Next"
+      }
+    },
+    "menu": {
+      "openMenu": "Open Menu",
+      "logs": "Change History",
+      "edit": "Edit Task",
+      "delete": "Delete Task"
+    },
+    "deleteDialog": {
+      "title": "Delete Task",
+      "description": "Are you sure you want to delete task {{taskCode}}?",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "toast": {
+      "deleteSuccessTitle": "Success",
+      "deleteErrorTitle": "Error",
+      "deleteSuccessDescription": "Task deleted successfully."
+    },
+    "dialog": {
+      "open_button": "New Task",
+      "title": "Create New Task",
+      "description": "Fill out the task creation form.",
+      "noDescription": "No description has been recorded for this task.",
+      "attachmentLabel": "Download Attachment File",
+      "noComments": "No comments yet.",
+      "avatarAlt": "Image"
+    },
+    "status": {
+      "BACKLOG": "Backlog",
+      "TODO": "To Do",
+      "IN_PROGRESS": "In Progress",
+      "IN_REVIEW": "In Review",
+      "DONE": "Done"
+    },
+    "priority": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "editTask": {
+      "subtitle": "Edit and update task information",
+      "submit": "Save Changes",
+      "fields": {
+        "title": {
+          "label": "Task Title",
+          "placeholder": "Website Redesign"
+        },
+        "description": {
+          "label": "Task Description",
+          "optional": "Optional",
+          "placeholder": "Description"
+        },
+        "assignedTo": {
+          "label": "Assignee",
+          "placeholder": "Select an assignee"
+        },
+        "startDate": {
+          "label": "Start Date"
+        },
+        "dueDate": {
+          "label": "Due Date"
+        },
+        "status": {
+          "label": "Status",
+          "placeholder": "Select a status"
+        },
+        "priority": {
+          "label": "Priority",
+          "placeholder": "Select a priority"
+        },
+        "attachment": {
+          "label": "Attachment File",
+          "previewTitle": "Download Attachment",
+          "previewAction": "Download"
+        }
+      },
+      "datePicker": {
+        "placeholder": "Select Date",
+        "hourLabel": "Hour:",
+        "minuteLabel": "Minute:",
+        "hourPlaceholder": "Hour",
+        "minutePlaceholder": "Minute"
+      },
+      "validation": {
+        "titleRequired": "Task title is required",
+        "statusRequired": "Status is required",
+        "priorityRequired": "Priority is required",
+        "assigneeRequired": "Assignee selection is required",
+        "startDateRequired": "Start date is required",
+        "dueDateRequired": "Due date is required"
+      },
+      "toast": {
+        "successTitle": "Success",
+        "successDescription": "Task updated successfully",
+        "errorTitle": "Error",
+        "errorDescription": "Failed to update task. Please try again."
+      }
+    },
+    "createTask": {
+      "form": {
+        "subtitle": "Organize and manage tasks, resources, and team collaboration",
+        "title_label": "Task Title",
+        "title_placeholder": "Website Redesign",
+        "title_required": "Task title is required",
+        "description_label": "Task Description",
+        "description_placeholder": "Description",
+        "optional": "(Optional)",
+        "project_label": "Project",
+        "project_placeholder": "Select a project",
+        "project_required": "Project selection is required",
+        "assigned_to_label": "Assignee",
+        "assigned_to_placeholder": "Select an assignee",
+        "assigned_to_required": "Assignee selection is required",
+        "assigned_to.unknown": "Unknown",
+        "start_date_label": "Start Date",
+        "start_date_required": "Start date is required",
+        "due_date_label": "Due Date",
+        "due_date_required": "Due date is required",
+        "status_label": "Status",
+        "status_placeholder": "Select a status",
+        "status_required": "Status is required",
+        "priority_label": "Priority",
+        "priority_placeholder": "Select a priority",
+        "priority_required": "Priority is required",
+        "attachment_label": "Attachment File",
+        "submit": "Create"
+      },
+      "date": {
+        "select_date": "Select Date",
+        "hour_label": "Hour:",
+        "hour_placeholder": "Hour",
+        "minute_label": "Minute:",
+        "minute_placeholder": "Minute"
+      },
+      "toast": {
+        "success": {
+          "title": "Success",
+          "description": "Task created successfully"
+        },
+        "error": {
+          "title": "Error",
+          "description": "An error occurred while creating the task. Please try again."
+        }
+      }
+    },
+    "recentTasks": {
+      "empty": "No tasks created yet",
+      "dueDateLabel": "Due:"
+    },
+    "filters": {
+      "keyword": "Filter tasks...",
+      "status": {
+        "title": "Status"
+      },
+      "priority": {
+        "title": "Priority"
+      },
+      "assignee": {
+        "title": "Assignee"
+      },
+      "project": {
+        "title": "Projects"
+      }
+    }
+  },
+  "invite": {
+    "title": "Hello! You've been invited to join a workspace",
+    "description": "To join this workspace, you must first log in to your account",
+    "joinWorkspace": "Join Workspace",
+    "signUp": "Sign Up",
+    "login": "Login",
+    "errorTitle": "Error",
+    "errorDescription": "An error occurred while performing the operation. Please try again."
+  },
+  "errors": {
+    "unknown": "An error occurred. Please try again.",
+    "network": "Problem connecting to the server. Check your internet connection.",
+    "unauthorized": "Your access is not authorized.",
+    "forbidden": "You do not have permission to perform this operation.",
+    "notFound": "Item not found.",
+    "server": "A server error occurred. Please try again later.",
+    "accessDenied": "You do not have access to this section"
+  }
+}

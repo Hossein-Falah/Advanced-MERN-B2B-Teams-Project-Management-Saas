@@ -32,13 +32,19 @@ import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { TaskPriorityEnum, TaskStatusEnum } from '@/constant'
+
 import useGetProjectsInWorkspaceQuery from '@/hooks/api/use-get-projects'
 import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { createTaskMutationFn } from '@/lib/api/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
+import { useTranslation } from 'react-i18next' // یا هر کتابخانه i18n که استفاده می‌کنی
+import { TaskPriorityEnum, TaskStatusEnum } from '@/constant/task'
+import {
+  getTaskPriorityLabels,
+  getTaskStatusLabels,
+} from '@/utils/getTaskLabel'
 
 /**
  * کامپوننت reusable برای انتخاب تاریخ + ساعت + دقیقه
@@ -49,6 +55,7 @@ type DateTimeFieldProps = {
 }
 
 function DateTimeField({ label, field }: DateTimeFieldProps) {
+  const { t } = useTranslation() // namespace پیشنهادی
   const value = field.value ? new Date(field.value) : undefined
 
   const updateDate = (updater: (date: Date) => void) => {
@@ -69,7 +76,7 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
               variant='outline'
               className={cn(
                 'w-full flex-1 pl-3 text-right font-normal',
-                !value && 'text-muted-foreground',
+                !value && 'text-muted-foreground'
               )}
             >
               {value ? (
@@ -77,7 +84,7 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
                   locale: faIR,
                 })
               ) : (
-                <span>انتخاب تاریخ</span>
+                <span>{t('tasks.createTask.date.select_date')}</span>
               )}
               <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
             </Button>
@@ -106,7 +113,7 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
           <div className='flex gap-2'>
             {/* ساعت */}
             <div className='flex flex-col gap-1'>
-              <p className='text-xs'>ساعت :</p>
+              <p className='text-xs'>{t('tasks.createTask.date.hour_label')}</p>
 
               <Select
                 value={value ? String(value.getHours()) : undefined}
@@ -115,7 +122,11 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
                 }}
               >
                 <SelectTrigger className='w-[80px]'>
-                  <SelectValue placeholder='ساعت' />
+                  <SelectValue
+                    placeholder={
+                      t('tasks.createTask.date.hour_placeholder') ?? ''
+                    }
+                  />
                 </SelectTrigger>
 
                 <SelectContent className='max-h-[200px]'>
@@ -130,7 +141,9 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
 
             {/* دقیقه */}
             <div className='flex flex-col gap-1'>
-              <p className='text-xs'>دقیقه :</p>
+              <p className='text-xs'>
+                {t('tasks.createTask.date.minute_label')}
+              </p>
 
               <Select
                 value={value ? String(value.getMinutes()) : undefined}
@@ -139,7 +152,11 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
                 }}
               >
                 <SelectTrigger className='w-[80px]'>
-                  <SelectValue placeholder='دقیقه' />
+                  <SelectValue
+                    placeholder={
+                      t('tasks.createTask.date.minute_placeholder') ?? '  '
+                    }
+                  />
                 </SelectTrigger>
 
                 <SelectContent className='max-h-[200px]'>
@@ -165,6 +182,7 @@ export default function CreateTaskForm(props: {
   onClose: () => void
 }) {
   const { projectId, onClose } = props
+  const { t } = useTranslation()
 
   const queryClient = useQueryClient()
   const workspaceId = useWorkspaceId()
@@ -180,8 +198,8 @@ export default function CreateTaskForm(props: {
 
   const { data: memberData } = useGetWorkspaceMembers(workspaceId)
 
-  const projects = data?.projects || []
-  const members = memberData?.members || []
+  const projects = data?.data?.projects || []
+  const members = memberData?.data?.members || []
 
   // پروژه‌های فضای کاری
   const projectOptions = projects?.map((project) => ({
@@ -196,7 +214,8 @@ export default function CreateTaskForm(props: {
 
   // اعضای فضای کاری
   const membersOptions = members?.map((member) => {
-    const name = member.userId?.name || 'ناشناس'
+    const name =
+      member.userId?.name || t('tasks.createTask.form.assigned_to.unknown')
     const initials = getAvatarFallbackText(name)
     const avatarColor = getAvatarColor(name)
 
@@ -216,33 +235,42 @@ export default function CreateTaskForm(props: {
 
   // ---------------- schema فرم با startDate ----------------
   const formSchema = z.object({
-    title: z.string().trim().min(1, {
-      message: 'عنوان وظیفه  الزامی است',
-    }),
+    title: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('tasks.createTask.form.title_required'),
+      }),
     description: z.string().trim(),
-    projectId: z.string().trim().min(1, {
-      message: 'انتخاب پروژه الزامی است',
-    }),
+    projectId: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('tasks.createTask.form.project_required'),
+      }),
     status: z.enum(
       Object.values(TaskStatusEnum) as [keyof typeof TaskStatusEnum],
       {
-        required_error: 'وضعیت الزامی است',
-      },
+        required_error: t('tasks.createTask.form.status_required'),
+      }
     ),
     priority: z.enum(
       Object.values(TaskPriorityEnum) as [keyof typeof TaskPriorityEnum],
       {
-        required_error: 'اولویت الزامی است',
-      },
+        required_error: t('tasks.createTask.form.priority_required'),
+      }
     ),
-    assignedTo: z.string().trim().min(1, {
-      message: 'انتخاب مسئول الزامی است',
-    }),
+    assignedTo: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('tasks.createTask.form.assigned_to_required'),
+      }),
     startDate: z.date({
-      required_error: 'تاریخ شروع الزامی است',
+      required_error: t('tasks.createTask.form.start_date_required'),
     }),
     dueDate: z.date({
-      required_error: 'تاریخ سررسید الزامی است',
+      required_error: t('tasks.createTask.form.due_date_required'),
     }),
     attachment: z.instanceof(File).optional(),
   })
@@ -254,40 +282,22 @@ export default function CreateTaskForm(props: {
       description: '',
       attachment: undefined,
       projectId: projectId ? projectId : '',
-      // startDate و dueDate را خالی می‌گذاریم تا کاربر انتخاب کند
-      // اگر می‌خواهی مقدار اولیه امروز باشد می‌توانی new Date() بگذاری
-      // startDate: new Date(),
-      // dueDate: new Date(),
     } as any,
   })
 
   const taskStatusList = Object.values(TaskStatusEnum)
   const taskPriorityList = Object.values(TaskPriorityEnum)
 
-  // برچسب‌های فارسی برای وضعیت‌ها
-  const statusLabels: Record<string, string> = {
-    BACKLOG: 'لیست انتظار',
-    TODO: 'برای انجام',
-    IN_PROGRESS: 'در حال انجام',
-    IN_REVIEW: 'در حال بررسی',
-    DONE: 'انجام شده',
-  }
-
+  // برچسب‌های فارسی برای وضعیت‌ها (می‌توان بعداً به i18n منتقل کرد)
+  const statusLabels = getTaskStatusLabels(t)
   // برچسب‌های فارسی برای اولویت‌ها
-  const priorityLabels: Record<string, string> = {
-    LOW: 'کم',
-    MEDIUM: 'متوسط',
-    HIGH: 'زیاد',
-    URGENT: 'فوری',
-  }
+  const priorityLabels = getTaskPriorityLabels(t)
 
-  // ساخت گزینه‌های وضعیت با برچسب فارسی
   const statusOptions = taskStatusList.map((status) => ({
     value: status,
     label: statusLabels[status] || status,
   }))
 
-  // ساخت گزینه‌های اولویت با برچسب فارسی
   const priorityOptions = taskPriorityList.map((priority) => ({
     value: priority,
     label: priorityLabels[priority] || priority,
@@ -325,21 +335,22 @@ export default function CreateTaskForm(props: {
           })
 
           toast({
-            title: 'موفق',
-            description: 'وظیفه  با موفقیت ایجاد شد',
+            title: t('tasks.createTask.toast.success.title'),
+            description: t('tasks.createTask.toast.success.description'),
             variant: 'success',
           })
 
           onClose()
         },
-        onError: (error: any) => {
+        onError: () => {
+          // اینجا پیام خام API نمایش داده نمی‌شود
           toast({
-            title: 'خطا',
-            description: error.message,
+            title: t('tasks.createTask.toast.error.title'),
+            description: t('tasks.createTask.toast.error.description'),
             variant: 'destructive',
           })
         },
-      },
+      }
     )
   }
 
@@ -348,7 +359,7 @@ export default function CreateTaskForm(props: {
       <div className='h-full'>
         <div className='my-5 pb-2 border-b'>
           <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            سازماندهی و مدیریت وظیفه ‌ها، منابع و همکاری تیمی
+            {t('tasks.createTask.form.subtitle')}
           </p>
         </div>
         <Form {...form}>
@@ -361,11 +372,13 @@ export default function CreateTaskForm(props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      عنوان وظیفه
+                      {t('tasks.createTask.form.title_label')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='بازطراحی وب‌سایت'
+                        placeholder={
+                          t('tasks.createTask.form.title_placeholder') ?? ''
+                        }
                         className='!h-[48px]'
                         {...field}
                       />
@@ -384,13 +397,20 @@ export default function CreateTaskForm(props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      توضیحات وظیفه
+                      {t('tasks.createTask.form.description_label')}
                       <span className='text-xs font-extralight mr-2'>
-                        (اختیاری)
+                        {t('tasks.createTask.form.optional')}
                       </span>
                     </FormLabel>
                     <FormControl>
-                      <Textarea rows={1} placeholder='توضیحات' {...field} />
+                      <Textarea
+                        rows={1}
+                        placeholder={
+                          t('tasks.createTask.form.description_placeholder') ??
+                          ''
+                        }
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -406,14 +426,22 @@ export default function CreateTaskForm(props: {
                   name='projectId'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>پروژه</FormLabel>
+                      <FormLabel>
+                        {t('tasks.createTask.form.project_label')}
+                      </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder='یک پروژه انتخاب کنید' />
+                            <SelectValue
+                              placeholder={
+                                t(
+                                  'tasks.createTask.form.project_placeholder'
+                                ) as string
+                              }
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -449,14 +477,22 @@ export default function CreateTaskForm(props: {
                 name='assignedTo'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>مسئول</FormLabel>
+                    <FormLabel>
+                      {t('tasks.createTask.form.assigned_to_label')}
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='یک مسئول انتخاب کنید' />
+                          <SelectValue
+                            placeholder={
+                              t(
+                                'tasks.createTask.form.assigned_to_placeholder'
+                              ) as string
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -485,7 +521,10 @@ export default function CreateTaskForm(props: {
                 control={form.control}
                 name='startDate'
                 render={({ field }) => (
-                  <DateTimeField label='تاریخ شروع' field={field} />
+                  <DateTimeField
+                    label={t('tasks.createTask.form.start_date_label')}
+                    field={field}
+                  />
                 )}
               />
             </div>
@@ -496,7 +535,10 @@ export default function CreateTaskForm(props: {
                 control={form.control}
                 name='dueDate'
                 render={({ field }) => (
-                  <DateTimeField label='تاریخ سررسید' field={field} />
+                  <DateTimeField
+                    label={t('tasks.createTask.form.due_date_label')}
+                    field={field}
+                  />
                 )}
               />
             </div>
@@ -508,7 +550,9 @@ export default function CreateTaskForm(props: {
                 name='status'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>وضعیت</FormLabel>
+                    <FormLabel>
+                      {t('tasks.createTask.form.status_label')}
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -517,7 +561,11 @@ export default function CreateTaskForm(props: {
                         <SelectTrigger>
                           <SelectValue
                             className='!text-muted-foreground !capitalize'
-                            placeholder='یک وضعیت انتخاب کنید'
+                            placeholder={
+                              t(
+                                'tasks.createTask.form.status_placeholder'
+                              ) as string
+                            }
                           />
                         </SelectTrigger>
                       </FormControl>
@@ -546,14 +594,22 @@ export default function CreateTaskForm(props: {
                 name='priority'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>اولویت</FormLabel>
+                    <FormLabel>
+                      {t('tasks.createTask.form.priority_label')}
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='یک اولویت انتخاب کنید' />
+                          <SelectValue
+                            placeholder={
+                              t(
+                                'tasks.createTask.form.priority_placeholder'
+                              ) as string
+                            }
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -581,7 +637,9 @@ export default function CreateTaskForm(props: {
                 name='attachment'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>فایل پیوست</FormLabel>
+                    <FormLabel>
+                      {t('tasks.createTask.form.attachment_label')}
+                    </FormLabel>
                     <FormControl>
                       <FileDropInput
                         onFileChange={(file) => field.onChange(file)}
@@ -599,7 +657,7 @@ export default function CreateTaskForm(props: {
               disabled={isPending}
             >
               {isPending && <Loader className='animate-spin ml-2' />}
-              ایجاد
+              {t('tasks.createTask.form.submit')}
             </Button>
           </form>
         </Form>

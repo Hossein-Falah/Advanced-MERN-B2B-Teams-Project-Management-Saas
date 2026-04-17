@@ -11,6 +11,7 @@ import useWorkspaceId from '@/hooks/use-workspace-id'
 import { getAllAutomationsQueryFn } from '@/lib/api/automation'
 import { AutomationItem } from '@/types/automation.type'
 import { getColumns } from './columns'
+import { useTranslation } from 'react-i18next'
 
 type Filters = {
   keyword: string | null
@@ -27,6 +28,7 @@ interface DataTableFilterToolbarProps {
 }
 
 const AutomationTable = () => {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const automationId = searchParams.get('automationId')
 
@@ -41,7 +43,7 @@ const AutomationTable = () => {
   })
 
   const workspaceId = useWorkspaceId()
-  const columns = getColumns({})
+  const columns = getColumns()
 
   const resetAllFilters = () => {
     setFilters({
@@ -71,8 +73,8 @@ const AutomationTable = () => {
     staleTime: 0,
   })
 
-  const automations: AutomationItem[] = data?.data || []
-  const totalCount = data?.pagination.total || 0
+  const automations: AutomationItem[] = data?.data?.automations || []
+  const totalCount = data?.meta?.total || 0
 
   const handlePageChange = (page: number) => setPageNumber(page)
   const handlePageSizeChange = (size: number) => setPageSize(size)
@@ -104,9 +106,11 @@ const AutomationTable = () => {
       {selectedAutomation && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
           <div className='bg-white p-4 rounded-lg'>
-            <h2>ویرایش اتومیشن</h2>
+            <h2>{t('automations.ui.editDialogTitle')}</h2>
             <pre>{JSON.stringify(selectedAutomation, null, 2)}</pre>
-            <Button onClick={() => setSelectedAutomation(null)}>بستن</Button>
+            <Button onClick={() => setSelectedAutomation(null)}>
+              {t('automations.ui.editDialogClose')}
+            </Button>
           </div>
         </div>
       )}
@@ -120,6 +124,8 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
   setFilters,
   resetAllFilters,
 }) => {
+  const { t } = useTranslation()
+
   const handleFilterChange = (key: keyof Filters, values: string[]) => {
     setFilters({
       ...filters,
@@ -130,14 +136,14 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
   return (
     <div className='flex flex-col lg:flex-row w-full items-start space-y-2 mb-2 lg:mb-0 lg:space-x-2 lg:space-y-0 rtl:space-x-reverse'>
       <Input
-        placeholder='فیلتر اتومیشن‌ها ...'
+        placeholder={t('automations.ui.filterPlaceholder')}
         value={filters.keyword || ''}
         onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
         className='h-8 w-full lg:w-[250px]'
       />
 
       <DataTableFacetedFilter
-        title='وضعیت'
+        title={t('automations.ui.statusFilterTitle')}
         multiSelect={true}
         options={statuses}
         disabled={isLoading}
@@ -152,7 +158,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
           className='h-8 px-2 lg:px-3'
           onClick={resetAllFilters}
         >
-          بازنشانی
+          {t('automations.ui.resetFilters')}
           <X />
         </Button>
       )}

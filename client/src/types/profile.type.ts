@@ -1,5 +1,5 @@
-// profile.type.ts
-import { TaskType, UserType } from './api.type'
+// src/types/profile.type.ts
+import { TaskType, UserType, ResponseType } from './api.type'
 
 // تایپ‌های جدید برای فیلدهای اضافه‌شده
 
@@ -41,10 +41,10 @@ export interface UpdateProfileRequestType {
   region?: string
 }
 
-export interface UpdateProfileResponseType {
-  message: string
+// ✅ هماهنگ با ResponseType
+export type UpdateProfileResponseType = ResponseType<{
   user: UserType
-}
+}>
 
 export interface GetUserProfileRequestType {
   workspaceId: string
@@ -61,8 +61,6 @@ export interface GetProfileActivityAnalyticsRequest {
   projectId?: string
 }
 
-// یک تسک در لیست tasks
-
 // یک آیتم اکتیویتی در یک ساعت مشخص
 export interface ProfileActivityItem {
   tasks: TaskType[]
@@ -70,8 +68,10 @@ export interface ProfileActivityItem {
   hour: number // 1 تا 24
 }
 
-// پاسخ API (آرایه‌ای از آیتم‌ها)
-export type GetProfileActivityAnalyticsResponse = ProfileActivityItem[]
+// ✅ پاسخ API (روی ResponseType پیچیده شد)
+export type GetProfileActivityAnalyticsResponse = ResponseType<{
+  analytics: ProfileActivityItem[]
+}>
 
 /* ======  🔹🔹🔹  API جدید Analytics Workspace  🔹🔹🔹  ====== */
 
@@ -105,7 +105,7 @@ export interface GetWorkspaceAnalyticsRequest {
   treandRange?: number // طبق پارامتر treandRange=5
 }
 
-// پاسخ API
-export interface GetWorkspaceAnalyticsResponse {
+// ✅ پاسخ API (هماهنگ با ResponseType جنرال)
+export type GetWorkspaceAnalyticsResponse = ResponseType<{
   analytics: WorkspaceAnalytics
-}
+}>

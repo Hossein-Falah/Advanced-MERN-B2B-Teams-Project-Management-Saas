@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { Loader } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDebounce } from 'use-debounce'
 
 import {
@@ -31,120 +32,26 @@ import { getAllTasksQueryFn } from '@/lib/api/api'
 import { AutomationType } from '@/types/automation.type'
 import { createAutomationMutationFn } from '@/lib/api/automation'
 import { toast } from '@/hooks/use-toast'
+import { TimeField } from '@/components/ui/time-field'
+import { ALL_DAYS } from '@/constant'
 
-/**
- * کامپوننت reusable برای انتخاب فقط ساعت + دقیقه
- */
-type TimeFieldProps = {
-  label: string
-  value?: string // "HH:MM"
-  onChange: (val: string) => void
-}
+const formSchema = (t: (key: string) => string) =>
+  z.object({
+    type: z.nativeEnum(AutomationType),
+    taskId: z
+      .string()
+      .min(1, { message: t('automations.validation.taskRequired') }),
+    daysOfWeek: z
+      .array(z.number())
+      .min(1, { message: t('automations.validation.daysRequired') }),
+    timeOfDay: z.string().regex(/^\d{2}:\d{2}$/, {
+      message: t('automations.validation.invalidTime'),
+    }),
+    timezone: z.string().default('Asia/Tehran'),
+    active: z.boolean().default(true),
+  })
 
-function TimeField({ label, value, onChange }: TimeFieldProps) {
-  const [hourStr, minuteStr] = (value || '00:00').split(':')
-
-  const hour = Number(hourStr) || 0
-  const minute = Number(minuteStr) || 0
-
-  const updateTime = (h: number, m: number) => {
-    const hh = String(h).padStart(2, '0')
-    const mm = String(m).padStart(2, '0')
-    onChange(`${hh}:${mm}`)
-  }
-
-  return (
-    <FormItem>
-      <FormLabel>{label}</FormLabel>
-
-      <div className='flex gap-2'>
-        {/* ساعت */}
-        <div className='flex flex-col gap-1'>
-          <p className='text-xs'>ساعت :</p>
-
-          <Select
-            value={String(hour)}
-            onValueChange={(h) => {
-              updateTime(Number(h), minute)
-            }}
-          >
-            <SelectTrigger className='w-[90px]'>
-              <SelectValue placeholder='ساعت' />
-            </SelectTrigger>
-
-            <SelectContent className='max-h-[200px]'>
-              {Array.from({ length: 24 }, (_, i) => i).map((h) => (
-                <SelectItem key={h} value={String(h)}>
-                  {String(h).padStart(2, '0')}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* دقیقه */}
-        <div className='flex flex-col gap-1'>
-          <p className='text-xs'>دقیقه :</p>
-
-          <Select
-            value={String(minute)}
-            onValueChange={(m) => {
-              updateTime(hour, Number(m))
-            }}
-          >
-            <SelectTrigger className='w-[90px]'>
-              <SelectValue placeholder='دقیقه' />
-            </SelectTrigger>
-
-            <SelectContent className='max-h-[200px]'>
-              {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
-                <SelectItem key={m} value={String(m)}>
-                  {String(m).padStart(2, '0')}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <FormMessage />
-    </FormItem>
-  )
-}
-
-const daysOfWeekOptions = [
-  { label: 'شنبه', value: 0 },
-  { label: 'یکشنبه', value: 1 },
-  { label: 'دوشنبه', value: 2 },
-  { label: 'سه‌شنبه', value: 3 },
-  { label: 'چهارشنبه', value: 4 },
-  { label: 'پنجشنبه', value: 5 },
-  { label: 'جمعه', value: 6 },
-]
-
-const automationTypeLabels: Record<AutomationType, string> = {
-  TASK_REPETITION: 'تکرار وظیفه',
-  SCHEDULED: 'زمان‌بندی شده',
-  TRIGGER_BASED: 'مبتنی بر رویداد',
-}
-
-/**
- * به جای startDateTime اینجا timeOfDay داریم
- */
-const formSchema = z.object({
-  type: z.nativeEnum(AutomationType),
-  taskId: z.string().min(1, { message: 'انتخاب وظیفه الزامی است' }),
-  daysOfWeek: z
-    .array(z.number())
-    .min(1, { message: 'حداقل یک روز را انتخاب کنید' }),
-  timeOfDay: z
-    .string()
-    .regex(/^\d{2}:\d{2}$/, { message: 'ساعت نامعتبر است (فرمت  HH:MM)' }),
-  timezone: z.string().default('Asia/Tehran'),
-  active: z.boolean().default(true),
-})
-
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<ReturnType<typeof formSchema>>
 
 export default function CreateAutomationForm({
   onClose,
@@ -154,6 +61,7 @@ export default function CreateAutomationForm({
   const queryClient = useQueryClient()
   const workspaceId = useWorkspaceId()
 
+  const { t } = useTranslation()
   const [keyword, setKeyword] = useState('')
   const [debouncedKeyword] = useDebounce(keyword, 500)
 
@@ -173,7 +81,7 @@ export default function CreateAutomationForm({
     enabled: !!workspaceId,
   })
 
-  const tasks = tasksData?.tasks || []
+  const tasks = tasksData?.data?.tasks || []
 
   const taskOptions = tasks.map((task: any) => ({
     value: task._id,
@@ -181,7 +89,7 @@ export default function CreateAutomationForm({
   }))
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       type: AutomationType.TASK_REPETITION,
       timezone: 'Asia/Tehran',
@@ -201,7 +109,7 @@ export default function CreateAutomationForm({
           type: values.type,
           taskId: values.taskId,
           daysOfWeek: values.daysOfWeek,
-          timeOfDay: values.timeOfDay, // مستقیماً همون رشته "HH:MM"
+          timeOfDay: values.timeOfDay, // رشته "HH:MM"
           timezone: values.timezone,
           active: values.active,
         },
@@ -213,21 +121,25 @@ export default function CreateAutomationForm({
           })
 
           toast({
-            title: 'موفق',
-            description: 'اتوماسیون ایجاد شد',
+            title: t('automations.toast.createSuccess.title'),
+            description: t('automations.toast.createSuccess.description'),
             variant: 'success',
           })
 
           onClose()
         },
         onError: (error: any) => {
+          // اینجا هیچ پیام مستقیم از API نشان داده نمی‌شود
+          // اگر خواستی لاگ داخلی بگیری، می‌تونی با console.error انجام بدی
+          console.error('Create automation error', error)
+
           toast({
-            title: 'خطا',
-            description: error?.message || 'خطایی رخ داد',
+            title: t('automations.toast.createError.title'),
+            description: t('automations.toast.createError.description'),
             variant: 'destructive',
           })
         },
-      },
+      }
     )
   }
 
@@ -241,17 +153,19 @@ export default function CreateAutomationForm({
             name='type'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>نوع اتوماسیون</FormLabel>
+                <FormLabel>{t('automations.form.type.label')}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='انتخاب کنید' />
+                      <SelectValue
+                        placeholder={t('automations.form.type.placeholder')}
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {Object.values(AutomationType).map((type) => (
                       <SelectItem key={type} value={type}>
-                        {automationTypeLabels[type]}
+                        {t(`automations.types.${type}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -267,19 +181,23 @@ export default function CreateAutomationForm({
             name='taskId'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>وظیفه</FormLabel>
+                <FormLabel>{t('automations.form.task.label')}</FormLabel>
 
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='انتخاب وظیفه' />
+                      <SelectValue
+                        placeholder={t('automations.form.task.placeholder')}
+                      />
                     </SelectTrigger>
                   </FormControl>
 
                   <SelectContent>
                     <div className='p-2'>
                       <Input
-                        placeholder='جستجوی وظیفه...'
+                        placeholder={t(
+                          'automations.form.task.searchPlaceholder'
+                        )}
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
                       />
@@ -311,9 +229,9 @@ export default function CreateAutomationForm({
             name='daysOfWeek'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>روزهای اجرا</FormLabel>
+                <FormLabel>{t('automations.form.daysOfWeek.label')}</FormLabel>
                 <div className='flex flex-wrap gap-2'>
-                  {daysOfWeekOptions.map((day) => {
+                  {ALL_DAYS.map((day) => {
                     const selected = field.value?.includes(day.value)
 
                     return (
@@ -325,16 +243,14 @@ export default function CreateAutomationForm({
                         onClick={() => {
                           if (selected) {
                             field.onChange(
-                              field.value.filter(
-                                (d: number) => d !== day.value,
-                              ),
+                              field.value.filter((d: number) => d !== day.value)
                             )
                           } else {
                             field.onChange([...(field.value || []), day.value])
                           }
                         }}
                       >
-                        {day.label}
+                        {t(`days.${day.value}`)}
                       </Button>
                     )
                   })}
@@ -350,7 +266,7 @@ export default function CreateAutomationForm({
             name='timeOfDay'
             render={({ field }) => (
               <TimeField
-                label='ساعت اجرا'
+                labelKey={t('automations.form.timeOfDay.label')}
                 value={field.value}
                 onChange={field.onChange}
               />
@@ -359,7 +275,7 @@ export default function CreateAutomationForm({
 
           <Button type='submit' disabled={isPending}>
             {isPending && <Loader className='animate-spin ml-2' />}
-            ایجاد اتوماسیون
+            {t('automations.form.submit')}
           </Button>
         </form>
       </Form>

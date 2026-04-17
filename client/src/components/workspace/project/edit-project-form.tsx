@@ -25,12 +25,15 @@ import useWorkspaceId from '@/hooks/use-workspace-id'
 import { editProjectMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function EditProjectForm(props: {
   project?: ProjectType
   onClose: () => void
 }) {
   const { project, onClose } = props
+  const { t } = useTranslation()
+
   const workspaceId = useWorkspaceId()
   const queryClient = useQueryClient()
 
@@ -39,9 +42,12 @@ export default function EditProjectForm(props: {
   const projectId = project?._id as string
 
   const formSchema = z.object({
-    name: z.string().trim().min(1, {
-      message: 'عنوان پروژه الزامی است',
-    }),
+    name: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('projects.editProject.validation.nameRequired'),
+      }),
     description: z.string().trim(),
   })
 
@@ -71,13 +77,15 @@ export default function EditProjectForm(props: {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return
+
     const payload = {
       projectId,
       workspaceId,
       data: { emoji, ...values },
     }
+
     mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ['singleProject', projectId],
         })
@@ -87,37 +95,48 @@ export default function EditProjectForm(props: {
         })
 
         toast({
-          title: 'موفق',
-          description: data.message,
+          title: t('projects.editProject.toast.successTitle'),
+          description: t('projects.editProject.toast.successDescription'),
           variant: 'success',
         })
 
         setTimeout(() => onClose(), 100)
       },
-      onError: (error) => {
-        toast({
-          title: 'خطا',
-          description: error.message,
-          variant: 'destructive',
-        })
+      onError: (err) => {
+        // اینجا هیچ پیغام خام از API نمایش داده نمی‌شود
+        if (err.message == 'UNAUTHORIZED') {
+          toast({
+            title: t('projects.editProject.toast.errorTitle'),
+            description: t('errors.UNAUTHORIZED'),
+            variant: 'destructive',
+          })
+        } else {
+          toast({
+            title: t('projects.editProject.toast.errorTitle'),
+            description: t('projects.editProject.toast.errorDescription'),
+            variant: 'destructive',
+          })
+        }
       },
     })
   }
 
   return (
-    <div className='w-full h-auto max-w-full' dir='rtl '>
+    <div className='w-full h-auto max-w-full' dir='rtl'>
       <div className='h-full'>
-        <div className='m-5  pb-2 border-b'>
+        <div className='m-5 pb-2 border-b'>
           <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            جزئیات پروژه را برای مدیریت بهتر وظیفه ‌ها به‌روز کنید
+            {t('projects.editProject.subtitle')}
           </p>
         </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='mb-4'>
               <label className='block text-sm font-medium text-gray-700'>
-                انتخاب ایموجی
+                {t('projects.editProject.emojiLabel')}
               </label>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -127,11 +146,13 @@ export default function EditProjectForm(props: {
                     <span className='text-4xl'>{emoji}</span>
                   </Button>
                 </PopoverTrigger>
+
                 <PopoverContent align='start' className='!p-0'>
                   <EmojiPickerComponent onSelectEmoji={handleEmojiSelection} />
                 </PopoverContent>
               </Popover>
             </div>
+
             <div className='mb-4'>
               <FormField
                 control={form.control}
@@ -139,20 +160,23 @@ export default function EditProjectForm(props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      عنوان پروژه
+                      {t('projects.editProject.nameLabel')}
                     </FormLabel>
+
                     <FormControl>
                       <Input
-                        placeholder='عنوان پروژه'
+                        placeholder={t('projects.editProject.namePlaceholder')}
                         className='!h-[48px]'
                         {...field}
                       />
                     </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
             <div className='mb-4'>
               <FormField
                 control={form.control}
@@ -160,18 +184,22 @@ export default function EditProjectForm(props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      توضیحات پروژه
+                      {t('projects.editProject.descriptionLabel')}
                       <span className='text-xs font-extralight mr-2'>
-                        (اختیاری)
+                        ({t('projects.editProject.optional')})
                       </span>
                     </FormLabel>
+
                     <FormControl>
                       <Textarea
                         rows={4}
-                        placeholder='توضیحات پروژه'
+                        placeholder={t(
+                          'projects.editProject.descriptionPlaceholder'
+                        )}
                         {...field}
                       />
                     </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -184,7 +212,7 @@ export default function EditProjectForm(props: {
               type='submit'
             >
               {isPending && <Loader className='animate-spin ml-2' />}
-              به‌روزرسانی
+              {t('projects.editProject.submit')}
             </Button>
           </form>
         </Form>

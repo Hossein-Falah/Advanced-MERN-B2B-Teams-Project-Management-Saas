@@ -7,6 +7,8 @@ import { AnalyticsGroup } from "./interfaces/analytics.interface";
 import { AnalyticsType } from "./types/analytics.type";
 import { TaskDocument } from "../task/task.model";
 import { UserService } from "../user/user.service";
+import { AnalyticsTaskTypeEnum } from "../../common/enums/analytics.enum";
+import { validateDateTask } from "../../utils/validate-task.util";
 
 export class AnalyticsService {
     constructor(
@@ -106,5 +108,50 @@ export class AnalyticsService {
         return {
             analytics: hours
         }
+    }
+
+    public async getTaskAnalytics(
+        workspaceId: string,
+        type: AnalyticsTaskTypeEnum,
+        startDate: Date,
+        endDate: Date,
+        projectId?: string
+    ) {
+        validateDateTask(startDate, endDate);
+    
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+    
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+            
+        const getTasksDaily =
+            type === AnalyticsTaskTypeEnum.CREATED
+                ? await this.analyticsRepository.getTasksCreatedDaily(workspaceId, start, end, projectId)
+                : await this.analyticsRepository.getTasksCompletedDaily(workspaceId, start, end, projectId);        
+
+        return getTasksDaily;
+    }
+
+    public async getProjectAnalytics(workspaceId: string) {
+        const getProjects = await this.analyticsRepository.getProjectsProgress(workspaceId);
+        return getProjects;
+    }
+
+    public async getUserAnalytics(
+        workspaceId: string, 
+        startDate: Date, 
+        endDate: Date
+    ) {
+        validateDateTask(startDate, endDate);
+    
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+    
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+    
+        const getAnalytics = await this.analyticsRepository.getUsersAssignedCount(workspaceId, start, end);
+        return getAnalytics;
     }
 }

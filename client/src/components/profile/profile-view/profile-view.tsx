@@ -10,6 +10,7 @@ import {
   Globe,
   Calendar,
   Clock,
+  BarChart3,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -21,12 +22,13 @@ import ProfileViewError from './profile-view-error'
 import getAchievements from './profile-view-achivment'
 import InfoRow from '../../ui/info-row'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import ProfileActivityTimelineDialog from '@/components/profile/profile-view/activity-dialog/activity-dialog'
-import { BarChart3 } from 'lucide-react'
+import { ALL_DAYS } from '@/constant'
+import { useTranslation } from 'react-i18next'
 
-/** 🗓 تبدیل تاریخ میلادی به شمسی */
+/** 🗓 تبدیل تاریخ میلادی به شمسی (بدون دیفالت متنی؛ در صورت خطا رشته خالی) */
 const toJalali = (date?: string | number | Date | null) => {
   if (!date) return ''
   try {
@@ -40,24 +42,30 @@ const toJalali = (date?: string | number | Date | null) => {
   }
 }
 
-const formatWorkingDays = (days?: number[]) => {
-  if (!days || !days.length) return 'تعریف نشده'
-  const map: Record<number, string> = {
-    0: 'شنبه',
-    1: 'یکشنبه',
-    2: 'دوشنبه',
-    3: 'سه‌شنبه',
-    4: 'چهارشنبه',
-    5: 'پنجشنبه',
-    6: 'جمعه',
-  }
-  return days.map((d) => map[d] ?? d).join('، ')
-}
-
 const ProfileView = () => {
+  const { t } = useTranslation()
   const { username } = useParams<{ username: string }>()
   const workspaceId = useWorkspaceId()
   const [isTimelineOpen, setIsTimelineOpen] = useState(false)
+
+  // Map روزهای کاری از ALL_DAYS (بدون متن پیش‌فرض در اینجا)
+  const workingDayLabelMap = useMemo(() => {
+    const map = new Map<number, string>()
+    ALL_DAYS.forEach((day) => {
+      const translated = t(`days.${day.value}`)
+      map.set(day.value, translated)
+    })
+    return map
+  }, [t])
+
+  // بدون متن notDefined؛ اگر روزها خالی باشند، رشته خالی برمی‌گردد
+  const formatWorkingDays = (days?: number[]) => {
+    if (!days || !days.length) return ''
+    return days
+      .map((d) => workingDayLabelMap.get(d) ?? '')
+      .filter(Boolean)
+      .join('، ')
+  }
 
   const {
     data: userData,
@@ -86,10 +94,19 @@ const ProfileView = () => {
     return <ProfileViewSkeleton />
   }
 
-  const user = userData.user
+  const user = userData.data?.user
+  if (!user) {
+    return <ProfileViewSkeleton />
+  }
   const achievements = getAchievements(user)
   const workSchedule = user.workSchedule
   const region = user.region
+
+  const hasWorkingDays =
+    workSchedule &&
+    formatWorkingDays(workSchedule.workingDays) &&
+    workSchedule.startHour != null &&
+    workSchedule.endHour != null
 
   return (
     <div
@@ -100,7 +117,7 @@ const ProfileView = () => {
       <ProfileActivityTimelineDialog
         open={isTimelineOpen}
         onOpenChange={setIsTimelineOpen}
-        title={`آمار فعالیت ۲۴ ساعته ${user.name}`}
+        title={t('profileView.activityDialog.title')}
         username={username}
       />
 
@@ -114,7 +131,7 @@ const ProfileView = () => {
                   {user.profilePicture ? (
                     <img
                       src={user.profilePicture}
-                      alt={`تصویر پروفایل ${user.name}`}
+                      alt={t('profileView.imageAlt')}
                       className='w-full h-full object-cover'
                     />
                   ) : (
@@ -128,18 +145,23 @@ const ProfileView = () => {
                   className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-white dark:border-gray-900 ${
                     user.isOnline ? 'bg-emerald-500' : 'bg-gray-400'
                   }`}
+                  aria-label={
+                    user.isOnline
+                      ? t('profileView.online')
+                      : t('profileView.offline')
+                  }
                 />
               </div>
 
               <div className='space-y-1'>
-                <div className='flex w-full   gap-2 flex-col md:flex-row md:items-center'>
+                <div className='flex w-full gap-2 flex-col md:flex-row md:items-center'>
                   <h1 className='text-base lg:text-lg font-semibold text-gray-900 dark:text-white'>
                     {user.name}
                   </h1>
                   {user.jobTitle && (
                     <Badge
                       variant='outline'
-                      className='text-[11px] sm:w-max break-words text-center  font-normal p-2 py-1   border-gray-300 dark:border-gray-700'
+                      className='text-[11px] sm:w-max break-words text-center font-normal p-2 py-1 border-gray-300 dark:border-gray-700'
                     >
                       {user.jobTitle}
                     </Badge>
@@ -153,11 +175,21 @@ const ProfileView = () => {
                       <span>@{user.username}</span>
                     </span>
                   )}
-                  <Separator orientation='vertical' className='h-3' />
-                  <span className='inline-flex items-center gap-1'>
-                    <Calendar className='h-3 w-3' />
-                    <span>عضو از {toJalali(user.createdAt || user._id)}</span>
-                  </span>
+
+                  {user.createdAt && (
+                    <>
+                      <Separator orientation='vertical' className='h-3' />
+                      <span className='inline-flex items-center gap-1'>
+                        <Calendar className='h-3 w-3' />
+                        <span>
+                          {t('profileView.memberSince', {
+                            date: toJalali(user.createdAt),
+                          })}
+                        </span>
+                      </span>
+                    </>
+                  )}
+
                   {!user.isOnline && user.lastSeen && (
                     <>
                       <Separator
@@ -166,7 +198,11 @@ const ProfileView = () => {
                       />
                       <span className='inline-flex items-center gap-1'>
                         <Clock className='h-3 w-3' />
-                        <span>آخرین بازدید: {toJalali(user.lastSeen)}</span>
+                        <span>
+                          {t('profileView.lastSeen', {
+                            date: toJalali(user.lastSeen),
+                          })}
+                        </span>
                       </span>
                     </>
                   )}
@@ -183,7 +219,9 @@ const ProfileView = () => {
                     : 'bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-800'
                 }`}
               >
-                {user.isOnline ? 'آنلاین' : 'آفلاین'}
+                {user.isOnline
+                  ? t('profileView.online')
+                  : t('profileView.offline')}
               </Badge>
 
               <Button
@@ -193,7 +231,7 @@ const ProfileView = () => {
                 onClick={() => setIsTimelineOpen(true)}
               >
                 <BarChart3 className='w-3.5 h-3.5' />
-                <span>آمار ۲۴ ساعته</span>
+                <span>{t('profileView.activity24h')}</span>
               </Button>
             </div>
           </div>
@@ -204,53 +242,69 @@ const ProfileView = () => {
             {/* اطلاعات اصلی */}
             <div className='lg:col-span-2 space-y-4'>
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-                <InfoRow icon={UserIcon} label='نام کامل' value={user.name} />
+                <InfoRow
+                  icon={UserIcon}
+                  label={t('profileView.fields.fullName')}
+                  value={user.name}
+                />
 
                 {user.username && (
                   <InfoRow
                     icon={Globe}
-                    label='نام کاربری'
+                    label={t('profileView.fields.username')}
                     value={`@${user.username}`}
                   />
                 )}
 
                 {user.email && (
-                  <InfoRow icon={Mail} label='ایمیل' value={user.email} />
+                  <InfoRow
+                    icon={Mail}
+                    label={t('profileView.fields.email')}
+                    value={user.email}
+                  />
                 )}
 
                 {user.phone && (
-                  <InfoRow icon={Phone} label='شماره تلفن' value={user.phone} />
+                  <InfoRow
+                    icon={Phone}
+                    label={t('profileView.fields.phone')}
+                    value={user.phone}
+                  />
                 )}
 
                 {user.jobTitle && (
                   <InfoRow
                     icon={Briefcase}
-                    label='عنوان شغلی'
+                    label={t('profileView.fields.jobTitle')}
                     value={user.jobTitle}
                   />
                 )}
 
                 {region && (
-                  <InfoRow icon={Globe} label='منطقه زمانی' value={region} />
+                  <InfoRow
+                    icon={Globe}
+                    label={t('profileView.fields.region')}
+                    value={region}
+                  />
                 )}
               </div>
 
-              {workSchedule && (
+              {hasWorkingDays && (
                 <InfoRow
                   icon={Clock}
-                  label='ساعات کاری'
-                  value={`${formatWorkingDays(
-                    workSchedule.workingDays,
-                  )}، ${workSchedule.startHour}:00 تا ${workSchedule.endHour}:00`}
+                  label={t('profileView.fields.workSchedule')}
+                  value={`${formatWorkingDays(workSchedule!.workingDays)}، ${
+                    workSchedule!.startHour
+                  }:00 ${t('profileView.to')} ${workSchedule!.endHour}:00`}
                 />
               )}
             </div>
 
-            {/* ستون کناری – خلاصه + دستاوردها */}
+            {/* ستون کناری – دستاوردها */}
             <div className='space-y-3'>
               <div className='bg-white/70 dark:bg-gray-900/60 border border-gray-100 dark:border-gray-800 rounded-md px-3 py-3'>
                 <h4 className='text-[12px] font-medium mb-2 text-gray-800 dark:text-gray-100'>
-                  دستاوردها
+                  {t('profileView.achievements.title')}
                 </h4>
                 {achievements.length ? (
                   <div className='flex flex-wrap gap-1.5'>
@@ -265,19 +319,20 @@ const ProfileView = () => {
                   </div>
                 ) : (
                   <p className='text-[11px] text-gray-500'>
-                    هنوز دستاوردی ثبت نشده
+                    {t('profileView.achievements.empty')}
                   </p>
                 )}
               </div>
             </div>
           </div>
+
           <Separator className='my-2 mt-4' />
 
           {/* درباره من */}
           {user.bio ? (
             <div className='space-y-2'>
               <h3 className='text-[13px] font-medium text-gray-900 dark:text-gray-100'>
-                درباره من
+                {t('profileView.about.title')}
               </h3>
               <div className='bg-gray-50 dark:bg-gray-900/60 rounded-md px-3 py-2'>
                 <p className='text-[12px] leading-relaxed text-gray-700 dark:text-gray-300'>
@@ -287,7 +342,7 @@ const ProfileView = () => {
             </div>
           ) : (
             <div className='text-[12px] text-gray-500 dark:text-gray-400 py-2'>
-              هنوز بیوگرافی‌ای ثبت نشده است.
+              {t('profileView.about.empty')}
             </div>
           )}
         </CardContent>

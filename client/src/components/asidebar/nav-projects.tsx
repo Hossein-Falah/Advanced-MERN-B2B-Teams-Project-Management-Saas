@@ -36,8 +36,11 @@ import { PaginationType } from '@/types/api.type'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteProjectMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
+import { useTranslation } from 'react-i18next'
 
 export function NavProjects() {
+  const { t } = useTranslation()
+
   const navigate = useNavigate()
   const location = useLocation()
   const pathname = location.pathname
@@ -63,8 +66,8 @@ export function NavProjects() {
       pageNumber,
     })
 
-  const projects = data?.projects || []
-  const pagination = data?.pagination || ({} as PaginationType)
+  const projects = data?.data?.projects || []
+  const pagination = data?.meta || ({} as PaginationType)
   const hasMore = pagination?.totalPages > pageNumber
 
   const fetchNextPage = () => {
@@ -80,34 +83,41 @@ export function NavProjects() {
         projectId: context?._id,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: ['allprojects', workspaceId],
           })
+
+          // نمایش فقط پیام عمومی موفقیت، نه متن خام API
           toast({
-            title: 'موفق',
-            description: data.message,
+            title: t('sidebar.navProjects.deleteDialog.toast.successTitle'),
+            description: t(
+              'sidebar.navProjects.deleteDialog.toast.projectDeleted'
+            ),
             variant: 'success',
           })
 
           navigate(`/workspace/${workspaceId}`)
           setTimeout(() => onCloseDialog(), 100)
         },
-        onError: (error) => {
+        onError: () => {
+          // عدم نمایش متن خطای خام API
+          // if(err.message)
           toast({
-            title: 'خطا',
-            description: error.message,
+            title: t('sidebar.navProjects.deleteDialog.toast.errorTitle'),
+            description: t('errors.unknown'),
             variant: 'destructive',
           })
         },
-      },
+      }
     )
   }
+
   return (
     <>
       <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
         <SidebarGroupLabel className='w-full justify-between pr-0'>
-          <span>پروژه / هدف</span>
+          <span>{t('sidebar.navProjects.title')}</span>
 
           <PermissionsGuard requiredPermission={Permissions.CREATE_PROJECT}>
             <button
@@ -120,7 +130,8 @@ export function NavProjects() {
           </PermissionsGuard>
         </SidebarGroupLabel>
         <SidebarMenu className='h-[320px] scrollbar overflow-y-auto pb-2'>
-          {isError ? <div>خطا رخ داد</div> : null}
+          {isError ? <div>{t('errors.unknown')}</div> : null}
+
           {isPending ? (
             <Loader
               className=' w-5 h-5
@@ -132,8 +143,7 @@ export function NavProjects() {
           {!isPending && projects?.length === 0 ? (
             <div className='pl-3'>
               <p className='text-xs text-muted-foreground leading-6'>
-                هنوز پروژه‌ای در این فضای کاری وجود ندارد. پروژه‌هایی که ایجاد
-                می‌کنید اینجا نمایش داده می‌شوند.
+                {t('sidebar.navProjects.emptyDescription')}
               </p>
               <PermissionsGuard requiredPermission={Permissions.CREATE_PROJECT}>
                 <Button
@@ -142,7 +152,7 @@ export function NavProjects() {
                   className='h-0 p-0 text-[13px] underline font-semibold mt-4'
                   onClick={onOpen}
                 >
-                  ایجاد پروژه
+                  {t('sidebar.navProjects.createProject')}
                   <ArrowRight />
                 </Button>
               </PermissionsGuard>
@@ -163,7 +173,9 @@ export function NavProjects() {
                     <DropdownMenuTrigger asChild>
                       <SidebarMenuAction showOnHover>
                         <MoreHorizontal />
-                        <span className='sr-only'>بیشتر</span>
+                        <span className='sr-only'>
+                          {t('sidebar.navProjects.more')}
+                        </span>
                       </SidebarMenuAction>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -175,7 +187,7 @@ export function NavProjects() {
                         onClick={() => navigate(`${projectUrl}`)}
                       >
                         <Folder className='text-muted-foreground' />
-                        <span>مشاهده پروژه</span>
+                        <span>{t('sidebar.navProjects.viewProject')}</span>
                       </DropdownMenuItem>
 
                       <PermissionsGuard
@@ -187,7 +199,7 @@ export function NavProjects() {
                           onClick={() => onOpenDialog(item)}
                         >
                           <Trash2 className='text-muted-foreground' />
-                          <span>حذف پروژه</span>
+                          <span>{t('sidebar.navProjects.deleteProject')}</span>
                         </DropdownMenuItem>
                       </PermissionsGuard>
                     </DropdownMenuContent>
@@ -205,7 +217,11 @@ export function NavProjects() {
                 onClick={fetchNextPage}
               >
                 <MoreHorizontal className='text-sidebar-foreground/70' />
-                <span>{isFetching ? 'در حال بارگذاری...' : 'بیشتر'}</span>
+                <span>
+                  {isFetching
+                    ? t('sidebar.navProjects.loadingMore')
+                    : t('sidebar.navProjects.more')}
+                </span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
@@ -217,12 +233,13 @@ export function NavProjects() {
         isLoading={isLoading}
         onClose={onCloseDialog}
         onConfirm={handleConfirm}
-        title='حذف پروژه'
-        description={`آیا مطمئن هستید می‌خواهید ${
-          context?.name || 'این مورد'
-        } را حذف کنید؟ این عمل قابل بازگشت نیست.`}
-        confirmText='حذف'
-        cancelText='انصراف'
+        title={t('sidebar.navProjects.deleteDialog.title')}
+        description={t('sidebar.navProjects.deleteDialog.description', {
+          name:
+            context?.name || t('sidebar.navProjects.deleteDialog.defaultItem'),
+        })}
+        confirmText={t('sidebar.navProjects.deleteDialog.confirm')}
+        cancelText={t('sidebar.navProjects.deleteDialog.cancel')}
       />
     </>
   )

@@ -1,9 +1,8 @@
-'use client'
-
 import { useState } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import AnalyticsCard from '../common/analytics-card'
 import { MoveLeftIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type AnalyticsKind = 'total' | 'overdue' | 'completed' | 'inprogress'
 type TabKey = 'team' | 'personal'
@@ -77,43 +76,45 @@ const fakeData: AnalyticsData = {
 const cardsConfig: {
   key: keyof TabAnalytics
   kind: AnalyticsKind
-  title: { team: string; personal: string }
+  // اینجا به جای متن ثابت، کلید ترجمه نگه می‌داریم
+  titleKey: { team: string; personal: string }
 }[] = [
   {
     key: 'todayTasks',
     kind: 'total',
-    title: {
-      team: 'وظایف امروز تیم',
-      personal: 'وظایف امروز شما',
+    titleKey: {
+      team: 'analytics.teamTodayTasks',
+      personal: 'analytics.personalTodayTasks',
     },
   },
   {
     key: 'overdueTasks',
     kind: 'overdue',
-    title: {
-      team: 'وظایف عقب‌افتاده تیم',
-      personal: 'وظایف عقب‌افتاده شما',
+    titleKey: {
+      team: 'analytics.teamOverdueTasks',
+      personal: 'analytics.personalOverdueTasks',
     },
   },
   {
     key: 'completedTasks',
     kind: 'completed',
-    title: {
-      team: 'وظایف انجام‌شده تیم',
-      personal: 'وظایف انجام‌شده شما',
+    titleKey: {
+      team: 'analytics.teamCompletedTasks',
+      personal: 'analytics.personalCompletedTasks',
     },
   },
   {
     key: 'inProgressTasks',
     kind: 'inprogress',
-    title: {
-      team: 'وظایف در حال انجام تیم',
-      personal: 'وظایف در حال انجام شما',
+    titleKey: {
+      team: 'analytics.teamInProgressTasks',
+      personal: 'analytics.personalInProgressTasks',
     },
   },
 ]
 
 const WorkspaceAnalytics = () => {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<TabKey>('personal')
 
   // TODO
@@ -147,11 +148,11 @@ const WorkspaceAnalytics = () => {
               <AnalyticsCard
                 key={`${tab}-${card.key}`}
                 isLoading={isPending}
-                title={card.title[tab]}
+                title={t(card.titleKey[tab])}
                 value={metric.value}
                 kind={card.kind}
                 trend={metric.trend}
-                trendLabel='نسبت به هفته قبل'
+                trendLabel={t('analytics.previousWeek')}
                 chartData={metric.chartData}
               />
             )
@@ -168,13 +169,15 @@ const WorkspaceAnalytics = () => {
         onValueChange={(value) => setActiveTab(value as TabKey)}
       >
         <TabsList>
-          <TabsTrigger value='team'>آمار کل تیم</TabsTrigger>
-          <TabsTrigger value='personal'>آمار من</TabsTrigger>
+          <TabsTrigger value='team'>{t('analytics.teamTab')}</TabsTrigger>
+          <TabsTrigger value='personal'>
+            {t('analytics.personalTab')}
+          </TabsTrigger>
         </TabsList>
         <div className='flex justify-start items-center gap-1'>
           <MoveLeftIcon size={15} />
           <p className='text-sm opacity-65 my-3'>
-            این آمار مربوط به این پروژه میباشد{' '}
+            {t('analytics.projectScopeHint')}
           </p>
         </div>
         {renderTabContent('team')}

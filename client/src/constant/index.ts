@@ -1,20 +1,3 @@
-export const TaskStatusEnum = {
-  BACKLOG: 'BACKLOG',
-  TODO: 'TODO',
-  IN_PROGRESS: 'IN_PROGRESS',
-  IN_REVIEW: 'IN_REVIEW',
-  DONE: 'DONE',
-} as const
-
-export const TaskPriorityEnum = {
-  LOW: 'LOW',
-  MEDIUM: 'MEDIUM',
-  HIGH: 'HIGH',
-  URGENT: 'URGENT',
-} as const
-export type TaskStatusEnumType = keyof typeof TaskStatusEnum
-export type TaskPriorityEnumType = keyof typeof TaskPriorityEnum
-
 export const Permissions = {
   CREATE_WORKSPACE: 'CREATE_WORKSPACE',
   DELETE_WORKSPACE: 'DELETE_WORKSPACE',
@@ -33,3 +16,23 @@ export const Permissions = {
 } as const
 
 export type PermissionType = keyof typeof Permissions
+export const ALL_DAYS = [
+  { value: 0 as const },
+  { value: 1 as const },
+  { value: 2 as const },
+  { value: 3 as const },
+  { value: 4 as const },
+  { value: 5 as const },
+  { value: 6 as const },
+] as const
+
+export type DayValue = (typeof ALL_DAYS)[number]['value']
+
+export const WorkspaceRoles = {
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER',
+  OWNER: 'OWNER',
+} as const
+
+export type WorkspaceRoleType =
+  (typeof WorkspaceRoles)[keyof typeof WorkspaceRoles]

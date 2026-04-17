@@ -6,7 +6,7 @@ import { isAuthRoute } from './common/routePaths'
 const AuthRoute = () => {
   const location = useLocation()
   const { data: authData, isLoading } = useAuth()
-  const user = authData?.user
+  const user = authData?.data?.user
 
   const _isAuthRoute = isAuthRoute(location.pathname)
 

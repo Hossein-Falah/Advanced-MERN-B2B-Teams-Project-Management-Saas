@@ -2,50 +2,67 @@
 import { format as formatJalali } from 'date-fns-jalali'
 import { faIR } from 'date-fns-jalali/locale'
 import { Badge } from '@/components/ui/badge'
-import {
-  TaskPriorityEnum,
-  TaskPriorityEnumType,
-  TaskStatusEnum,
-  TaskStatusEnumType,
-} from '@/constant'
+
 import { formatStatusToEnum } from '@/lib/helper'
 import { priorities, statuses } from '@/components/workspace/task/table/data'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
 import { TaskType } from '@/types/api.type'
+import {
+  TaskPriorityEnum,
+  TaskPriorityEnumType,
+  TaskStatusEnum,
+  TaskStatusEnumType,
+} from '@/constant/task'
 
-export const fieldLabelMap: Record<string, string> = {
-  title: 'عنوان',
-  description: 'توضیحات',
-  status: 'وضعیت',
-  priority: 'اولویت',
-  dueDate: 'تاریخ سررسید',
-  assignedTo: 'مسئول',
-  attachment: 'پیوست',
+// i18n
+import { TFunction } from 'i18next'
+
+export const getFieldLabelMap = (
+  t: TFunction
+): Partial<Record<keyof TaskType, string>> => ({
+  title: t('tasks.taskLogs.fields.title'),
+  description: t('tasks.taskLogs.fields.description'),
+  status: t('tasks.taskLogs.fields.status'),
+  priority: t('tasks.taskLogs.fields.priority'),
+  dueDate: t('tasks.taskLogs.fields.dueDate'),
+  assignedTo: t('tasks.taskLogs.fields.assignedTo'),
+  attachment: t('tasks.taskLogs.fields.attachment'),
+  startDate: t('tasks.taskLogs.fields.startDate'),
+})
+
+type RenderLogFieldValueOptions = {
+  task?: TaskType
+  t: TFunction // 👈 t رو به صورت پارامتر بگیر
 }
 
 export const renderLogFieldValue = (
   field: string,
   value: any,
-  options?: {
-    task?: TaskType
-  },
+  options: RenderLogFieldValueOptions
 ) => {
+  const t = options.t
+  const emptyPlaceholder = t('tasks.taskLogs.common.empty', '—')
+  const invalidDateText = t('tasks.taskLogs.common.invalidDate', 'Invalid date')
+  const defaultUserText = t('tasks.taskLogs.common.user', 'User')
+
   if (value == null || value === '') {
     return (
-      <span className='text-muted-foreground text-[11px] sm:text-xs'>—</span>
+      <span className='text-muted-foreground text-[11px] sm:text-xs'>
+        {emptyPlaceholder}
+      </span>
     )
   }
 
   /* ---------------- date ---------------- */
 
-  if (field === 'dueDate') {
+  if (field === 'dueDate' || field === 'startDate') {
     const date = new Date(value)
 
     if (isNaN(date.getTime())) {
       return (
         <span className='text-[11px] sm:text-xs text-red-500'>
-          تاریخ نامعتبر
+          {invalidDateText}
         </span>
       )
     }
@@ -65,7 +82,7 @@ export const renderLogFieldValue = (
     if (!status) {
       return (
         <span className='text-[11px] sm:text-xs text-slate-700 dark:text-slate-100'>
-          {value}
+          {String(value)}
         </span>
       )
     }
@@ -92,13 +109,13 @@ export const renderLogFieldValue = (
     if (!priority) {
       return (
         <span className='text-[11px] sm:text-xs text-slate-700 dark:text-slate-100'>
-          {value}
+          {String(value)}
         </span>
       )
     }
 
     const priorityKey = formatStatusToEnum(
-      priority.value,
+      priority.value
     ) as TaskPriorityEnumType
 
     const Icon = priority.icon
@@ -132,7 +149,7 @@ export const renderLogFieldValue = (
           </Avatar>
 
           <span className='text-[11px] sm:text-xs truncate max-w-[140px] text-slate-800 dark:text-slate-100'>
-            {name || 'کاربر'}
+            {name || defaultUserText}
           </span>
         </div>
       )

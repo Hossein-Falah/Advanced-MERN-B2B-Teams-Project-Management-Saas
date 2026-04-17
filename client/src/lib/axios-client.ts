@@ -12,9 +12,7 @@ API.interceptors.response.use(
   (response) => response,
   (error: AxiosError<any>) => {
     if (!error.response) {
-      error.message =
-        'اتصال به سرور برقرار نشد. لطفاً اینترنت خود را بررسی کنید'
-      error.code = 'NETWORK_ERROR'
+      error.message = 'NETWORK_ERROR'
       return Promise.reject(error)
     }
 
@@ -22,41 +20,35 @@ API.interceptors.response.use(
 
     switch (status) {
       case 401:
-        error.message = 'لطفا مجدد وارد شوید'
-        error.code = data?.errorCode || 'UNAUTHORIZED'
+        error.message = data?.code || 'UNAUTHORIZED'
         break
 
       case 403:
-        error.message = data?.message || 'دسترسی ندارید'
-        error.code = data?.errorCode || 'FORBIDDEN'
+        error.message = data?.code || 'FORBIDDEN'
         break
 
       case 400:
       case 422:
-        error.message = data?.message || 'مقادیر ارسال شده نامعتبر است'
-        error.code = data?.errorCode || 'VALIDATION_ERROR'
+        error.message = data?.code || 'VALIDATION_ERROR'
         break
 
       case 404:
-        error.message = data?.message || 'منبع مورد نظر پیدا نشد'
-        error.code = data?.errorCode || 'NOT_FOUND'
+        error.message = data?.code || 'NOT_FOUND'
         break
 
       case 500:
       case 502:
       case 503:
       case 504:
-        error.message = 'خطا در اتصال به سرور'
-        error.code = data?.errorCode || 'SERVER_ERROR'
+        error.message = data?.code || 'SERVER_ERROR'
         break
 
       default:
-        error.message = data?.message || 'خطای ناشناخته رخ داده است'
-        error.code = data?.errorCode || 'UNKNOWN_ERROR'
+        error.message = data?.code || 'UNKNOWN_ERROR'
     }
 
     return Promise.reject(error)
-  },
+  }
 )
 
 export default API

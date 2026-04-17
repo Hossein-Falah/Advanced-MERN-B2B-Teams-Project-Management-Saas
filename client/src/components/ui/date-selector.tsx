@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next' // یا از next-i18next
 
 type JalaliDateSelectorProps = {
   /**
@@ -52,6 +53,8 @@ export const JalaliDateSelector: React.FC<JalaliDateSelectorProps> = ({
   label = '',
   disabled,
 }) => {
+  const { t } = useTranslation()
+
   const selectedDate = React.useMemo(() => parseIsoDate(value), [value])
 
   const handleChangeDate = (date: Date | undefined) => {
@@ -99,14 +102,14 @@ export const JalaliDateSelector: React.FC<JalaliDateSelectorProps> = ({
               variant='outline'
               className={cn(
                 'flex-1 h-9 justify-between px-3 text-right text-xs font-normal',
-                !value && 'text-muted-foreground',
+                !value && 'text-muted-foreground'
               )}
               disabled={disabled}
             >
               <span className='truncate'>
                 {selectedDate
                   ? formatJalali(selectedDate, 'PPP', { locale: faIR })
-                  : 'انتخاب تاریخ'}
+                  : t('ui.datePicker.placeholder')}
               </span>
               <CalendarIcon className='mr-2 h-4 w-4 opacity-60' />
             </Button>

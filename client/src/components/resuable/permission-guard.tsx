@@ -1,6 +1,7 @@
 import React from 'react'
 import { PermissionType } from '@/constant'
 import { useAuthContext } from '@/context/auth-provider'
+import { useTranslation } from 'react-i18next'
 
 type PermissionsGuardProps = {
   requiredPermission: PermissionType
@@ -14,6 +15,7 @@ const PermissionsGuard: React.FC<PermissionsGuardProps> = ({
   children,
 }) => {
   const { hasPermission } = useAuthContext()
+  const { t } = useTranslation()
 
   if (!hasPermission(requiredPermission)) {
     return (
@@ -25,7 +27,7 @@ const PermissionsGuard: React.FC<PermissionsGuardProps> = ({
         w-full
         text-muted-foreground'
         >
-          شما برای این کار اجازه دسترسی ندارید
+          {t('errors.accessDenied')}
         </div>
       )
     )

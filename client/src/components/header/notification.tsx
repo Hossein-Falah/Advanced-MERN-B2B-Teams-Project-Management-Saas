@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Bell, Eye, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { useAuthContext } from '@/context/auth-provider'
 
@@ -28,6 +29,8 @@ import { formatNumberShort } from '@/utils/formatNumberShort'
 const LIMIT = 20
 
 const Notification = () => {
+  const { t } = useTranslation()
+
   const { socket, isSocketConnected } = useAuthContext()
   const location = useLocation()
   const navigate = useNavigate()
@@ -36,11 +39,8 @@ const Notification = () => {
   const [page, setPage] = useState(1)
   const [mergedNotifications, setMergedNotifications] = useState<any[]>([])
   const [isLoadMore, setIsLoadMore] = useState(false)
-
-  // ✅ شمارنده‌ی محلی نوتیف‌های خوانده‌نشده
   const [localUnreadCount, setLocalUnreadCount] = useState<number>(0)
 
-  // ref برای مدیریت اسکرول
   const listRef = useRef<HTMLDivElement | null>(null)
 
   const { data, isLoading, isError, refetch, isFetching } = useNotifications({
@@ -52,36 +52,31 @@ const Notification = () => {
     useReadAllNotifications()
   const { mutate: readSingleMutate } = useReadSingleNotification()
 
-  const totalCount = data?.notifications?.pagination?.total ?? 0
+  const totalCount = data?.meta?.total ?? 0
   const hasMore = mergedNotifications.length < totalCount
 
-  // ✅ سینک اولیه‌ی localUnreadCount با API
   useEffect(() => {
-    if (data?.notifications?.unreadCount != null) {
-      setLocalUnreadCount(data.notifications.unreadCount)
+    if (data?.data?.unreadCount != null) {
+      setLocalUnreadCount(data?.data?.unreadCount)
     }
-  }, [data?.notifications?.unreadCount])
+  }, [data?.data?.unreadCount])
 
-  // همگام‌سازی data هر صفحه با mergedNotifications
   useEffect(() => {
-    if (!data?.notifications?.notifications) return
+    if (!data?.data?.notifications) return
 
     setMergedNotifications((prev) => {
+      const current = data.data?.notifications ?? [] // همیشه آرایه
+
       if (page === 1) {
-        // بار اول یا رفرش
-        return data.notifications.notifications
+        return current
       }
 
-      // در صفحه‌های بعدی append بدون تکرار
       const existingIds = new Set(prev.map((n: any) => n._id))
-      const newItems = data.notifications.notifications.filter(
-        (n: any) => !existingIds.has(n._id),
-      )
+      const newItems = current.filter((n: any) => !existingIds.has(n._id))
 
       return [...prev, ...newItems]
     })
 
-    // بعد از load more، اسکرول را اصلاح کن
     if (isLoadMore && listRef.current) {
       const container = listRef.current
 
@@ -94,58 +89,71 @@ const Notification = () => {
     setIsLoadMore(false)
   }, [data, page, isLoadMore])
 
-  // ساب‌اسکرایب وب‌سوکت + آپدیت شمارنده محلی
   useEffect(() => {
     if (!socket || !isSocketConnected) return
 
     const handleNewNotification = (notif: any) => {
       console.log('NEW NOTIFICATION:', notif)
 
-      // 1) آپدیت کش صفحه 1 (در صورت سازگار بودن key)
       queryClient.setQueryData(
         ['notifications', { page: 1, limit: LIMIT }],
         (oldData: any) => {
-          if (!oldData?.notifications) {
+          // اگر هنوز هیچ دیتایی کش نشده
+          if (!oldData) {
             return {
-              notifications: {
+              success: true,
+              code: 'NOTIFICATIONS_FETCHED',
+              statusCode: 200,
+              message: 'Notifications fetched successfully',
+              data: {
                 notifications: [notif],
                 unreadCount: 1,
-                pagination: { total: 1 },
+              },
+              meta: {
+                page: 1,
+                limit: LIMIT,
+                total: 1,
+                totalPages: 1,
               },
             }
           }
 
-          const prev = oldData.notifications
+          const prevData = oldData.data ?? {}
+          const prevNotifications = prevData.notifications ?? []
+          const prevUnreadCount = prevData.unreadCount ?? 0
+
+          const prevMeta = oldData.meta ?? {}
+          const prevTotal = prevMeta.total ?? prevNotifications.length
+
+          const newNotifications = [notif, ...prevNotifications].slice(0, LIMIT)
 
           return {
             ...oldData,
-            notifications: {
-              ...prev,
-              notifications: [notif, ...(prev.notifications ?? [])].slice(
-                0,
-                LIMIT,
+            data: {
+              ...prevData,
+              notifications: newNotifications,
+              unreadCount: prevUnreadCount + 1,
+            },
+            meta: {
+              ...prevMeta,
+              total: prevTotal + 1,
+              // اگر دوست داری totalPages را هم آپدیت کنی:
+              totalPages: Math.max(
+                1,
+                Math.ceil((prevTotal + 1) / (prevMeta.limit ?? LIMIT))
               ),
-              unreadCount: (prev.unreadCount ?? 0) + 1,
-              pagination: {
-                ...prev.pagination,
-                total:
-                  prev.pagination?.total != null
-                    ? prev.pagination.total + 1
-                    : (prev.notifications?.length ?? 0) + 1,
-              },
             },
           }
-        },
+        }
       )
 
-      // 2) آپدیت آرایه‌ی محلی برای UI
+      // اینجا mergedNotifications فقط آرایه‌ی نوتیفیکیشن‌هاست، مستقل از ساختار ریسپانس
       setMergedNotifications((prev) => {
         const exists = prev.some((n: any) => n._id === notif._id)
         if (exists) return prev
         return [notif, ...prev]
       })
 
-      // 3) ✅ افزایش شمارنده‌ی محلی
       setLocalUnreadCount((prev) => prev + 1)
     }
 
@@ -156,7 +164,6 @@ const Notification = () => {
     }
   }, [socket, isSocketConnected, queryClient])
 
-  // ✅ خواندن همه → صفر کردن شمارنده‌ی محلی + sync کش و لیست
   const handleReadAll = () => {
     if (isReadAllPending || localUnreadCount === 0) return
 
@@ -164,12 +171,10 @@ const Notification = () => {
       onSuccess: () => {
         setLocalUnreadCount(0)
 
-        // لیست محلی را به read تبدیل کن
         setMergedNotifications((prev) =>
-          prev.map((n) => ({ ...n, read: true })),
+          prev.map((n) => ({ ...n, read: true }))
         )
 
-        // کش ریکت‌کوئری را هم آپدیت کن
         queryClient.setQueryData(
           ['notifications', { page: 1, limit: LIMIT }],
           (oldData: any) => {
@@ -180,17 +185,16 @@ const Notification = () => {
                 ...oldData.notifications,
                 unreadCount: 0,
                 notifications: oldData.notifications.notifications?.map(
-                  (n: any) => ({ ...n, read: true }),
+                  (n: any) => ({ ...n, read: true })
                 ),
               },
             }
-          },
+          }
         )
       },
     })
   }
 
-  // ✅ خواندن تکی → 1 دونه از شمارنده کم کن + sync کش و لیست
   const handleNotificationClick = (notification: any) => {
     if (!notification.read) {
       readSingleMutate(
@@ -199,14 +203,12 @@ const Notification = () => {
           onSuccess: () => {
             setLocalUnreadCount((prev) => Math.max(prev - 1, 0))
 
-            // در آرایه‌ی محلی، read را true کنیم
             setMergedNotifications((prev) =>
               prev.map((n) =>
-                n._id === notification._id ? { ...n, read: true } : n,
-              ),
+                n._id === notification._id ? { ...n, read: true } : n
+              )
             )
 
-            // کش ریکت‌کوئری را هم آپدیت کن
             queryClient.setQueryData(
               ['notifications', { page: 1, limit: LIMIT }],
               (oldData: any) => {
@@ -218,18 +220,18 @@ const Notification = () => {
                     ...oldData.notifications,
                     unreadCount: Math.max(
                       (oldData.notifications.unreadCount ?? 1) - 1,
-                      0,
+                      0
                     ),
                     notifications: oldData.notifications.notifications?.map(
                       (n: any) =>
-                        n._id === notification._id ? { ...n, read: true } : n,
+                        n._id === notification._id ? { ...n, read: true } : n
                     ),
                   },
                 }
-              },
+              }
             )
           },
-        },
+        }
       )
     }
 
@@ -238,7 +240,7 @@ const Notification = () => {
         `/workspace/${notification.workspace}/tasks?taskId=${notification.task?._id}`,
         {
           state: { from: location.pathname },
-        },
+        }
       )
     }
   }
@@ -248,13 +250,11 @@ const Notification = () => {
 
     if (listRef.current) {
       const container = listRef.current
-      // موقعیت اسکرول قبل از لود
       ;(container as any).scrollTopBeforeLoad = container.scrollTop
     }
 
     setIsLoadMore(true)
     setPage((prev) => prev + 1)
-    // اگر useNotifications بر اساس page key تغییر می‌کند، refetch لازم نیست
     await refetch()
   }
 
@@ -270,7 +270,6 @@ const Notification = () => {
               size={32}
               className='cursor-pointer text-white rounded-xl p-2 bg-black/90 shadow-sm '
             />
-            {/* ✅ استفاده از localUnreadCount برای Badge */}
             {localUnreadCount > 0 && (
               <Badge
                 variant='destructive'
@@ -293,12 +292,14 @@ const Notification = () => {
             <div className='flex sticky top-0 z-40 items-center justify-between gap-2 px-3 py-2.5 border-b bg-white'>
               <div className='flex flex-col gap-0.5'>
                 <DropdownMenuLabel className='p-0 text-[13px] sm:text-sm font-semibold'>
-                  نوتیفیکیشن‌ها
+                  {t('notifications.title')}
                 </DropdownMenuLabel>
-                {/* برای متن توضیحی می‌تونی از apiUnreadCount یا localUnreadCount استفاده کنی؛ من local رو گذاشتم که همیشه sync باشه */}
+
                 {localUnreadCount > 0 && (
                   <span className='hidden sm:inline-block text-xs text-muted-foreground'>
-                    {localUnreadCount} نوتیف خوانده‌نشده
+                    {t('notifications.unreadCount', {
+                      count: localUnreadCount,
+                    })}
                   </span>
                 )}
               </div>
@@ -315,11 +316,11 @@ const Notification = () => {
                     !(localUnreadCount === 0 || isReadAllPending) &&
                       'hover:bg-sidebar-accent-foreground/5 hover:shadow-sm',
                     (localUnreadCount === 0 || isReadAllPending) &&
-                      'opacity-50 cursor-not-allowed',
+                      'opacity-50 cursor-not-allowed'
                   )}
                 >
                   <Eye className='w-3.5 h-3.5 sm:w-4 sm:h-4' />
-                  <span>خواندن همه</span>
+                  <span>{t('notifications.readAll')}</span>
                 </Button>
               </div>
             </div>
@@ -352,7 +353,7 @@ const Notification = () => {
               {!isLoading && !isError && mergedNotifications.length === 0 && (
                 <div className='flex flex-col items-center justify-center py-6 text-xs text-muted-foreground gap-1 text-center'>
                   <span className='text-base'>📭</span>
-                  <span>فعلاً نوتیفیکیشنی نداری.</span>
+                  <span>{t('notifications.empty')}</span>
                 </div>
               )}
 
@@ -371,7 +372,7 @@ const Notification = () => {
                 ))}
             </div>
 
-            {/* Footer: UX بهتر برای Load more */}
+            {/* Footer */}
             <div className='border-t bg-muted/40 px-3 py-2 flex flex-col gap-1'>
               {hasMore ? (
                 <Button
@@ -384,24 +385,26 @@ const Notification = () => {
                   {isFetching ? (
                     <>
                       <Loader2 className='w-3.5 h-3.5 animate-spin' />
-                      <span>در حال بارگذاری نوتیف‌های بیشتر...</span>
+                      <span>{t('notifications.loadingMore')}</span>
                     </>
                   ) : (
-                    <span>نمایش نوتیف‌های بیشتر</span>
+                    <span>{t('notifications.showMore')}</span>
                   )}
                 </Button>
               ) : (
                 totalCount > 0 && (
                   <span className='text-[10px] sm:text-[11px] text-muted-foreground text-center'>
-                    همه نوتیف‌ها نمایش داده شدند
+                    {t('notifications.allShown')}
                   </span>
                 )
               )}
 
               {totalCount > 0 && (
                 <span className='hidden sm:inline text-[11px] text-muted-foreground self-end'>
-                  {formatNumberShort(mergedNotifications.length)} از{' '}
-                  {formatNumberShort(totalCount)} نوتیف
+                  {t('notifications.showingCount', {
+                    shown: formatNumberShort(mergedNotifications.length),
+                    total: formatNumberShort(totalCount),
+                  })}
                 </span>
               )}
             </div>

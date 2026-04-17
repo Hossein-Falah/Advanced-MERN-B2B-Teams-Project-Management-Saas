@@ -1,0 +1,1035 @@
+{
+  "common": {
+    "search": "بحث",
+    "back": "رجوع",
+    "tryAgain": "المحاولة مجدّدًا",
+    "ok": "حسنًا",
+    "cancel": "إلغاء",
+    "appName": "تِلِ مِن",
+    "success": "ناجح",
+    "error": "خطأ",
+    "delete": "حذف",
+    "openMenu": "فتح القائمة",
+    "loading": "جاري التحميل...",
+    "createdBy": "تم الإنشاء بواسطة",
+    "reset": "إعادة تعيين",
+    "unknown": "مجهول"
+  },
+  "plan": {
+    "free": "مجاني"
+  },
+  "roles": {
+    "ADMIN": "مدير",
+    "MEMBER": "عضو",
+    "OWNER": "مالك",
+    "roleDescriptions": {
+      "ADMIN": "يمكنه عرض المشاريع والمهام وإنشاؤها وتعديلها وإدارة الإعدادات.",
+      "MEMBER": "يمكنه فقط عرض وتعديل المهام التي أنشأها بنفسه."
+    }
+  },
+
+  "days": {
+    "0": "السبت",
+    "1": "الأحد",
+    "2": "الاثنين",
+    "3": "الثلاثاء",
+    "4": "الأربعاء",
+    "5": "الخميس",
+    "6": "الجمعة"
+  },
+  "sidebar": {
+    "brand": "تِلِ مِن",
+    "editProfile": "تعديل الملف الشخصي",
+    "logout": "تسجيل الخروج",
+    "logoutDialog": {
+      "title": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+      "description": "بهذا الإجراء ستنتهي جلستك الحالية، وللوصول مرة أخرى يجب أن تقوم بتسجيل الدخول مجددًا.",
+      "confirm": "تسجيل الخروج",
+      "cancel": "إلغاء",
+      "errorTitle": "خطأ",
+      "errorMessage": "حدثت مشكلة أثناء تسجيل الخروج. يرجى المحاولة مرة أخرى."
+    },
+    "nav": {
+      "dashboard": "لوحة التحكم",
+      "tasks": "المهام",
+      "members": "الأعضاء",
+      "automations": "الأتمتة",
+      "settings": "الإعدادات"
+    },
+    "navProjects": {
+      "title": "مشروع / هدف",
+      "emptyDescription": "لا يوجد أي مشروع في مساحة العمل هذه بعد. المشاريع التي تقوم بإنشائها ستُعرض هنا.",
+      "createProject": "إنشاء مشروع",
+      "more": "المزيد",
+      "viewProject": "عرض المشروع",
+      "deleteProject": "حذف المشروع",
+      "loadingMore": "جاري التحميل...",
+      "deleteDialog": {
+        "title": "حذف المشروع",
+        "description": "هل أنت متأكد أنك تريد حذف {{name}}؟ هذا الإجراء غير قابل للاسترجاع.",
+        "defaultItem": "هذا العنصر",
+        "confirm": "حذف",
+        "cancel": "إلغاء"
+      }
+    },
+    "workspaceSwitcher": {
+      "title": "مساحات العمل",
+      "noWorkspace": "لا توجد مساحة عمل محدّدة",
+      "createWorkspace": "إنشاء مساحة عمل جديدة"
+    }
+  },
+  "auth": {
+    "googleOAuth": {
+      "googleLogin": "تسجيل الدخول بحساب جوجل",
+      "failure": {
+        "title": "فشل في المصادقة",
+        "description": "لم ينجح تسجيل الدخول باستخدام حساب جوجل. يرجى المحاولة مرة أخرى.",
+        "backToLogin": "الرجوع إلى صفحة تسجيل الدخول"
+      }
+    },
+    "validation": {
+      "nameRequired": "الاسم مطلوب.",
+      "emailInvalid": "البريد الإلكتروني الذي أدخلته غير صالح.",
+      "emailRequired": "البريد الإلكتروني مطلوب.",
+      "passwordRequired": "كلمة المرور مطلوبة."
+    },
+    "termsText": "بتسجيلك أو تسجيل دخولك فأنت توافق على جميع قوانيننا.",
+    "termsLink": "القوانين والسياسات",
+    "privacyLink": "سياسة الخصوصية",
+
+    "signIn": {
+      "title": "مرحبًا بعودتك",
+      "description": "سجّل الدخول بالبريد الإلكتروني أو رقم الهاتف",
+      "loginWithGoogle": "تسجيل الدخول عبر جوجل",
+      "orLoginWith": "أو تسجيل الدخول بواسطة",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "كلمة المرور",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "loginButton": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "signup": "إنشاء حساب",
+      "termsText": "بتسجيلك أو تسجيل دخولك فأنت توافق على جميع قوانيننا.",
+      "termsLink": "القوانين والسياسات",
+      "privacyLink": "سياسة الخصوصية",
+
+      "validation": {
+        "emailInvalid": "البريد الإلكتروني الذي أدخلته غير صالح.",
+        "emailRequired": "البريد الإلكتروني مطلوب.",
+        "passwordRequired": "كلمة المرور مطلوبة."
+      }
+    },
+    "signup": {
+      "title": "إنشاء حساب",
+      "description": "سجّل باستخدام البريد الإلكتروني أو رقم الهاتف",
+      "googleSignup": "التسجيل عبر جوجل",
+      "orSignupWith": "أو التسجيل بواسطة",
+      "nameLabel": "الاسم",
+      "namePlaceholder": "اسمك",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "كلمة المرور",
+      "submit": "إنشاء حساب",
+      "haveAccount": "هل لديك حساب بالفعل؟",
+      "login": "تسجيل الدخول"
+    }
+  },
+  "notFound": {
+    "title": "الصفحة المطلوبة غير موجودة",
+    "description": "الصفحة التي تبحث عنها غير موجودة أو ربما تم نقلها.",
+    "back": "رجوع",
+    "goToDashboard": "الذهاب إلى لوحة التحكم"
+  },
+  "header": {
+    "dashboard": "لوحة التحكم",
+    "pageLabel": {
+      "profile": "الملف الشخصي",
+      "profile_settings": "إعدادات الملف الشخصي",
+      "project": "المشروع",
+      "settings": "الإعدادات",
+      "tasks": "المهام",
+      "members": "الأعضاء"
+    }
+  },
+  "notifications": {
+    "item": {
+      "defaultUser": "مستخدم",
+
+      "title": {
+        "taskAssigned": "{{name}} عيّن لك مهمة",
+        "taskUpdated": "{{name}} حدّث مهمة",
+        "mention": "{{name}} قام بذكرك",
+        "default": "إشعار جديد"
+      },
+
+      "description": {
+        "default": "اضغط على هذا الإشعار لعرض المزيد من التفاصيل."
+      },
+
+      "taskLabel": "المهمة:"
+    },
+    "title": "الإشعارات",
+    "empty": "لا توجد إشعارات حاليًا.",
+    "unreadCount": "{{count}} إشعار غير مقروء",
+    "readAll": "تحديد الكل كمقروء",
+    "loadingMore": "جارٍ تحميل المزيد من الإشعارات...",
+    "showMore": "عرض المزيد من الإشعارات",
+    "allShown": "تم عرض جميع الإشعارات",
+    "showingCount": "يتم عرض {{shown}} من {{total}} إشعار"
+  },
+  "profileSetting": {
+    "title": "تعديل الملف الشخصي",
+    "validation": {
+      "nameRequired": "الاسم مطلوب",
+      "emailInvalid": "البريد الإلكتروني غير صالح",
+      "phoneInvalid": "رقم الهاتف غير صالح",
+      "usernameMin": "يجب أن يكون اسم المستخدم من 3 أحرف على الأقل",
+      "bioMax": "يجب ألا تزيد السيرة الذاتية عن 500 حرف",
+      "jobTitleMax": "يجب ألا يزيد المسمى الوظيفي عن 100 حرف"
+    },
+
+    "image": {
+      "errorTitle": "خطأ",
+      "onlyImage": "يرجى اختيار ملف صورة فقط",
+      "maxSize": "يجب ألا يتجاوز حجم الملف 5 ميجابايت",
+      "label": "صورة الملف الشخصي",
+      "hint": "JPG/PNG/GIF — الحد الأقصى 5MB",
+      "button": "اختيار صورة",
+      "changeAria": "تغيير الصورة",
+      "alt": "صورة الملف الشخصي"
+    },
+
+    "toast": {
+      "updateSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "updateErrorTitle": "خطأ",
+      "updateErrorFallback": "حدث خطأ أثناء تحديث الملف الشخصي"
+    },
+
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "work": "العمل",
+      "notify": "الإشعارات"
+    },
+
+    "actions": {
+      "viewProfile": "عرض الملف الشخصي",
+      "viewProfileShort": "الملف الشخصي",
+      "saving": "جارٍ الحفظ…",
+      "saveChanges": "حفظ التغييرات",
+      "save": "حفظ",
+      "savingShort": "حفظ…"
+    },
+
+    "fields": {
+      "name": {
+        "label": "الاسم الكامل",
+        "placeholder": "الاسم الكامل"
+      },
+      "username": {
+        "label": "اسم المستخدم",
+        "placeholder": "اسم المستخدم"
+      },
+      "email": {
+        "label": "البريد الإلكتروني",
+        "placeholder": "example@domain.com"
+      },
+      "phone": {
+        "label": "رقم الهاتف",
+        "placeholder": "09123456789"
+      },
+      "jobTitle": {
+        "label": "المسمى الوظيفي",
+        "placeholder": "مثال: Product Designer"
+      },
+      "bio": {
+        "label": "السيرة الذاتية",
+        "placeholder": "اكتب عن نفسك…",
+        "counter": "{{count}}/500"
+      },
+      "region": {
+        "label": "المنطقة الزمنية",
+        "placeholder": "اختر المنطقة الزمنية",
+        "tehran": "Asia/Tehran"
+      },
+      "workSchedule": {
+        "title": "إعدادات العمل",
+        "subtitle": "تُستخدم في الجدولة والإرسال.",
+        "workingDays": "أيام العمل",
+        "startHour": "ساعة البداية",
+        "endHour": "ساعة الانتهاء"
+      },
+      "notify": {
+        "title": "إعدادات الإشعارات",
+        "subtitle": "حدّد طريقة الاستلام لكل بند.",
+        "inAppTitle": "داخل النظام",
+        "smsTitle": "SMS",
+        "allOn": "تشغيل الكل",
+        "allOff": "إيقاف الكل",
+        "custom": "مخصّص",
+        "items": {
+          "onCreateTask": "إنشاء مهمة",
+          "onUpdateTask": "تعديل مهمة",
+          "onMention": "ذكر",
+          "onAutomationAction": "أتمتة",
+          "onMessage": "رسالة"
+        },
+        "toggles": {
+          "allInAppAria": "تشغيل/إيقاف جميع الإشعارات داخل النظام",
+          "allSmsAria": "تشغيل/إيقاف جميع رسائل SMS"
+        }
+      }
+    }
+  },
+  "profileView": {
+    "title": "الملف الشخصي",
+    "summary": {
+      "totalTasks": "إجمالي المهام",
+      "maxPerHour": "الأعلى في الساعة",
+      "avgPerHour": "المتوسط في الساعة",
+      "errors": {
+        "loadFailed": "خطأ في تحميل النشاطات",
+        "unknown": "حدث خطأ غير معروف"
+      }
+    },
+    "activity": {
+      "title": "إحصاءات النشاط خلال 24 ساعة",
+      "chartTabs": {
+        "bar": "أعمدة",
+        "pie": "دائري",
+        "line": "خطّي",
+        "area": "مساحي"
+      },
+      "tooltip": {
+        "hourRange": "الساعة {{startHour}}:00 - {{endHour}}:00",
+        "count": "عدد الأنشطة: {{count}}"
+      },
+
+      "error": {
+        "generic": "حدثت مشكلة أثناء جلب إحصاءات النشاط.",
+        "notFound": "لا توجد بيانات لهذا المستخدم في هذا التاريخ.",
+        "unexpected": "حدث خطأ غير متوقع. يرجى المحاولة لاحقًا."
+      }
+    },
+    "online": "متصل",
+    "offline": "غير متصل",
+
+    "activity24h": "إحصاءات 24 ساعة",
+    "activityDialog": {
+      "title": "إحصاءات النشاط خلال 24 ساعة"
+    },
+
+    "imageAlt": "صورة الملف الشخصي لـ {{name}}",
+
+    "memberSince": "عضو منذ {{date}}",
+    "lastSeen": "آخر ظهور: {{date}}",
+
+    "to": "إلى",
+
+    "workSchedule": {
+      "notDefined": "غير محدّد"
+    },
+
+    "fields": {
+      "fullName": "الاسم الكامل",
+      "username": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "jobTitle": "المسمى الوظيفي",
+      "region": "المنطقة الزمنية",
+      "workSchedule": "ساعات العمل"
+    },
+
+    "achievements": {
+      "title": "الإنجازات",
+      "empty": "لا توجد إنجازات مسجّلة بعد",
+      "member_1_month": "🎉 أكثر من شهر معانا",
+      "member_1_year": "🏅 أكثر من سنة معنا",
+      "member_10_years": "👑 أكثر من 10 سنوات خبرة",
+      "online_now": "🟢 نشط حاليًا",
+      "active_last_24h": "🔥 مستخدم نشط (خلال آخر 24 ساعة)",
+      "profile_completed": "⭐ ملف شخصي شبه مكتمل"
+    },
+
+    "about": {
+      "title": "نبذة عني",
+      "empty": "لم يتم تسجيل نبذة شخصية بعد."
+    },
+    "error": {
+      "title": "لم يتم العثور على مستخدم بهذا الاسم",
+      "description": "لم يتم العثور على مستخدم بالاسم ‎@{{username}} في هذه المساحة. هل تريد البحث عن اسم آخر؟",
+      "searchPlaceholder": "مثال: ali أو testuser"
+    }
+  },
+  "ui": {
+    "fileDrop": {
+      "dragOrClick": "اسحب الملف أو انقر للاختيار",
+      "allowedFormats": "الصيغ المسموح بها: jpg, png, pdf, ...",
+      "changeFile": "انقر لتغيير الملف"
+    },
+    "timeField": {
+      "hourLabel": "الساعة:",
+      "minuteLabel": "الدقيقة:",
+      "hourPlaceholder": "ساعة",
+      "minutePlaceholder": "دقيقة",
+      "errors": {
+        "required": "إدخال الوقت مطلوب.",
+        "invalidFormat": "صيغة الوقت غير صالحة.",
+        "outOfRange": "الوقت المحدد خارج النطاق المسموح.",
+        "default": "حدث خطأ. يرجى المحاولة مجددًا."
+      }
+    },
+    "attachmentDownload": {
+      "label": "تحميل الملف المرفق",
+      "button": "تحميل",
+      "error": "لا يمكن تحميل الملف."
+    },
+    "datePicker": {
+      "selectDate": "اختيار التاريخ",
+      "label": "التاريخ"
+    },
+
+    "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "previousPage": "الذهاب إلى الصفحة السابقة",
+      "nextPage": "الذهاب إلى الصفحة التالية",
+      "morePages": "صفحات أخرى"
+    },
+    "sidebar": {
+      "menu": "القائمة",
+      "toggle": "تبديل حالة الشريط الجانبي",
+      "errors": {
+        "hookOutsideProvider": "يجب استخدام useSidebar داخل SidebarProvider."
+      }
+    }
+  },
+  "automations": {
+    "mainPage": {
+      "title": "جميع الأتمتة",
+      "description": "قائمة الأتمتة في مساحة العمل هذه"
+    },
+    "columns": {
+      "type": "النوع",
+      "taskTitle": "عنوان المهمة",
+      "daysOfWeek": "أيام الأسبوع",
+      "time": "وقت التنفيذ",
+      "nextRun": "التنفيذ القادم",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "table": {
+      "columns": "الأعمدة",
+      "noResult": "لم يتم العثور على نتائج",
+      "pageInfo": "الصفحة {{page}} من {{total}}",
+      "previous": "السابق",
+      "next": "التالي",
+      "sortAsc": "تصاعدي",
+      "sortDesc": "تنازلي",
+      "hide": "إخفاء"
+    },
+    "title": "إدارة الأتمتة",
+    "createNewAutomationButton": "أتمتة جديدة",
+    "createNewAutomationTitle": "إنشاء أتمتة جديدة",
+    "form": {
+      "type": {
+        "label": "نوع الأتمتة",
+        "placeholder": "اختيار نوع الأتمتة"
+      },
+      "task": {
+        "label": "المهمة",
+        "placeholder": "اختيار مهمة",
+        "searchPlaceholder": "بحث عن مهمة..."
+      },
+      "daysOfWeek": {
+        "label": "أيام التنفيذ"
+      },
+      "timeOfDay": {
+        "label": "وقت التنفيذ"
+      },
+      "active": {
+        "label": "حالة الأتمتة",
+        "placeholder": "اختيار الحالة"
+      },
+      "submit": "إنشاء أتمتة",
+      "edit": {
+        "title": "تعديل وتحديث الأتمتة",
+        "submit": "حفظ التغييرات"
+      }
+    },
+    "types": {
+      "TASK_REPETITION": "تكرار مهمة",
+      "SCHEDULED": "مجدولة",
+      "TRIGGER_BASED": "معتمدة على حدث",
+      "UNKNOWN": "معتمدة على حدث"
+    },
+    "validation": {
+      "taskRequired": "اختيار المهمة مطلوب",
+      "daysRequired": "اختر يومًا واحدًا على الأقل",
+      "invalidTime": "الوقت غير صالح (الصيغة HH:MM)"
+    },
+    "toast": {
+      "createSuccess": {
+        "title": "ناجح",
+        "description": "تم إنشاء الأتمتة بنجاح"
+      },
+      "createError": {
+        "title": "خطأ",
+        "description": "حدث خطأ أثناء إنشاء الأتمتة. يرجى المحاولة مرة أخرى."
+      },
+      "updateSuccess": {
+        "title": "ناجح",
+        "description": "تم تحديث الأتمتة بنجاح"
+      },
+      "updateError": {
+        "title": "خطأ",
+        "description": "حدث خطأ أثناء تحديث الأتمتة. يرجى المحاولة مرة أخرى."
+      },
+      "deleteSuccess": {
+        "title": "ناجح",
+        "description": "تم حذف الأتمتة بنجاح"
+      },
+      "deleteError": {
+        "title": "خطأ",
+        "description": "فشل حذف الأتمتة. يرجى المحاولة مرة أخرى."
+      },
+      "loadError": {
+        "title": "خطأ",
+        "description": "لا يمكن تحميل قائمة الأتمتة. يرجى المحاولة لاحقًا."
+      }
+    },
+    "actions": {
+      "edit": "تعديل العنصر",
+      "delete": "حذف الأتمتة"
+    },
+    "messages": {
+      "deleteSuccess": "تم حذف الأتمتة بنجاح"
+    },
+    "errors": {
+      "deleteFailed": "فشل حذف الأتمتة",
+      "unknown": "حدث خطأ غير معروف. يرجى المحاولة لاحقًا.",
+      "network": "خطأ في الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت.",
+      "forbidden": "ليس لديك صلاحية للوصول إلى هذا القسم.",
+      "notFound": "لم يتم العثور على المعلومات المطلوبة.",
+      "validation": "بعض البيانات المدخلة غير صالحة. يرجى التحقق."
+    },
+    "deleteDialog": {
+      "title": "حذف الأتمتة",
+      "description": "هل أنت متأكد من حذف الأتمتة {{name}}؟"
+    },
+    "ui": {
+      "filterPlaceholder": "تصفية الأتمتة...",
+      "statusFilterTitle": "الحالة",
+      "resetFilters": "إعادة تعيين",
+      "editDialogTitle": "تعديل الأتمتة",
+      "editDialogClose": "إغلاق"
+    }
+  },
+  "analytics": {
+    "value": "القيمة",
+    "totalCount": "العدد الإجمالي",
+    "previousPeriod": "مقارنة بالفترة السابقة",
+    "previousWeek": "مقارنة بالأسبوع السابق",
+    "teamTab": "إحصاءات الفريق",
+    "personalTab": "إحصاءاتي",
+    "projectScopeHint": "هذه الإحصاءات تخص هذا المشروع.",
+    "teamTodayTasks": "مهام اليوم للفريق",
+    "personalTodayTasks": "مهامك اليوم",
+    "teamOverdueTasks": "مهام اليوم المتأخرة للفريق",
+    "personalOverdueTasks": "مهامك المتأخرة اليوم",
+    "teamCompletedTasks": "مهام اليوم المنجزة للفريق",
+    "personalCompletedTasks": "مهامك المنجزة اليوم",
+    "teamInProgressTasks": "مهام اليوم قيد التنفيذ للفريق",
+    "personalInProgressTasks": "مهامك قيد التنفيذ اليوم",
+    "workspaceScopeHint": "هذه الإحصاءات تخص مساحة العمل هذه.",
+    "loading": "جاري التحميل...",
+    "error": {
+      "loadFailed": "خطأ في جلب إحصاءات مساحة العمل",
+      "unexpected": "حدث خطأ غير متوقع"
+    }
+  },
+  "members": {
+    "mainPage": {
+      "title": "أعضاء مساحة العمل",
+      "description": "يمكن لأعضاء مساحة العمل عرض جميع مشاريع ومسؤوليات مساحة العمل والانضمام إليها وإنشاء مهام جديدة في مساحة العمل."
+    },
+    "joinedAtLabel": "انضم في تاريخ",
+    "avatarAlt": "صورة المستخدم",
+    "changeRole": {
+      "successTitle": "ناجح",
+      "successDescription": "تم تغيير دور العضو بنجاح.",
+      "errorTitle": "خطأ",
+      "errorDescription": "حدثت مشكلة أثناء تغيير دور العضو. يرجى المحاولة مرة أخرى.",
+      "searchPlaceholder": "اختيار دور جديد...",
+      "noRoleFound": "لم يتم العثور على أي دور."
+    },
+    "invite": {
+      "title": "دعوة الأعضاء للانضمام",
+      "description": "أي شخص لديه رابط الدعوة يمكنه الانضمام إلى مساحة العمل هذه. يمكنك في أي وقت تعطيل رابط الدعوة وإنشاء رابط جديد لمساحة العمل.",
+      "linkLabel": "رابط الدعوة",
+      "copySuccessTitle": "تم النسخ",
+      "copySuccessDescription": "تم نسخ رابط الدعوة إلى الحافظة"
+    }
+  },
+  "projects": {
+    "projecUntitled": "مشروع بدون عنوان",
+    "createProject": {
+      "title": "إنشاء مشروع",
+      "subtitle": "تنظيم وإدارة المهام والموارد والتعاون داخل الفريق",
+      "emojiLabel": "اختيار إيموجي",
+
+      "nameLabel": "عنوان المشروع",
+      "namePlaceholder": "إعادة تصميم الموقع",
+
+      "descriptionLabel": "وصف المشروع",
+      "descriptionPlaceholder": "وصف المشروع",
+      "optional": "اختياري",
+
+      "submit": "إنشاء",
+
+      "validation": {
+        "nameRequired": "عنوان المشروع مطلوب"
+      },
+
+      "toast": {
+        "successTitle": "ناجح",
+        "successDescription": "تم إنشاء المشروع بنجاح",
+        "errorTitle": "خطأ",
+        "errorDescription": "حدثت مشكلة أثناء إنشاء المشروع. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "editProject": {
+      "title": "تعديل المشروع",
+      "subtitle": "حدّث تفاصيل المشروع لتحسين إدارة المهام",
+
+      "emojiLabel": "اختيار إيموجي",
+
+      "nameLabel": "عنوان المشروع",
+      "namePlaceholder": "عنوان المشروع",
+
+      "descriptionLabel": "وصف المشروع",
+      "descriptionPlaceholder": "وصف المشروع",
+      "optional": "اختياري",
+
+      "submit": "تحديث",
+
+      "validation": {
+        "nameRequired": "عنوان المشروع مطلوب"
+      },
+
+      "toast": {
+        "successTitle": "ناجح",
+        "successDescription": "تم تحديث المشروع بنجاح",
+        "errorTitle": "خطأ",
+        "errorDescription": "لم يتم تحديث المشروع. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "recentProjects": {
+      "empty": "لا يوجد أي مشروع بعد",
+      "createdBy": "تم الإنشاء بواسطة"
+    }
+  },
+  "workspaces": {
+    "mainPage": {
+      "title": "لوحة التحكم الخاصة بي",
+      "subtitle": "هنا نظرة عامة على مساحة العمل هذه!",
+      "newProject": "مشروع جديد",
+
+      "recentProjects": "المشاريع الأخيرة",
+      "recentTasks": "المهام الأخيرة",
+      "recentMembers": "الأعضاء الجدد"
+    },
+    "deleteWorkspace": {
+      "title": "حذف مساحة العمل",
+      "description": "حذف مساحة العمل إجراء نهائي وغير قابل للاسترجاع. بعد حذف مساحة العمل، سيتم حذف جميع البيانات المرتبطة بها نهائيًا، بما في ذلك المشاريع والمهام وأدوار الأعضاء. يرجى التصرف بحذر والتأكد من أنك تقوم بذلك عن قصد.",
+      "deleteButton": "حذف مساحة العمل",
+
+      "toast": {
+        "errorTitle": "خطأ",
+        "errorDescription": "فشل حذف مساحة العمل. يرجى المحاولة مرة أخرى."
+      },
+
+      "confirm": {
+        "title": "حذف مساحة العمل {{name}}",
+        "description": "هل أنت متأكد من حذف هذه المساحة؟ هذا الإجراء غير قابل للاسترجاع.",
+        "confirmText": "حذف",
+        "cancelText": "إلغاء"
+      }
+    },
+    "createWorkspace": {
+      "title": "لنقم بإنشاء مساحة عمل",
+      "subtitle": "زد من إنتاجيتك بجمع جميع المشاريع في مكان واحد يسهل على الجميع الوصول إليه.",
+
+      "nameLabel": "اسم مساحة العمل",
+      "namePlaceholder": "اسم الشركة أو الفريق",
+      "nameDescription": "هذا هو اسم شركتك أو فريقك أو مؤسستك.",
+
+      "descriptionLabel": "وصف مساحة العمل",
+      "descriptionPlaceholder": "فريقنا ينظّم هنا مشاريع ومهام التسويق.",
+      "descriptionHelp": "صف مساحة عملك ببضع كلمات ليتعرّف عليها الأعضاء.",
+
+      "optional": "اختياري",
+      "submit": "إنشاء مساحة عمل",
+
+      "validation": {
+        "nameRequired": "اسم مساحة العمل مطلوب"
+      },
+
+      "toast": {
+        "errorTitle": "خطأ",
+        "errorDescription": "فشل إنشاء مساحة العمل. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "editWorkspace": {
+      "mainPage": { "title": "إعدادات مساحة العمل" },
+      "title": "تعديل مساحة العمل",
+
+      "nameLabel": "اسم مساحة العمل",
+      "namePlaceholder": "اسم الشركة أو الفريق",
+
+      "descriptionLabel": "وصف مساحة العمل",
+      "descriptionPlaceholder": "فريقنا ينظّم هنا مشاريع ومهام التسويق.",
+
+      "optional": "اختياري",
+      "submit": "تحديث مساحة العمل",
+
+      "validation": {
+        "nameRequired": "اسم مساحة العمل مطلوب"
+      },
+
+      "toast": {
+        "errorTitle": "خطأ",
+        "errorDescription": "فشل تحديث مساحة العمل. يرجى المحاولة مرة أخرى."
+      }
+    }
+  },
+  "tasks": {
+    "mainPage": {
+      "title": "جميع المهام",
+      "description": "قائمة مهام مساحة العمل هذه"
+    },
+    "taskLogs": {
+      "noLogSelected": "لرؤية التفاصيل، اختر أحد السجلات من القائمة على اليمين.",
+      "headerTitle": "تفاصيل التغييرات",
+      "changesByUserAndDate": "تم تسجيل هذه التغييرات بواسطة {{userName}} بتاريخ {{date}}.",
+      "fallbackUser": "مستخدم",
+      "undo": {
+        "loading": "جارٍ التراجع...",
+        "label": {
+          "desktop": "تراجع",
+          "mobile": "رجوع"
+        }
+      },
+      "redo": {
+        "loading": "جارٍ التطبيق...",
+        "label": {
+          "desktop": "تطبيق القيمة الجديدة",
+          "mobile": "تطبيق"
+        }
+      },
+      "changeType": {
+        "edit": "تغيير تحريري",
+        "create": "تغيير إنشائي"
+      },
+      "previousValue": {
+        "label": "القيمة السابقة"
+      },
+      "newValue": {
+        "label": "القيمة الجديدة"
+      },
+      "noChangesForLog": "لا توجد تغييرات مسجّلة لهذا السجل.",
+      "loading": "جارٍ تحميل سجل المهام...",
+      "empty": "لا يوجد سجل بعد لهذه المهمة.",
+      "actions": {
+        "create": "إنشاء مهمة",
+        "update": "تعديل مهمة",
+        "delete": "حذف مهمة",
+        "other": "إجراء"
+      },
+      "changesCount": "{{count}} تغيير",
+      "itemAriaLabel": "إجراء {{action}} بواسطة {{user}} (المعرّف {{id}})",
+      "unknownUser": "مستخدم غير معروف",
+      "title": "سجل التغييرات - {{title}}",
+      "fields": {
+        "title": "العنوان",
+        "description": "الوصف",
+        "status": "الحالة",
+        "priority": "الأولوية",
+        "dueDate": "تاريخ الاستحقاق",
+        "assignedTo": "المسؤول",
+        "attachment": "مرفق",
+        "startDate": "تاريخ البدء"
+      },
+      "common": {
+        "empty": "—",
+        "invalidDate": "تاريخ غير صالح",
+        "user": "مستخدم"
+      },
+      "errors": {
+        "undoFailed": "فشل التراجع عن التغيير المطلوب. يرجى المحاولة مرة أخرى.",
+        "redoFailed": "فشل تطبيق هذا التغيير مرة أخرى. يرجى المحاولة مرة أخرى.",
+        "fetchFailed": "فشل جلب سجل التغييرات. يرجى تحديث الصفحة."
+      }
+    },
+    "comment": {
+      "form": {
+        "contentRequired": "نص التعليق مطلوب",
+        "placeholder": "اكتب رأيك أو ملاحظاتك...",
+        "submit": "إرسال التعليق",
+        "successTitle": "ناجح",
+        "successDescription": "تم تسجيل التعليق بنجاح",
+        "errorTitle": "خطأ",
+        "errorDescription": "لم يتم تسجيل التعليق"
+      },
+      "attachment": {
+        "dropOrSelect": "اسحب الملف إلى هنا أو اختره",
+        "selectFile": "اختيار ملف"
+      },
+      "mention": {
+        "loading": "جارٍ التحميل...",
+        "noUserFound": "لم يتم العثور على مستخدم",
+        "noUsername": "مستخدم بدون اسم"
+      }
+    },
+    "table": {
+      "columnHeader": {
+        "sortAsc": "تصاعدي",
+        "sortDesc": "تنازلي",
+        "hideColumn": "إخفاء"
+      },
+      "columns": {
+        "columns": "الأعمدة",
+        "selectAll": "تحديد الكل",
+        "selectRow": "تحديد الصف",
+        "title": "العنوان",
+        "project": "المشروع",
+        "assignee": "المسؤول",
+        "dateRange": "نطاق تنفيذ العمل",
+        "status": "الحالة",
+        "priority": "الأولوية",
+        "actions": "الإجراءات",
+        "avatarAlt": "صورة"
+      },
+      "filter": {
+        "searchPlaceholder": "بحث في {{title}}",
+        "noResults": "لم يتم العثور على نتائج",
+        "clearFilters": "مسح المرشحات"
+      },
+
+      "noResults": "لم يتم العثور على نتائج.",
+      "pagination": {
+        "range": "عرض {{start}} إلى {{end}} من {{total}}",
+        "rowsPerPage": "عدد الصفوف في كل صفحة",
+        "pageInfo": "الصفحة {{page}} من {{pageCount}}",
+        "firstPage": "الذهاب إلى الصفحة الأولى",
+        "previousPage": "الذهاب إلى الصفحة السابقة",
+        "nextPage": "الذهاب إلى الصفحة التالية",
+        "lastPage": "الذهاب إلى الصفحة الأخيرة",
+        "prevLabel": "السابق",
+        "nextLabel": "التالي"
+      }
+    },
+    "menu": {
+      "openMenu": "فتح القائمة",
+      "logs": "سجل التغييرات",
+      "edit": "تعديل المهمة",
+      "delete": "حذف المهمة"
+    },
+    "deleteDialog": {
+      "title": "حذف المهمة",
+      "description": "هل أنت متأكد من حذف المهمة {{taskCode}}؟",
+      "confirm": "حذف",
+      "cancel": "إلغاء"
+    },
+    "toast": {
+      "deleteSuccessTitle": "ناجح",
+      "deleteErrorTitle": "خطأ",
+      "deleteSuccessDescription": "تم حذف المهمة بنجاح."
+    },
+    "dialog": {
+      "open_button": "مهمة جديدة",
+      "title": "إنشاء مهمة جديدة",
+      "description": "املأ نموذج إنشاء المهمة.",
+      "noDescription": "لا يوجد وصف مُسجّل لهذه المهمة.",
+      "attachmentLabel": "تحميل الملف المرفق",
+      "noComments": "لا يوجد أي تعليق بعد.",
+      "avatarAlt": "صورة"
+    },
+    "status": {
+      "BACKLOG": "قائمة الانتظار",
+      "TODO": "للتنفيذ",
+      "IN_PROGRESS": "قيد التنفيذ",
+      "IN_REVIEW": "قيد المراجعة",
+      "DONE": "منجزة"
+    },
+    "priority": {
+      "LOW": "منخفضة",
+      "MEDIUM": "متوسطة",
+      "HIGH": "مرتفعة",
+      "URGENT": "عاجلة"
+    },
+    "editTask": {
+      "subtitle": "تعديل وتحديث معلومات المهمة",
+      "submit": "حفظ التغييرات",
+
+      "fields": {
+        "title": {
+          "label": "عنوان المهمة",
+          "placeholder": "إعادة تصميم الموقع"
+        },
+        "description": {
+          "label": "وصف المهمة",
+          "optional": "اختياري",
+          "placeholder": "الوصف"
+        },
+        "assignedTo": {
+          "label": "المسؤول",
+          "placeholder": "اختر مسؤولًا"
+        },
+        "startDate": {
+          "label": "تاريخ البدء"
+        },
+        "dueDate": {
+          "label": "تاريخ الاستحقاق"
+        },
+        "status": {
+          "label": "الحالة",
+          "placeholder": "اختر حالة"
+        },
+        "priority": {
+          "label": "الأولوية",
+          "placeholder": "اختر أولوية"
+        },
+        "attachment": {
+          "label": "ملف مرفق",
+          "previewTitle": "تحميل الملف المرفق",
+          "previewAction": "تحميل"
+        }
+      },
+
+      "datePicker": {
+        "placeholder": "اختيار التاريخ",
+        "hourLabel": "الساعة:",
+        "minuteLabel": "الدقيقة:",
+        "hourPlaceholder": "ساعة",
+        "minutePlaceholder": "دقيقة"
+      },
+
+      "validation": {
+        "titleRequired": "عنوان المهمة مطلوب",
+        "statusRequired": "الحالة مطلوبة",
+        "priorityRequired": "الأولوية مطلوبة",
+        "assigneeRequired": "اختيار المسؤول مطلوب",
+        "startDateRequired": "تاريخ البدء مطلوب",
+        "dueDateRequired": "تاريخ الاستحقاق مطلوب"
+      },
+
+      "toast": {
+        "successTitle": "ناجح",
+        "successDescription": "تم تحديث المهمة بنجاح",
+        "errorTitle": "خطأ",
+        "errorDescription": "حدثت مشكلة أثناء تحديث المهمة. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "createTask": {
+      "form": {
+        "subtitle": "تنظيم وإدارة المهام والموارد والتعاون داخل الفريق",
+
+        "title_label": "عنوان المهمة",
+        "title_placeholder": "إعادة تصميم الموقع",
+        "title_required": "عنوان المهمة مطلوب",
+
+        "description_label": "وصف المهمة",
+        "description_placeholder": "الوصف",
+        "optional": "(اختياري)",
+
+        "project_label": "المشروع",
+        "project_placeholder": "اختر مشروعًا",
+        "project_required": "اختيار المشروع مطلوب",
+
+        "assigned_to_label": "المسؤول",
+        "assigned_to_placeholder": "اختر مسؤولًا",
+        "assigned_to_required": "اختيار المسؤول مطلوب",
+        "assigned_to.unknown": "مجهول",
+
+        "start_date_label": "تاريخ البدء",
+        "start_date_required": "تاريخ البدء مطلوب",
+
+        "due_date_label": "تاريخ الاستحقاق",
+        "due_date_required": "تاريخ الاستحقاق مطلوب",
+
+        "status_label": "الحالة",
+        "status_placeholder": "اختر حالة",
+        "status_required": "الحالة مطلوبة",
+
+        "priority_label": "الأولوية",
+        "priority_placeholder": "اختر أولوية",
+        "priority_required": "الأولوية مطلوبة",
+
+        "attachment_label": "ملف مرفق",
+
+        "submit": "إنشاء"
+      },
+
+      "date": {
+        "select_date": "اختيار التاريخ",
+        "hour_label": "الساعة:",
+        "hour_placeholder": "ساعة",
+        "minute_label": "الدقيقة:",
+        "minute_placeholder": "دقيقة"
+      },
+
+      "toast": {
+        "success": {
+          "title": "ناجح",
+          "description": "تم إنشاء المهمة بنجاح"
+        },
+        "error": {
+          "title": "خطأ",
+          "description": "حدث خطأ أثناء إنشاء المهمة. يرجى المحاولة مرة أخرى."
+        }
+      }
+    },
+    "recentTasks": {
+      "empty": "لم يتم إنشاء أي مهمة بعد",
+      "dueDateLabel": "تاريخ الاستحقاق:"
+    },
+    "filters": {
+      "keyword": "تصفية المهام...",
+      "status": {
+        "title": "الحالة"
+      },
+      "priority": {
+        "title": "الأولوية"
+      },
+      "assignee": {
+        "title": "المسؤول"
+      },
+      "project": {
+        "title": "المشاريع"
+      }
+    }
+  },
+  "invite": {
+    "title": "مرحبًا! لقد تمت دعوتك للانضمام إلى مساحة عمل",
+    "description": "لللانضمام إلى هذه المساحة يجب أولًا تسجيل الدخول إلى حسابك",
+    "joinWorkspace": "الانضمام إلى مساحة العمل",
+    "signUp": "إنشاء حساب",
+    "login": "تسجيل الدخول",
+    "errorTitle": "خطأ",
+    "errorDescription": "حدث خطأ أثناء تنفيذ العملية. يرجى المحاولة مرة أخرى."
+  },
+
+  "errors": {
+    "unknown": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "network": "مشكلة في الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت.",
+    "unauthorized": "صلاحيتك غير كافية.",
+    "forbidden": "لا تملك إذن القيام بهذا الإجراء.",
+    "notFound": "لم يتم العثور على أي عنصر.",
+    "server": "حدث خطأ في الخادم. يرجى المحاولة لاحقًا.",
+    "accessDenied": "ليست لديك صلاحية الوصول إلى هذا القسم."
+  }
+}

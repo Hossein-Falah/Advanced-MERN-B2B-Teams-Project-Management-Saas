@@ -15,4 +15,10 @@ analyticsRoutes.get(
   analyticsController.getProfileActivity
 )
 
+analyticsRoutes.get("/tasks/workspace/:workspaceId", analyticsController.getTaskAnalytics);
+
+analyticsRoutes.get("/projects/workspace/:workspaceId", analyticsController.getProjectAnalytics);
+
+analyticsRoutes.get("/users/workspace/:workspaceId", analyticsController.getUserAnalytics);
+
 export default analyticsRoutes;

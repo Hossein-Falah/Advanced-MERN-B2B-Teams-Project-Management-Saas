@@ -9,9 +9,11 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import CreateAutomationForm from './create-automation-form'
+import { useTranslation } from 'react-i18next' // یا مسیر/کتابخانه‌ی خودت
 
 const CreateAutomationDialog = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const { t } = useTranslation()
 
   const onClose = () => {
     setIsOpen(false)
@@ -22,12 +24,14 @@ const CreateAutomationDialog = () => {
       <DialogTrigger asChild>
         <Button>
           <Plus />
-          اتوماسیون جدید
+          {t('automations.createNewAutomationButton')}
         </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-lg max-h-auto my-5 border-0'>
         <DialogHeader>
-          <DialogTitle className='mt-4'>ایجاد اتوماسیون جدید</DialogTitle>
+          <DialogTitle className='mt-4'>
+            {t('automations.createNewAutomationTitle')}
+          </DialogTitle>
         </DialogHeader>
         <CreateAutomationForm onClose={onClose} />
       </DialogContent>

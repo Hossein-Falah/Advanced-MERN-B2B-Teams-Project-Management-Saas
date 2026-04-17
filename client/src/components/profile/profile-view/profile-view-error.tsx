@@ -4,11 +4,13 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { Input } from '../../ui/input'
+import { useTranslation } from 'react-i18next'
 
 const ProfileViewError = () => {
   const { username } = useParams<{ username: string }>()
   const navigate = useNavigate()
   const [searchValue, setSearchValue] = useState('')
+  const { t } = useTranslation()
 
   const handleSearch = () => {
     if (!searchValue.trim()) return
@@ -26,39 +28,34 @@ const ProfileViewError = () => {
     >
       <Card className='w-full shadow-sm border'>
         <CardContent className='py-8 flex flex-col items-center justify-center gap-6'>
-          {/* عنوان */}
           <h2 className='text-base lg:text-lg font-semibold text-center'>
-            کاربری با این نام پیدا نشد
+            {t('profileView.error.title')}
           </h2>
 
-          {/* توضیحات */}
           <p className='text-xs lg:text-sm text-muted-foreground text-center max-w-md leading-6'>
-            کاربری با نام @{username} در این فضا یافت نشد. می‌خواهید نام دیگری
-            را جستجو کنید؟
+            {t('profileView.error.description', { username })}
           </p>
 
-          {/* سرچ باکس */}
           <div className='flex w-full max-w-sm items-center gap-2'>
             <Input
-              placeholder='مثلاً ali یا testuser'
+              placeholder={t('profileView.error.searchPlaceholder')}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className='text-sm'
             />
             <Button size='sm' className='gap-1' onClick={handleSearch}>
               <Search className='w-4 h-4' />
-              جستجو
+              {t('common.search')}
             </Button>
           </div>
 
-          {/* دکمه بازگشت */}
           <Button
             onClick={() => navigate(-1)}
             variant='ghost'
             size='sm'
             className='gap-2 text-xs'
           >
-            بازگشت
+            {t('common.back')}
             <ArrowRight className='w-4 h-4' />
           </Button>
         </CardContent>

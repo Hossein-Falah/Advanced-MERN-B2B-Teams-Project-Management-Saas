@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { ArrowUpRight, ArrowDownRight, Loader2, Activity } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Sparkline } from './sparkline'
+import { useTranslation } from 'react-i18next'
 
 export type AnalyticsKind = 'total' | 'overdue' | 'completed' | 'inprogress'
 
@@ -50,10 +51,14 @@ const AnalyticsCard = ({
   isLoading,
   kind,
   trend,
-  trendLabel = 'نسبت به دوره قبل',
+  trendLabel,
   chartData,
 }: AnalyticsCardProps) => {
+  const { t } = useTranslation()
+
   const isPositive = kind !== 'overdue'
+
+  const safeTrendLabel = trendLabel || t('analytics.previousPeriod')
 
   return (
     <Card
@@ -105,7 +110,7 @@ const AnalyticsCard = ({
                   {trend > 0 ? `+${trend}%` : `${trend}%`}
                 </span>
 
-                <span>{trendLabel}</span>
+                <span>{safeTrendLabel}</span>
               </div>
             )}
           </div>
@@ -123,7 +128,9 @@ const AnalyticsCard = ({
 
         <div className='flex items-end justify-between gap-2'>
           <div className='flex flex-col'>
-            <span className='text-[11px] text-muted-foreground/80'>مقدار</span>
+            <span className='text-[11px] text-muted-foreground/80'>
+              {t('analytics.value')}
+            </span>
 
             <div className='text-3xl font-extrabold tracking-tight'>
               {isLoading ? (
@@ -136,7 +143,7 @@ const AnalyticsCard = ({
             {!isLoading && totalValue !== undefined && (
               <div className='mt-1 flex items-center gap-2 text-[11px] text-muted-foreground/80'>
                 <span>
-                  تعداد کل :{' '}
+                  {t('analytics.totalCount')} :{' '}
                   <span className='font-semibold'>
                     {totalValue.toLocaleString('fa-IR')}
                   </span>

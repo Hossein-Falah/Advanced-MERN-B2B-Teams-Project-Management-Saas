@@ -1,12 +1,40 @@
-export const CustomTooltip = ({ active, payload }: any) => {
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+
+type CustomTooltipProps = {
+  active?: boolean
+  payload?: any[]
+}
+
+export const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+}) => {
+  const { t } = useTranslation()
+
   if (active && payload && payload.length) {
     const data = payload[0].payload
+
     return (
       <div className='bg-white p-3 rounded-lg shadow-lg border border-gray-200'>
-        <p className='font-medium text-gray-700'>{`ساعت ${data.hour - 1}:00 - ${data.hour}:00`}</p>
-        <p className='text-green-600 mt-1'>{`تعداد فعالیت: ${data.count}`}</p>
+        {/* ساعت بازه زمانی */}
+        <p className='font-medium text-gray-700'>
+          {t('profileView.activity.tooltip.hourRange', {
+            startHour: data.hour - 1,
+            endHour: data.hour,
+          })}
+        </p>
+
+        {/* تعداد فعالیت */}
+        <p className='text-green-600 mt-1'>
+          {t('profileView.activity.tooltip.count', {
+            count: data.count,
+          })}
+        </p>
+
+        {/* لیست تسک‌ها */}
         <div className='mt-2 max-h-40 overflow-y-auto'>
-          {data.tasks.map((task: any, i: number) => (
+          {data.tasks?.map((task: any, i: number) => (
             <div
               key={i}
               className='py-1 border-b border-gray-100 last:border-0'
@@ -18,5 +46,6 @@ export const CustomTooltip = ({ active, payload }: any) => {
       </div>
     )
   }
+
   return null
 }

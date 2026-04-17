@@ -9,9 +9,11 @@ import {
 import EditProjectForm from './edit-project-form'
 import { ProjectType } from '@/types/api.type'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const EditProjectDialog = (props: { project?: ProjectType }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const { t } = useTranslation()
 
   const onClose = () => {
     setIsOpen(false)
@@ -24,11 +26,14 @@ const EditProjectDialog = (props: { project?: ProjectType }) => {
           <Edit3 className='w-5 h-5' />
         </span>
       </DialogTrigger>
+
       <DialogContent className='sm:max-w-lg border-0'>
         <DialogHeader>
-          <DialogTitle className='mt-4'>ویرایش پروژه</DialogTitle>
-          {/* <DialogDescription>اطلاعات پروژه را به‌روز کنید.</DialogDescription> */}
+          <DialogTitle className='mt-4'>
+            {t('projects.editProject.title')}
+          </DialogTitle>
         </DialogHeader>
+
         <EditProjectForm project={props.project} onClose={onClose} />
       </DialogContent>
     </Dialog>

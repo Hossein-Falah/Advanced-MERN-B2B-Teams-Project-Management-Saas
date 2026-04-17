@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { Column } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from 'lucide-react'
 
@@ -11,11 +12,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-interface DataTableColumnHeaderProps<
-  TData,
-  TValue,
-> extends React.HTMLAttributes<HTMLDivElement> {
+// i18n
+import { useTranslation } from 'react-i18next'
+
+interface DataTableColumnHeaderProps<TData, TValue>
+  extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>
+  /**
+   * عنوان ستون. معمولاً از بیرون با t('...') پاس داده می‌شود
+   * تا این کامپوننت وابسته به namespace خاصی نباشد.
+   */
   title: string
 }
 
@@ -24,6 +30,8 @@ export function DataTableColumnHeader<TData, TValue>({
   title,
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+  const { t } = useTranslation()
+
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>
   }
@@ -55,16 +63,16 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuContent align='start'>
           <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
             <ArrowUp className='h-3.5 w-3.5 text-muted-foreground/70' />
-            صعودی
+            {t('tasks.table.columnHeader.sortAsc')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
             <ArrowDown className='h-3.5 w-3.5 text-muted-foreground/70' />
-            نزولی
+            {t('tasks.table.columnHeader.sortDesc')}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
             <EyeOff className='h-3.5 w-3.5 text-muted-foreground/70' />
-            مخفی
+            {t('tasks.table.columnHeader.hideColumn')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

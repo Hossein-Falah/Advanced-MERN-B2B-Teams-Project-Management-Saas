@@ -1,15 +1,18 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
-interface FileDropInputProps extends Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  'type' | 'onChange'
-> {
+interface FileDropInputProps
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'type' | 'onChange'
+  > {
   onFileChange?: (file: File | null) => void
 }
 
 const FileDropInput = React.forwardRef<HTMLInputElement, FileDropInputProps>(
   ({ className, onFileChange, ...props }, ref) => {
+    const { t } = useTranslation()
     const [isDragging, setIsDragging] = React.useState(false)
     const [file, setFile] = React.useState<File | null>(null)
 
@@ -27,9 +30,9 @@ const FileDropInput = React.forwardRef<HTMLInputElement, FileDropInputProps>(
           file
             ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
             : isDragging
-              ? 'border-ring bg-accent/40'
-              : 'border-input hover:bg-accent/30',
-          className,
+            ? 'border-ring bg-accent/40'
+            : 'border-input hover:bg-accent/30',
+          className
         )}
         onDragOver={(e) => {
           e.preventDefault()
@@ -53,9 +56,11 @@ const FileDropInput = React.forwardRef<HTMLInputElement, FileDropInputProps>(
         {!file ? (
           <div className='flex flex-col items-center gap-2 text-muted-foreground'>
             <div className='text-4xl'>📁</div>
-            <p className='text-sm font-medium'>فایل را بکشید یا کلیک کنید</p>
+            <p className='text-sm font-medium'>
+              {t('ui.fileDrop.dragOrClick')}
+            </p>
             <p className='text-xs text-muted-foreground'>
-              فرمت‌های مجاز: jpg, png, pdf, ...
+              {t('ui.fileDrop.allowedFormats')}
             </p>
           </div>
         ) : (
@@ -66,13 +71,13 @@ const FileDropInput = React.forwardRef<HTMLInputElement, FileDropInputProps>(
               {(file.size / 1024).toFixed(1)} KB
             </p>
             <p className='text-xs text-muted-foreground'>
-              برای تغییر مجدد کلیک کنید
+              {t('ui.fileDrop.changeFile')}
             </p>
           </div>
         )}
       </label>
     )
-  },
+  }
 )
 
 FileDropInput.displayName = 'FileDropInput'

@@ -1,8 +1,11 @@
 import * as React from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Loader, Paperclip, Upload, X } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
 import {
   Form,
   FormControl,
@@ -13,22 +16,28 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
 import { createCommentMutationFn } from '@/lib/api/api'
 import { cn } from '@/lib/utils'
 import { getAllMentionableUsersQueryFn } from '@/lib/api/task-comments'
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { MentionableUsersType } from '@/types/task-comment.type'
 
-const formSchema = z.object({
-  content: z.string().trim().min(1, {
-    message: 'متن کامنت الزامی است',
-  }),
-  attachment: z.instanceof(File).optional(),
-})
+// i18n
+import { useTranslation } from 'react-i18next'
 
-type CreateCommentFormValues = z.infer<typeof formSchema>
+// ---------- Schema با پیام ترجمه‌شده ----------
+const formSchema = (t: (key: string) => string) =>
+  z.object({
+    content: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('tasks.comment.form.contentRequired'),
+      }),
+    attachment: z.instanceof(File).optional(),
+  })
+
+type CreateCommentFormValues = z.infer<ReturnType<typeof formSchema>>
 
 type CompactFileInputProps = {
   value?: File
@@ -36,6 +45,7 @@ type CompactFileInputProps = {
 }
 
 function CompactFileInput({ value, onChange }: CompactFileInputProps) {
+  const { t } = useTranslation()
   const inputRef = React.useRef<HTMLInputElement | null>(null)
   const [isDragging, setIsDragging] = React.useState(false)
 
@@ -52,8 +62,8 @@ function CompactFileInput({ value, onChange }: CompactFileInputProps) {
         value
           ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
           : isDragging
-            ? 'border-primary bg-accent/40'
-            : 'border-border bg-background',
+          ? 'border-primary bg-accent/40'
+          : 'border-border bg-background'
       )}
       onDragOver={(e) => {
         e.preventDefault()
@@ -78,7 +88,7 @@ function CompactFileInput({ value, onChange }: CompactFileInputProps) {
           <div className='flex items-center gap-2 text-muted-foreground'>
             <Paperclip className='size-4' />
             <span className='text-xs sm:text-sm'>
-              فایل را بکشید اینجا یا انتخاب کنید
+              {t('tasks.comment.attachment.dropOrSelect')}
             </span>
           </div>
 
@@ -89,7 +99,7 @@ function CompactFileInput({ value, onChange }: CompactFileInputProps) {
             onClick={() => inputRef.current?.click()}
           >
             <Upload className='size-4 ml-1' />
-            انتخاب فایل
+            {t('tasks.comment.attachment.selectFile')}
           </Button>
         </div>
       ) : (
@@ -125,6 +135,7 @@ export default function CreateCommentForm(props: {
   onClose?: () => void
 }) {
   const { taskId, onClose } = props
+  const { t } = useTranslation()
   const workspaceId = useWorkspaceId()
   const queryClient = useQueryClient()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -145,35 +156,36 @@ export default function CreateCommentForm(props: {
         workspaceId,
       }),
   })
-  const mentionableUsers = data?.mention.users
+  const mentionableUsers = data?.data?.users
   const { mutate, isPending } = useMutation({
     mutationFn: createCommentMutationFn,
   })
 
   const form = useForm<CreateCommentFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       content: '',
       attachment: undefined,
     },
   })
 
-  // Handle mention selection
+  // هندل انتخاب منشن
   const handleSelectMention = useCallback(
     (user: MentionableUsersType) => {
       const currentValue = form.getValues('content')
       const beforeMention = currentValue.substring(0, mentionPosition)
       const afterMention = currentValue.substring(
-        mentionPosition + mentionQuery.length + 1,
-      ) // +1 for '@'
+        mentionPosition + mentionQuery.length + 1 // +1 برای '@'
+      )
 
-      const newValue = `${beforeMention}${user.username || 'بدون-نام-کاربری'}${afterMention}`
+      const username = user.username || t('tasks.comment.mention.noUsername')
+      const newValue = `${beforeMention}${username}${afterMention}`
       form.setValue('content', newValue)
 
-      // Set cursor position after mention
+      // جابه‌جایی کرسر بعد از منشن
       setTimeout(() => {
         if (textareaRef.current) {
-          const cursorPos = beforeMention.length + user.username.length + 2 // +1 for '@' and +1 for space
+          const cursorPos = beforeMention.length + username.length + 2 // +1 برای '@' و +1 برای فاصله
           textareaRef.current.selectionStart = cursorPos
           textareaRef.current.selectionEnd = cursorPos
         }
@@ -182,16 +194,16 @@ export default function CreateCommentForm(props: {
       setShowMentionList(false)
       setMentionQuery('')
     },
-    [form, mentionPosition, mentionQuery],
+    [form, mentionPosition, mentionQuery, t]
   )
 
-  // Handle text changes for mention detection
+  // تشخیص منشن داخل متن
   const handleTextChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const value = e.target.value
       const cursorPos = e.target.selectionStart || 0
 
-      // Find last '@' before cursor
+      // پیدا کردن آخرین '@' قبل از کرسر
       let startPos = cursorPos - 1
       while (
         startPos >= 0 &&
@@ -201,7 +213,7 @@ export default function CreateCommentForm(props: {
         startPos--
       }
 
-      // Check if we found a mention trigger
+      // اگر تریگر منشن پیدا شد
       if (startPos >= 0 && value[startPos] === '@') {
         const wordStart = startPos + 1
         const wordEnd = cursorPos
@@ -215,24 +227,24 @@ export default function CreateCommentForm(props: {
         setShowMentionList(false)
       }
     },
-    [],
+    []
   )
 
-  // Handle keyboard navigation in mention list
+  // ناوبری با کیبورد در لیست منشن
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (showMentionList && (mentionableUsers?.length || 0) > 0) {
         if (e.key === 'ArrowDown') {
           e.preventDefault()
           setSelectedMentionIndex(
-            (prev) => (prev + 1) % (mentionableUsers?.length || 0),
+            (prev) => (prev + 1) % (mentionableUsers?.length || 0)
           )
         } else if (e.key === 'ArrowUp') {
           e.preventDefault()
           setSelectedMentionIndex(
             (prev) =>
               (prev - 1 + (mentionableUsers?.length || 0)) %
-              (mentionableUsers?.length || 0),
+              (mentionableUsers?.length || 0)
           )
         } else if (e.key === 'Enter') {
           e.preventDefault()
@@ -251,9 +263,10 @@ export default function CreateCommentForm(props: {
       mentionableUsers,
       selectedMentionIndex,
       handleSelectMention,
-    ],
+    ]
   )
-  // Handle form submission
+
+  // هندل ارسال فرم
   const onSubmit = (values: CreateCommentFormValues) => {
     if (isPending) return
 
@@ -277,8 +290,8 @@ export default function CreateCommentForm(props: {
           })
 
           toast({
-            title: 'موفق',
-            description: 'کامنت با موفقیت ثبت شد',
+            title: t('tasks.comment.form.successTitle'),
+            description: t('tasks.comment.form.successDescription'),
             variant: 'success',
           })
 
@@ -286,13 +299,31 @@ export default function CreateCommentForm(props: {
           onClose?.()
         },
         onError: (error: any) => {
+          // نگاشت امن خطا – بدون نمایش متن خام error.message
+          let errorKey = 'errors.default'
+
+          if (error?.name === 'AxiosError' || error?.isAxiosError) {
+            const status = error?.response?.status
+            if (!status) {
+              // احتمالاً مشکل شبکه
+              errorKey = 'errors.network'
+            } else if (status >= 500) {
+              errorKey = 'errors.unknown'
+            } else if (status === 408) {
+              errorKey = 'errors.timeout'
+            } else if (status === 400 || status === 422) {
+              errorKey = 'errors.validation'
+            }
+          }
+
           toast({
-            title: 'خطا',
-            description: error?.message || 'ثبت کامنت انجام نشد',
+            title: t('tasks.comment.form.errorTitle'),
+            description:
+              t('tasks.comment.form.errorDescription') || t(errorKey),
             variant: 'destructive',
           })
         },
-      },
+      }
     )
   }
 
@@ -311,7 +342,7 @@ export default function CreateCommentForm(props: {
                       {...field}
                       ref={textareaRef}
                       rows={2}
-                      placeholder='نظر و یا بازخورد خود را بنویسید...'
+                      placeholder={t('tasks.comment.form.placeholder')}
                       className='min-h-[80px] border-0 shadow-none focus-visible:ring-0 resize-none'
                       onChange={(e) => {
                         field.onChange(e)
@@ -324,21 +355,24 @@ export default function CreateCommentForm(props: {
                       <div className='absolute bottom-full left-0 right-0 mb-1 bg-popover border rounded-md shadow-lg z-10'>
                         {isMentionLoading ? (
                           <div className='p-2 text-center'>
-                            در حال بارگیری...
+                            {t('tasks.comment.mention.loading')}
                           </div>
                         ) : mentionableUsers?.length === 0 ? (
-                          <div className='p-2 text-center'>کاربری یافت نشد</div>
+                          <div className='p-2 text-center'>
+                            {t('tasks.comment.mention.noUserFound')}
+                          </div>
                         ) : (
                           mentionableUsers?.map((user, index) => (
                             <div
                               key={user._id}
                               className={cn(
                                 'px-3 py-2 cursor-pointer hover:bg-accent',
-                                index === selectedMentionIndex && 'bg-accent',
+                                index === selectedMentionIndex && 'bg-accent'
                               )}
                               onClick={() => handleSelectMention(user)}
                             >
-                              {user.username || 'کاربر بی نام'}
+                              {user.username ||
+                                t('tasks.comment.mention.noUsername')}
                             </div>
                           ))
                         )}
@@ -363,12 +397,12 @@ export default function CreateCommentForm(props: {
           />
 
           <Button
-            className='flex place-self-start h-[40px] text-white font-semibold '
+            className='flex place-self-start h-[40px] text-white font-semibold'
             type='submit'
             disabled={isPending}
           >
             {isPending && <Loader className='ml-2 animate-spin' />}
-            ثبت کامنت
+            {t('tasks.comment.form.submit')}
           </Button>
         </form>
       </Form>

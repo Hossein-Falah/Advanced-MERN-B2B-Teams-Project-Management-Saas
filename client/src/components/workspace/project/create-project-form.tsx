@@ -25,12 +25,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createProjectMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function CreateProjectForm({
   onClose,
 }: {
   onClose: () => void
 }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const workspaceId = useWorkspaceId()
@@ -42,9 +44,12 @@ export default function CreateProjectForm({
   })
 
   const formSchema = z.object({
-    name: z.string().trim().min(1, {
-      message: 'عنوان پروژه الزامی است',
-    }),
+    name: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('projects.createProject.validation.nameRequired'),
+      }),
     description: z.string().trim(),
   })
 
@@ -71,26 +76,35 @@ export default function CreateProjectForm({
     }
     mutate(payload, {
       onSuccess: (data) => {
-        const project = data.project
+        const project = data.data?.project
         queryClient.invalidateQueries({
           queryKey: ['allprojects', workspaceId],
         })
 
         toast({
-          title: 'موفق',
-          description: 'پروژه با موفقیت ایجاد شد',
+          title: t('projects.createProject.toast.successTitle'),
+          description: t('projects.createProject.toast.successDescription'),
           variant: 'success',
         })
 
-        navigate(`/workspace/${workspaceId}/project/${project._id}`)
+        navigate(`/workspace/${workspaceId}/project/${project?._id}`)
         setTimeout(() => onClose(), 500)
       },
-      onError: (error) => {
-        toast({
-          title: 'خطا',
-          description: error.message,
-          variant: 'destructive',
-        })
+      onError: (err) => {
+        // اینجا هیچ پیغام خام از API نمایش داده نمی‌شود
+        if (err.message == 'UNAUTHORIZED') {
+          toast({
+            title: t('projects.createProject.toast.errorTitle'),
+            description: t('errors.UNAUTHORIZED'),
+            variant: 'destructive',
+          })
+        } else {
+          toast({
+            title: t('projects.createProject.toast.errorTitle'),
+            description: t('projects.createProject.toast.errorDescription'),
+            variant: 'destructive',
+          })
+        }
       },
     })
   }
@@ -103,17 +117,17 @@ export default function CreateProjectForm({
             className='text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1
            text-center sm:text-right'
           >
-            ایجاد پروژه
+            {t('projects.createProject.title')}
           </h1>
           <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            سازماندهی و مدیریت وظیفه ‌ها، منابع و همکاری تیمی
+            {t('projects.createProject.subtitle')}
           </p>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='mb-4'>
               <label className='block text-sm font-medium text-gray-700'>
-                انتخاب ایموجی
+                {t('projects.createProject.emojiLabel')}
               </label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -136,11 +150,13 @@ export default function CreateProjectForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      عنوان پروژه
+                      {t('projects.createProject.nameLabel')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='بازطراحی وب‌سایت'
+                        placeholder={t(
+                          'projects.createProject.namePlaceholder'
+                        )}
                         className='!h-[48px]'
                         {...field}
                       />
@@ -157,15 +173,17 @@ export default function CreateProjectForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      توضیحات پروژه
+                      {t('projects.createProject.descriptionLabel')}{' '}
                       <span className='text-xs font-extralight mr-2'>
-                        (اختیاری)
+                        ({t('projects.createProject.optional')})
                       </span>
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         rows={4}
-                        placeholder='توضیحات پروژه'
+                        placeholder={t(
+                          'projects.createProject.descriptionPlaceholder'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -181,7 +199,7 @@ export default function CreateProjectForm({
               type='submit'
             >
               {isPending && <Loader className='animate-spin' />}
-              ایجاد
+              {t('projects.createProject.submit')}
             </Button>
           </form>
         </Form>

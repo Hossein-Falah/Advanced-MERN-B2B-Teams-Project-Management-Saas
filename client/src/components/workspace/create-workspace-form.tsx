@@ -18,14 +18,16 @@ import { createWorkspaceMutationFn } from '@/lib/api/api'
 import { useNavigate } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function CreateWorkspaceForm({
   onClose,
 }: {
   onClose: () => void
 }) {
-  const navigate = useNavigate()
+  const { t } = useTranslation()
 
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const { mutate, isPending } = useMutation({
@@ -33,9 +35,12 @@ export default function CreateWorkspaceForm({
   })
 
   const formSchema = z.object({
-    name: z.string().trim().min(1, {
-      message: 'نام فضای کاری الزامی است',
-    }),
+    name: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('workspaces.createWorkspace.validation.nameRequired'),
+      }),
     description: z.string().trim(),
   })
 
@@ -49,20 +54,27 @@ export default function CreateWorkspaceForm({
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return
+
     mutate(values, {
       onSuccess: (data) => {
         queryClient.resetQueries({
           queryKey: ['userWorkspaces'],
         })
 
-        const workspace = data.workspace
-        onClose()
-        navigate(`/workspace/${workspace._id}`)
-      },
-      onError: (error) => {
+        const workspace = data.data?.workspace
+
         toast({
-          title: 'خطا',
-          description: error.message,
+          title: t('workspaces.createWorkspace.toast.successTitle'),
+          description: t('workspaces.createWorkspace.toast.successDescription'),
+          variant: 'success',
+        })
+        onClose()
+        navigate(`/workspace/${workspace?._id}`)
+      },
+      onError: () => {
+        toast({
+          title: t('workspaces.createWorkspace.toast.errorTitle'),
+          description: t('workspaces.createWorkspace.toast.errorDescription'),
           variant: 'destructive',
         })
       },
@@ -76,17 +88,15 @@ export default function CreateWorkspaceForm({
     >
       <div className='h-full px-10 py-10 flex-1'>
         <div className='mb-5 flex flex-col gap-2'>
-          <h1
-            className='text-2xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5
-           text-center sm:text-right'
-          >
-            بیایید یک فضای کاری بسازیم
+          <h1 className='text-2xl tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5 text-center sm:text-right'>
+            {t('workspaces.createWorkspace.title')}
           </h1>
-          <p className='text-muted-foreground   text-center sm:text-right leading-6'>
-            با دسترسی آسان همه به پروژه‌ها در یک مکان، بهره‌وری خود را افزایش
-            دهید.
+
+          <p className='text-muted-foreground text-center sm:text-right leading-6'>
+            {t('workspaces.createWorkspace.subtitle')}
           </p>
         </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='mb-4'>
@@ -96,23 +106,29 @@ export default function CreateWorkspaceForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      نام فضای کاری
+                      {t('workspaces.createWorkspace.nameLabel')}
                     </FormLabel>
+
                     <FormControl>
                       <Input
-                        placeholder='نام شرکت یا تیم'
+                        placeholder={t(
+                          'workspaces.createWorkspace.namePlaceholder'
+                        )}
                         className='!h-[48px]'
                         {...field}
                       />
                     </FormControl>
+
                     <FormDescription>
-                      این نام شرکت، تیم یا سازمان شماست.
+                      {t('workspaces.createWorkspace.nameDescription')}
                     </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
             <div className='mb-4'>
               <FormField
                 control={form.control}
@@ -120,21 +136,26 @@ export default function CreateWorkspaceForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      توضیحات فضای کاری
+                      {t('workspaces.createWorkspace.descriptionLabel')}
                       <span className='text-xs font-extralight mr-2'>
-                        (اختیاری)
+                        ({t('workspaces.createWorkspace.optional')})
                       </span>
                     </FormLabel>
+
                     <FormControl>
                       <Textarea
                         rows={6}
-                        placeholder='تیم ما پروژه‌ها و وظایف بازاریابی را اینجا سازماندهی می‌کند.'
+                        placeholder={t(
+                          'workspaces.createWorkspace.descriptionPlaceholder'
+                        )}
                         {...field}
                       />
                     </FormControl>
+
                     <FormDescription>
-                      با چند کلمه درباره فضای کاری خود، اعضا را همراه کنید.
+                      {t('workspaces.createWorkspace.descriptionHelp')}
                     </FormDescription>
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -147,15 +168,15 @@ export default function CreateWorkspaceForm({
               type='submit'
             >
               {isPending && <Loader className='animate-spin ml-2' />}
-              ایجاد فضای کاری
+              {t('workspaces.createWorkspace.submit')}
             </Button>
           </form>
         </Form>
       </div>
+
       <div
         className="relative flex-1 shrink-0 hidden bg-muted md:block
-      bg-[url('/images/workspace.jpg')] bg-cover bg-center h-full
-      "
+        bg-[url('/images/workspace.jpg')] bg-cover bg-center h-full"
       />
     </main>
   )

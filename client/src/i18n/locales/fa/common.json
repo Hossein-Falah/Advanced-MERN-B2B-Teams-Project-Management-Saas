@@ -1,0 +1,1057 @@
+{
+  "common": {
+    "search": "جستجو",
+    "back": "بازگشت",
+    "tryAgain": "تلاش مجدد",
+    "ok": "باشه",
+    "cancel": "انصراف",
+    "appName": "تِلِ من",
+    "success": "موفق",
+    "error": "خطا",
+    "delete": "حذف",
+    "openMenu": "باز کردن منو",
+    "loading": "در حال بارگذاری...",
+    "createdBy": "ایجاد شده توسط",
+    "reset": "بازنشانی",
+    "unknown": "ناشناس"
+  },
+  "plan": {
+    "free": "رایگان"
+  },
+  "roles": {
+    "ADMIN": "مدیر",
+    "MEMBER": "عضو",
+    "OWNER": "مالک",
+    "roleDescriptions": {
+      "ADMIN": "می‌تواند پروژه‌ها و وظیفه‌ها را مشاهده، ایجاد و ویرایش کند و تنظیمات را مدیریت نماید.",
+      "MEMBER": "فقط می‌تواند وظیفه‌های ایجادشده توسط خود را مشاهده و ویرایش کند."
+    }
+  },
+
+  "days": {
+    "0": "شنبه",
+    "1": "یکشنبه",
+    "2": "دوشنبه",
+    "3": "سه‌شنبه",
+    "4": "چهارشنبه",
+    "5": "پنجشنبه",
+    "6": "جمعه"
+  },
+  "sidebar": {
+    "brand": "تل من",
+    "editProfile": "ویرایش پروفایل",
+    "logout": "خروج از حساب",
+    "logoutDialog": {
+      "title": "آیا مطمئن هستید می‌خواهید خارج شوید؟",
+      "description": "با این کار نشست فعلی شما پایان می‌یابد و برای دسترسی دوباره باید دوباره وارد شوید.",
+      "confirm": "خروج از حساب",
+      "cancel": "انصراف",
+      "errorTitle": "خطا",
+      "errorMessage": "مشکلی در خروج از حساب رخ داد. لطفاً دوباره تلاش کنید."
+    },
+    "nav": {
+      "dashboard": "داشبورد",
+      "tasks": "وظایف",
+      "members": "اعضا",
+      "automations": "اتومیشن‌ها",
+      "settings": "تنظیمات",
+      "messages": "پیام ها",
+      "analytics": "آمار و گزارشات"
+    },
+    "navProjects": {
+      "title": "پروژه / هدف",
+      "emptyDescription": "هنوز پروژه‌ای در این فضای کاری وجود ندارد. پروژه‌هایی که ایجاد می‌کنید اینجا نمایش داده می‌شوند.",
+      "createProject": "ایجاد پروژه",
+      "more": "بیشتر",
+      "viewProject": "مشاهده پروژه",
+      "deleteProject": "حذف پروژه",
+      "loadingMore": "در حال بارگذاری...",
+      "deleteDialog": {
+        "title": "حذف پروژه",
+        "description": "آیا مطمئن هستید می‌خواهید {{name}} را حذف کنید؟ این عمل قابل بازگشت نیست.",
+        "defaultItem": "این مورد",
+        "confirm": "حذف",
+        "cancel": "انصراف",
+        "toast": {
+          "successTitle": "موفق",
+          "projectDeleted": "پروژه با موفقیت حذف شد.",
+          "errorTitle": "خطا",
+          "errorDescription": "در حذف پروژه مشکلی پیش آمد. لطفاً دوباره تلاش کنید."
+        }
+      }
+    },
+    "workspaceSwitcher": {
+      "title": "فضاهای کاری",
+      "noWorkspace": "فضای کاری انتخاب نشده",
+      "createWorkspace": "ایجاد فضای کاری جدید"
+    }
+  },
+  "auth": {
+    "googleOAuth": {
+      "googleLogin": "ورود با حساب گوگل",
+      "failure": {
+        "title": "احراز هویت ناموفق بود",
+        "description": "ورود شما با حساب گوگل انجام نشد. لطفاً دوباره تلاش کنید.",
+        "backToLogin": "بازگشت به صفحه ورود"
+      }
+    },
+    "validation": {
+      "nameRequired": "نام الزامی است.",
+      "emailInvalid": "ایمیل وارد شده معتبر نیست.",
+      "emailRequired": "ایمیل الزامی است.",
+      "passwordRequired": "رمز عبور الزامی است."
+    },
+    "termsText": "با ثبت نام و ورود با تمامی قوانین ما موافقت میکنید",
+    "termsLink": "قوانین و سیاست ها",
+    "privacyLink": "خط‌مشی رازداری",
+
+    "signIn": {
+      "title": "مجدد خوش آمدید",
+      "description": "با ایمیل یا شماره تماس وارد شوید",
+      "loginWithGoogle": "ورود با گوگل",
+      "orLoginWith": "یا ورود با",
+      "emailLabel": "ایمیل",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "رمز عبور",
+      "forgotPassword": "رمزتون رو فراموش کردید؟",
+      "loginButton": "ورود",
+      "noAccount": "ایا حساب کاربری ندارید",
+      "signup": "ثبت نام",
+      "termsText": "با ثبت نام و ورود با تمامی قوانین ما موافقت میکنید",
+      "termsLink": "قوانین و سیاست ها",
+      "privacyLink": "خط‌مشی رازداری",
+
+      "validation": {
+        "emailInvalid": "ایمیل وارد شده معتبر نیست.",
+        "emailRequired": "ایمیل الزامی است.",
+        "passwordRequired": "رمز عبور الزامی است."
+      },
+      "errors": {
+        "wrongUserPass": "نام کاربری و یا رمز عبور اشتباه است"
+      }
+    },
+    "signup": {
+      "title": "ساخت حساب کاربری",
+      "description": "با ایمیل یا شماره تماس ثبت نام کنید",
+      "googleSignup": "ثبت نام با گوگل",
+      "orSignupWith": "یا ثبت نام با",
+      "nameLabel": "نام",
+      "namePlaceholder": "نام شما",
+      "emailLabel": "ایمیل",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "رمز عبور",
+      "submit": "ثبت نام",
+      "haveAccount": "آیا حسابی از قبل دارید؟",
+      "login": "ورود",
+      "phoneLabel": "شماره تلفن",
+      "phonePlaceholder": "شماره تلفن خود را وارد کنید"
+    }
+  },
+  "notFound": {
+    "title": "صفحه مورد نظر پیدا نشد",
+    "description": "صفحه‌ای که دنبال آن هستید وجود ندارد یا ممکن است جابه‌جا شده باشد.",
+    "back": "بازگشت",
+    "goToDashboard": "رفتن به داشبورد"
+  },
+  "header": {
+    "dashboard": "داشبورد",
+    "pageLabel": {
+      "profile": "پروفایل",
+      "profile_settings": "تنظیمات پروفایل",
+      "project": "پروژه",
+      "settings": "تنظیمات",
+      "tasks": "وظایف",
+      "members": "اعضا"
+    }
+  },
+  "notifications": {
+    "item": {
+      "defaultUser": "کاربر",
+
+      "title": {
+        "taskAssigned": "{{name}} یک وظیفه به شما اختصاص داد",
+        "taskUpdated": "{{name}} یک وظیفه را بروزرسانی کرد",
+        "mention": "{{name}} شما را منشن کرد",
+        "default": "نوتیفیکیشن جدید"
+      },
+
+      "description": {
+        "default": "برای جزئیات بیشتر، روی این نوتیفیکیشن کلیک کنید."
+      },
+
+      "taskLabel": "وظیفه:"
+    },
+    "title": "نوتیفیکیشن‌ها",
+    "empty": "فعلاً نوتیفیکیشنی نداری.",
+    "unreadCount": "{{count}} نوتیف خوانده‌نشده",
+    "readAll": "خواندن همه",
+    "loadingMore": "در حال بارگذاری نوتیف‌های بیشتر...",
+    "showMore": "نمایش نوتیف‌های بیشتر",
+    "allShown": "همه نوتیف‌ها نمایش داده شدند",
+    "showingCount": "{{shown}} از {{total}} نوتیف"
+  },
+  "profileSetting": {
+    "title": " ویرایش پروفایل کاربری",
+    "validation": {
+      "nameRequired": "نام الزامی است",
+      "emailInvalid": "ایمیل معتبر نیست",
+      "phoneInvalid": "شماره تلفن معتبر نیست",
+      "usernameMin": "نام کاربری باید حداقل ۳ حرف باشد",
+      "bioMax": "بیوگرافی نباید بیشتر از ۵۰۰ کاراکتر باشد",
+      "jobTitleMax": "عنوان شغلی نباید بیشتر از ۱۰۰ کاراکتر باشد"
+    },
+
+    "image": {
+      "errorTitle": "خطا",
+      "onlyImage": "لطفاً فقط فایل تصویری انتخاب کنید",
+      "maxSize": "حجم فایل نباید بیشتر از ۵ مگابایت باشد",
+      "label": "تصویر پروفایل",
+      "hint": "JPG/PNG/GIF — حداکثر ۵MB",
+      "button": "انتخاب تصویر",
+      "changeAria": "تغییر تصویر",
+      "alt": "تصویر پروفایل"
+    },
+
+    "toast": {
+      "updateSuccess": "پروفایل با موفقیت به‌روزرسانی شد",
+      "updateErrorTitle": "خطا",
+      "updateErrorFallback": "خطا در به‌روزرسانی پروفایل"
+    },
+
+    "tabs": {
+      "profile": "پروفایل",
+      "work": "کاری",
+      "notify": "اعلان‌ها"
+    },
+
+    "actions": {
+      "viewProfile": "مشاهده پروفایل",
+      "viewProfileShort": "پروفایل",
+      "saving": "در حال ذخیره…",
+      "saveChanges": "ذخیره تغییرات",
+      "save": "ذخیره",
+      "savingShort": "ذخیره…"
+    },
+
+    "fields": {
+      "name": {
+        "label": "نام و نام خانوادگی",
+        "placeholder": "نام و نام خانوادگی"
+      },
+      "username": {
+        "label": "نام کاربری",
+        "placeholder": "نام کاربری"
+      },
+      "email": {
+        "label": "ایمیل",
+        "placeholder": "example@domain.com"
+      },
+      "phone": {
+        "label": "شماره تلفن",
+        "placeholder": "09123456789"
+      },
+      "jobTitle": {
+        "label": "عنوان شغلی",
+        "placeholder": "مثلاً: Product Designer"
+      },
+      "bio": {
+        "label": "بیوگرافی",
+        "placeholder": "درباره خودتان…",
+        "counter": "{{count}}/500"
+      },
+      "region": {
+        "label": "منطقه زمانی",
+        "placeholder": "انتخاب منطقه زمانی",
+        "tehran": "Asia/Tehran"
+      },
+      "workSchedule": {
+        "title": "تنظیمات کاری",
+        "subtitle": "برای زمان‌بندی‌ها و ارسال‌ها استفاده می‌شود.",
+        "workingDays": "روزهای کاری",
+        "startHour": "ساعت شروع",
+        "endHour": "ساعت پایان"
+      },
+      "notify": {
+        "title": "تنظیمات اعلان‌ها",
+        "subtitle": "برای هر مورد، نوع دریافت را مشخص کن.",
+        "inAppTitle": "درون سیستم",
+        "smsTitle": "SMS",
+        "allOn": "همه روشن",
+        "allOff": "همه خاموش",
+        "custom": "سفارشی",
+        "items": {
+          "onCreateTask": "ساخت تسک",
+          "onUpdateTask": "ویرایش تسک",
+          "onMention": "منشن",
+          "onAutomationAction": "اتومیشن",
+          "onMessage": "پیام"
+        },
+        "toggles": {
+          "allInAppAria": "روشن/خاموش همه نوتیف‌ها",
+          "allSmsAria": "روشن/خاموش همه SMSها"
+        }
+      }
+    }
+  },
+  "profileView": {
+    "title": " پروفایل کاربری",
+    "summary": {
+      "totalTasks": "کل وظایف",
+      "maxPerHour": "بیشترین در ساعت",
+      "avgPerHour": "میانگین در ساعت",
+      "errors": {
+        "loadFailed": "خطا در بارگذاری فعالیت‌ها",
+        "unknown": "خطای نامشخصی رخ داده است"
+      }
+    },
+    "activity": {
+      "title": "آمار فعالیت ۲۴ ساعته",
+      "chartTabs": {
+        "bar": "ستونی",
+        "pie": "دایره‌ای",
+        "line": "خطی",
+        "area": "ناحیه‌ای"
+      },
+      "tooltip": {
+        "hourRange": "ساعت {{startHour}}:00 - {{endHour}}:00",
+        "count": "تعداد فعالیت: {{count}}"
+      },
+
+      "error": {
+        "generic": "در دریافت آمار فعالیت مشکلی رخ داد.",
+        "notFound": "برای این کاربر در این تاریخ داده‌ای یافت نشد.",
+        "unexpected": "خطای غیرمنتظره‌ای رخ داد. لطفاً بعداً دوباره تلاش کنید."
+      }
+    },
+    "online": "آنلاین",
+    "offline": "آفلاین",
+
+    "activity24h": "آمار ۲۴ ساعته",
+    "activityDialog": {
+      "title": "آمار فعالیت ۲۴ ساعته"
+    },
+
+    "imageAlt": "تصویر پروفایل {{name}}",
+
+    "memberSince": "عضو از {{date}}",
+    "lastSeen": "آخرین بازدید: {{date}}",
+
+    "to": "تا",
+
+    "workSchedule": {
+      "notDefined": "تعریف نشده"
+    },
+
+    "fields": {
+      "fullName": "نام کامل",
+      "username": "نام کاربری",
+      "email": "ایمیل",
+      "phone": "شماره تلفن",
+      "jobTitle": "عنوان شغلی",
+      "region": "منطقه زمانی",
+      "workSchedule": "ساعات کاری"
+    },
+
+    "achievements": {
+      "title": "دستاوردها",
+      "empty": "هنوز دستاوردی ثبت نشده",
+      "member_1_month": "🎉 بیش از ۱ ماه سابقه",
+      "member_1_year": "🏅 بیش از ۱ سال همراه ما",
+      "member_10_years": "👑 بیش از ۱۰ سال سابقه",
+      "online_now": "🟢 فعال در حال حاضر",
+      "active_last_24h": "🔥 کاربر فعال (در ۲۴ ساعت گذشته)",
+      "profile_completed": "⭐ پروفایل تقریباً کامل"
+    },
+
+    "about": {
+      "title": "درباره من",
+      "empty": "هنوز بیوگرافی‌ای ثبت نشده است."
+    },
+    "error": {
+      "title": "کاربری با این نام پیدا نشد",
+      "description": "کاربری با نام ‎@{{username}} در این فضا یافت نشد. می‌خواهید نام دیگری را جستجو کنید؟",
+      "searchPlaceholder": "مثلاً ali یا testuser"
+    }
+  },
+  "ui": {
+    "fileDrop": {
+      "dragOrClick": "فایل را بکشید یا کلیک کنید",
+      "allowedFormats": "فرمت‌های مجاز: jpg, png, pdf, ...",
+      "changeFile": "برای تغییر مجدد کلیک کنید"
+    },
+    "timeField": {
+      "hourLabel": "ساعت:",
+      "minuteLabel": "دقیقه:",
+      "hourPlaceholder": "ساعت",
+      "minutePlaceholder": "دقیقه",
+      "errors": {
+        "required": "وارد کردن زمان الزامی است.",
+        "invalidFormat": "فرمت زمان نامعتبر است.",
+        "outOfRange": "زمان انتخاب‌شده خارج از بازه مجاز است.",
+        "default": "خطایی رخ داده است. لطفاً دوباره تلاش کنید."
+      }
+    },
+    "attachmentDownload": {
+      "label": "دانلود فایل پیوست",
+      "button": "دانلود",
+      "error": "امکان دانلود فایل وجود ندارد."
+    },
+    "datePicker": {
+      "selectDate": "انتخاب تاریخ",
+      "label": "تاریخ"
+    },
+
+    "pagination": {
+      "previous": "قبلی",
+      "next": "بعدی",
+      "previousPage": "رفتن به صفحه قبلی",
+      "nextPage": "رفتن به صفحه بعدی",
+      "morePages": "صفحات بیشتر"
+    },
+    "sidebar": {
+      "menu": "منو",
+      "toggle": "تغییر وضعیت سایدبار",
+      "errors": {
+        "hookOutsideProvider": "هوک useSidebar باید داخل SidebarProvider استفاده شود."
+      }
+    }
+  },
+  "automations": {
+    "mainPage": {
+      "title": "همهٔ اتومیشن‌ها",
+      "description": "لیست اتومیشن‌های این فضای کاری"
+    },
+    "columns": {
+      "type": "نوع",
+      "taskTitle": "عنوان وظیفه",
+      "daysOfWeek": "روزهای هفته",
+      "time": "زمان اجرا",
+      "nextRun": "اجرای بعدی",
+      "status": "وضعیت",
+      "actions": "عملیات"
+    },
+    "status": {
+      "active": "فعال",
+      "inactive": "غیرفعال"
+    },
+    "table": {
+      "columns": "ستون‌ها",
+      "noResult": "نتیجه‌ای یافت نشد",
+      "pageInfo": "صفحه {{page}} از {{total}}",
+      "previous": "قبلی",
+      "next": "بعدی",
+      "sortAsc": "صعودی",
+      "sortDesc": "نزولی",
+      "hide": "مخفی"
+    },
+    "title": "مدیریت اتومیشن‌ها",
+    "createNewAutomationButton": "اتوماسیون جدید",
+    "createNewAutomationTitle": "ایجاد اتوماسیون جدید",
+    "form": {
+      "type": {
+        "label": "نوع اتوماسیون",
+        "placeholder": "انتخاب نوع اتوماسیون"
+      },
+      "task": {
+        "label": "وظیفه",
+        "placeholder": "انتخاب وظیفه",
+        "searchPlaceholder": "جستجوی وظیفه..."
+      },
+      "daysOfWeek": {
+        "label": "روزهای اجرا"
+      },
+      "timeOfDay": {
+        "label": "ساعت اجرا"
+      },
+      "active": {
+        "label": "وضعیت اتوماسیون",
+        "placeholder": "انتخاب وضعیت"
+      },
+      "submit": "ایجاد اتوماسیون",
+      "edit": {
+        "title": "ویرایش و بروزرسانی اتوماسیون",
+        "submit": "ذخیره تغییرات"
+      }
+    },
+    "types": {
+      "TASK_REPETITION": "تکرار وظیفه",
+      "SCHEDULED": "زمان‌بندی شده",
+      "TRIGGER_BASED": "مبتنی بر رویداد",
+      "UNKNOWN": "مبتنی بر رویداد"
+    },
+    "validation": {
+      "taskRequired": "انتخاب وظیفه الزامی است",
+      "daysRequired": "حداقل یک روز را انتخاب کنید",
+      "invalidTime": "ساعت نامعتبر است (فرمت HH:MM)"
+    },
+    "toast": {
+      "createSuccess": {
+        "title": "موفق",
+        "description": "اتوماسیون با موفقیت ایجاد شد"
+      },
+      "createError": {
+        "title": "خطا",
+        "description": "خطا در ایجاد اتوماسیون. لطفاً دوباره تلاش کنید."
+      },
+      "updateSuccess": {
+        "title": "موفق",
+        "description": "اتوماسیون با موفقیت بروزرسانی شد"
+      },
+      "updateError": {
+        "title": "خطا",
+        "description": "خطا در بروزرسانی اتوماسیون. لطفاً دوباره تلاش کنید."
+      },
+      "deleteSuccess": {
+        "title": "موفق",
+        "description": "اتوماسیون با موفقیت حذف شد"
+      },
+      "deleteError": {
+        "title": "خطا",
+        "description": "حذف اتوماسیون با خطا مواجه شد. لطفاً دوباره تلاش کنید."
+      },
+      "loadError": {
+        "title": "خطا",
+        "description": "امکان بارگذاری لیست اتوماسیون‌ها وجود ندارد. لطفاً بعداً دوباره تلاش کنید."
+      }
+    },
+    "actions": {
+      "edit": "ویرایش آیتم",
+      "delete": "حذف اتوماسیون"
+    },
+    "messages": {
+      "deleteSuccess": "اتوماسیون با موفقیت حذف شد"
+    },
+    "errors": {
+      "deleteFailed": "حذف اتوماسیون با خطا مواجه شد",
+      "unknown": "خطای نامشخصی رخ داد. لطفاً بعداً دوباره تلاش کنید.",
+      "network": "خطا در ارتباط با سرور. اتصال اینترنت خود را بررسی کنید.",
+      "forbidden": "دسترسی به این بخش برای شما مجاز نیست.",
+      "notFound": "اطلاعات مورد نظر یافت نشد.",
+      "validation": "برخی از اطلاعات وارد‌شده نامعتبر است. لطفاً بررسی کنید."
+    },
+    "deleteDialog": {
+      "title": "حذف اتوماسیون",
+      "description": "آیا از حذف اتوماسیون {{name}} مطمئن هستید؟"
+    },
+    "ui": {
+      "filterPlaceholder": "فیلتر اتومیشن‌ها ...",
+      "statusFilterTitle": "وضعیت",
+      "resetFilters": "بازنشانی",
+      "editDialogTitle": "ویرایش اتومیشن",
+      "editDialogClose": "بستن"
+    }
+  },
+  "analytics": {
+    "analyticsPage": {
+      "title": "آمار و گزارشات فضای کاری"
+    },
+    "value": "مقدار",
+    "totalCount": "تعداد کل",
+    "previousPeriod": "نسبت به دوره قبل",
+    "previousWeek": "نسبت به هفته قبل",
+    "teamTab": "آمار کل تیم",
+    "personalTab": "آمار من",
+    "projectScopeHint": "این آمار مربوط به این  پروژه می‌باشد",
+    "teamTodayTasks": "وظایف امروز تیم",
+    "personalTodayTasks": "وظایف امروز شما",
+    "teamOverdueTasks": "وظایف عقب‌افتاده امروز تیم",
+    "personalOverdueTasks": "وظایف عقب‌افتاده امروز شما",
+    "teamCompletedTasks": "وظایف انجام‌شده امروز تیم",
+    "personalCompletedTasks": "وظایف انجام‌شده امروز شما",
+    "teamInProgressTasks": "وظایف در حال انجام امروز تیم",
+    "personalInProgressTasks": "وظایف در حال انجام امروز شما",
+    "workspaceScopeHint": "این آمار مربوط به این فضای کار می‌باشد",
+    "loading": "در حال بارگذاری...",
+    "error": {
+      "loadFailed": "خطا در دریافت آمار فضای کار",
+      "unexpected": "خطای غیرمنتظره‌ای رخ داد"
+    }
+  },
+  "members": {
+    "mainPage": {
+      "title": "اعضای فضای کاری",
+      "description": "اعضای فضای کاری می‌توانند تمام پروژه‌ها و وظیفه‌های فضای کاری را مشاهده کرده و به آن‌ها بپیوندند و وظیفه‌های جدیدی در فضای کاری ایجاد کنند."
+    },
+    "joinedAtLabel": "عضو شده در تاریخ",
+    "avatarAlt": "تصویر کاربر",
+    "changeRole": {
+      "successTitle": "موفق",
+      "successDescription": "نقش عضو با موفقیت تغییر کرد.",
+      "errorTitle": "خطا",
+      "errorDescription": "در تغییر نقش عضو مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
+      "searchPlaceholder": "انتخاب نقش جدید...",
+      "noRoleFound": "نقشی یافت نشد."
+    },
+    "invite": {
+      "title": "دعوت از اعضا برای پیوستن",
+      "description": "هر کسی با لینک دعوت می‌تواند به این فضای کاری بپیوندد. شما می‌توانید در هر زمان لینک دعوت را غیرفعال کرده و یک لینک جدید برای این فضای کاری ایجاد کنید.",
+      "linkLabel": "لینک دعوت",
+      "copySuccessTitle": "کپی شد",
+      "copySuccessDescription": "لینک دعوت در کلیپ‌بورد کپی شد"
+    }
+  },
+  "projects": {
+    "projecUntitled": "پروژه بدون عنوان",
+    "createProject": {
+      "title": "ایجاد پروژه",
+      "subtitle": "سازماندهی و مدیریت وظیفه‌ها، منابع و همکاری تیمی",
+      "emojiLabel": "انتخاب ایموجی",
+
+      "nameLabel": "عنوان پروژه",
+      "namePlaceholder": "بازطراحی وب‌سایت",
+
+      "descriptionLabel": "توضیحات پروژه",
+      "descriptionPlaceholder": "توضیحات پروژه",
+      "optional": "اختیاری",
+
+      "submit": "ایجاد",
+
+      "validation": {
+        "nameRequired": "عنوان پروژه الزامی است"
+      },
+
+      "toast": {
+        "successTitle": "موفق",
+        "successDescription": "پروژه با موفقیت ایجاد شد",
+        "errorTitle": "خطا",
+        "errorDescription": "در ایجاد پروژه مشکلی پیش آمد. لطفاً دوباره تلاش کنید."
+      }
+    },
+    "editProject": {
+      "title": "ویرایش پروژه",
+      "subtitle": "جزئیات پروژه را برای مدیریت بهتر وظیفه‌ها به‌روز کنید",
+
+      "emojiLabel": "انتخاب ایموجی",
+
+      "nameLabel": "عنوان پروژه",
+      "namePlaceholder": "عنوان پروژه",
+
+      "descriptionLabel": "توضیحات پروژه",
+      "descriptionPlaceholder": "توضیحات پروژه",
+      "optional": "اختیاری",
+
+      "submit": "به‌روزرسانی",
+
+      "validation": {
+        "nameRequired": "عنوان پروژه الزامی است"
+      },
+
+      "toast": {
+        "successTitle": "موفق",
+        "successDescription": "پروژه با موفقیت به‌روزرسانی شد",
+        "errorTitle": "خطا",
+        "errorDescription": "به‌روزرسانی پروژه انجام نشد. لطفاً دوباره تلاش کنید."
+      }
+    },
+
+    "recentProjects": {
+      "empty": "هنوز پروژه‌ای وجود ندارد",
+      "createdBy": "ایجاد شده توسط"
+    }
+  },
+  "workspaces": {
+    "mainPage": {
+      "title": "داشبورد من",
+      "subtitle": "در اینجا یک نمای کلی از این فضای کاری آمده است!",
+      "newProject": "پروژه جدید",
+
+      "recentProjects": "پروژه‌های اخیر",
+      "recentTasks": "وظایف اخیر",
+      "recentMembers": "اعضای اخیر"
+    },
+    "deleteWorkspace": {
+      "title": "حذف فضای کاری",
+      "description": "حذف یک فضای کاری یک اقدام دائمی است و قابل بازگشت نیست. پس از حذف فضای کاری، تمام داده‌های مرتبط با آن، از جمله پروژه‌ها، وظیفه‌ها و نقش‌های اعضا، برای همیشه پاک خواهند شد. لطفاً با احتیاط عمل کنید و از انجام عمدی این کار مطمئن شوید.",
+      "deleteButton": "حذف فضای کاری",
+
+      "toast": {
+        "errorTitle": "خطا",
+        "errorDescription": "حذف فضای کاری انجام نشد. لطفاً دوباره تلاش کنید.",
+        "successTitle": " موفقیت آمیز",
+        "successDescription": "حذف فضای کاری با موفقیت انجام شد."
+      },
+
+      "confirm": {
+        "title": "حذف فضای کاری {{name}}",
+        "description": "آیا از حذف این فضای کاری مطمئن هستید؟ این عمل قابل بازگشت نیست.",
+        "confirmText": "حذف",
+        "cancelText": "انصراف"
+      }
+    },
+    "createWorkspace": {
+      "title": "بیایید یک فضای کاری بسازیم",
+      "subtitle": "با دسترسی آسان همه به پروژه‌ها در یک مکان، بهره‌وری خود را افزایش دهید.",
+
+      "nameLabel": "نام فضای کاری",
+      "namePlaceholder": "نام شرکت یا تیم",
+      "nameDescription": "این نام شرکت، تیم یا سازمان شماست.",
+
+      "descriptionLabel": "توضیحات فضای کاری",
+      "descriptionPlaceholder": "تیم ما پروژه‌ها و وظایف بازاریابی را اینجا سازماندهی می‌کند.",
+      "descriptionHelp": "با چند کلمه درباره فضای کاری خود، اعضا را همراه کنید.",
+
+      "optional": "اختیاری",
+      "submit": "ایجاد فضای کاری",
+
+      "validation": {
+        "nameRequired": "نام فضای کاری الزامی است"
+      },
+
+      "toast": {
+        "errorTitle": "خطا",
+        "errorDescription": "ایجاد فضای کاری انجام نشد. لطفاً دوباره تلاش کنید.",
+        "successTitle": " موفقیت آمیز",
+        "successDescription": "ساخت فضای کاری با موفقیت انجام شد."
+      }
+    },
+    "editWorkspace": {
+      "mainPage": { "title": "تنظیمات فضای کار" },
+      "title": "ویرایش فضای کاری",
+
+      "nameLabel": "نام فضای کاری",
+      "namePlaceholder": "نام شرکت یا تیم",
+
+      "descriptionLabel": "توضیحات فضای کاری",
+      "descriptionPlaceholder": "تیم ما پروژه‌ها و وظایف بازاریابی را اینجا سازماندهی می‌کند.",
+
+      "optional": "اختیاری",
+      "submit": "به‌روزرسانی فضای کاری",
+
+      "validation": {
+        "nameRequired": "نام فضای کاری الزامی است"
+      },
+
+      "toast": {
+        "errorTitle": "خطا",
+        "successTitle": "بروزرسانی موفقیت آمیز",
+        "successDescription": "به‌روزرسانی فضای کاری انجام شد.",
+        "errorDescription": "به‌روزرسانی فضای کاری انجام نشد. لطفاً دوباره تلاش کنید."
+      }
+    }
+  },
+  "tasks": {
+    "mainPage": {
+      "title": "همهٔ وظیفه‌ها",
+      "description": "لیست وظیفه‌های این فضای کاری"
+    },
+    "taskLogs": {
+      "noLogSelected": "برای مشاهده جزئیات، یکی از لاگ‌ها را از لیست سمت راست انتخاب کنید.",
+      "headerTitle": "جزئیات تغییرات",
+      "changesByUserAndDate": "این تغییرات توسط {{userName}} در {{date}} ثبت شده‌اند.",
+      "fallbackUser": "کاربر",
+      "undo": {
+        "loading": "در حال بازگردانی...",
+        "label": {
+          "desktop": "بازگردانی",
+          "mobile": "بازگشت"
+        }
+      },
+      "redo": {
+        "loading": "در حال اعمال...",
+        "label": {
+          "desktop": "اعمال مقدار جدید",
+          "mobile": "اعمال"
+        }
+      },
+      "changeType": {
+        "edit": "تغییر ویرایشی",
+        "create": "تغییر ایجادی"
+      },
+      "previousValue": {
+        "label": "مقدار قبلی"
+      },
+      "newValue": {
+        "label": "مقدار جدید"
+      },
+      "noChangesForLog": "تغییری برای این لاگ ثبت نشده است.",
+      "loading": "در حال بارگذاری تاریخچه وظایف...",
+      "empty": "هنوز تاریخچه‌ای برای این وظیفه ثبت نشده است.",
+      "actions": {
+        "create": "ایجاد وظیفه",
+        "update": "ویرایش وظیفه",
+        "delete": "حذف وظیفه",
+        "other": "اقدام"
+      },
+      "changesCount": "{{count}} تغییر",
+      "itemAriaLabel": "اقدام {{action}} توسط {{user}} (شناسه {{id}})",
+      "unknownUser": "کاربر نامشخص",
+      "title": "تاریخچه تغییرات - {{title}}",
+      "fields": {
+        "title": "عنوان",
+        "description": "توضیحات",
+        "status": "وضعیت",
+        "priority": "اولویت",
+        "dueDate": "تاریخ سررسید",
+        "assignedTo": "مسئول",
+        "attachment": "پیوست",
+        "startDate": "تاریخ شروع"
+      },
+      "common": {
+        "empty": "—",
+        "invalidDate": "تاریخ نامعتبر",
+        "user": "کاربر"
+      },
+      "errors": {
+        "undoFailed": "برگشت تغییر موردنظر انجام نشد. لطفاً دوباره تلاش کنید.",
+        "redoFailed": "اعمال دوباره این تغییر انجام نشد. لطفاً دوباره تلاش کنید.",
+        "fetchFailed": "دریافت تاریخچه تغییرات انجام نشد. لطفاً صفحه را رفرش کنید."
+      }
+    },
+    "comment": {
+      "form": {
+        "contentRequired": "متن کامنت الزامی است",
+        "placeholder": "نظر و یا بازخورد خود را بنویسید...",
+        "submit": "ثبت کامنت",
+        "successTitle": "موفق",
+        "successDescription": "کامنت با موفقیت ثبت شد",
+        "errorTitle": "خطا",
+        "errorDescription": "ثبت کامنت انجام نشد"
+      },
+      "attachment": {
+        "dropOrSelect": "فایل را بکشید اینجا یا انتخاب کنید",
+        "selectFile": "انتخاب فایل"
+      },
+      "mention": {
+        "loading": "در حال بارگیری...",
+        "noUserFound": "کاربری یافت نشد",
+        "noUsername": "کاربر بی نام"
+      }
+    },
+    "table": {
+      "columnHeader": {
+        "sortAsc": "صعودی",
+        "sortDesc": "نزولی",
+        "hideColumn": "مخفی"
+      },
+      "columns": {
+        "columns": "ستون‌ها",
+        "selectAll": "انتخاب همه",
+        "selectRow": "انتخاب ردیف",
+        "title": "عنوان",
+        "project": "پروژه",
+        "assignee": "مسئول",
+        "dateRange": "بازه زمانی انجام کار",
+        "status": "وضعیت",
+        "priority": "اولویت",
+        "actions": "عملیات",
+        "avatarAlt": "تصویر"
+      },
+      "filter": {
+        "searchPlaceholder": "جستجوی {{title}}",
+        "noResults": "نتیجه‌ای یافت نشد",
+        "clearFilters": "پاک کردن فیلترها"
+      },
+
+      "noResults": "نتیجه‌ای یافت نشد.",
+      "pagination": {
+        "range": "نمایش {{start}} تا {{end}} از {{total}}",
+        "rowsPerPage": "تعداد ردیف در هر صفحه",
+        "pageInfo": "صفحه {{page}} از {{pageCount}}",
+        "firstPage": "رفتن به صفحه اول",
+        "previousPage": "رفتن به صفحه قبل",
+        "nextPage": "رفتن به صفحه بعد",
+        "lastPage": "رفتن به صفحه آخر",
+        "prevLabel": "قبلی",
+        "nextLabel": "بعدی"
+      }
+    },
+    "menu": {
+      "openMenu": "باز کردن منو",
+      "logs": "تاریخچه تغییرات",
+      "edit": "ویرایش وظیفه",
+      "delete": "حذف وظیفه"
+    },
+    "deleteDialog": {
+      "title": "حذف وظیفه",
+      "description": "آیا از حذف وظیفه {{taskCode}} مطمئن هستید؟",
+      "confirm": "حذف",
+      "cancel": "انصراف"
+    },
+    "toast": {
+      "deleteSuccessTitle": "موفق",
+      "deleteErrorTitle": "خطا",
+      "deleteSuccessDescription": "وظیفه با موفقیت حذف شد."
+    },
+    "dialog": {
+      "open_button": "وظیفه جدید",
+      "title": "ایجاد وظیفه جدید",
+      "description": "فرم ایجاد وظیفه را پر کنید.",
+      "noDescription": "توضیحی برای این وظیفه ثبت نشده است.",
+      "attachmentLabel": "دانلود فایل پیوست",
+      "noComments": "هنوز کامنتی ثبت نشده است.",
+      "avatarAlt": "تصویر"
+    },
+    "status": {
+      "BACKLOG": "لیست انتظار",
+      "TODO": "برای انجام",
+      "IN_PROGRESS": "در حال انجام",
+      "IN_REVIEW": "در حال بررسی",
+      "DONE": "انجام شده"
+    },
+    "priority": {
+      "LOW": "کم",
+      "MEDIUM": "متوسط",
+      "HIGH": "زیاد",
+      "URGENT": "فوری"
+    },
+    "editTask": {
+      "subtitle": "ویرایش و بروزرسانی اطلاعات وظیفه",
+      "submit": "ذخیره تغییرات",
+
+      "fields": {
+        "title": {
+          "label": "عنوان وظیفه",
+          "placeholder": "بازطراحی وب‌سایت"
+        },
+        "description": {
+          "label": "توضیحات وظیفه",
+          "optional": "اختیاری",
+          "placeholder": "توضیحات"
+        },
+        "assignedTo": {
+          "label": "مسئول",
+          "placeholder": "یک مسئول انتخاب کنید"
+        },
+        "startDate": {
+          "label": "تاریخ شروع"
+        },
+        "dueDate": {
+          "label": "تاریخ سررسید"
+        },
+        "status": {
+          "label": "وضعیت",
+          "placeholder": "یک وضعیت انتخاب کنید"
+        },
+        "priority": {
+          "label": "اولویت",
+          "placeholder": "یک اولویت انتخاب کنید"
+        },
+        "attachment": {
+          "label": "فایل پیوست",
+          "previewTitle": "دانلود فایل ضمیمه",
+          "previewAction": "دانلود"
+        }
+      },
+
+      "datePicker": {
+        "placeholder": "انتخاب تاریخ",
+        "hourLabel": "ساعت:",
+        "minuteLabel": "دقیقه:",
+        "hourPlaceholder": "ساعت",
+        "minutePlaceholder": "دقیقه"
+      },
+
+      "validation": {
+        "titleRequired": "عنوان وظیفه الزامی است",
+        "statusRequired": "وضعیت الزامی است",
+        "priorityRequired": "اولویت الزامی است",
+        "assigneeRequired": "انتخاب مسئول الزامی است",
+        "startDateRequired": "تاریخ شروع الزامی است",
+        "dueDateRequired": "تاریخ سررسید الزامی است"
+      },
+
+      "toast": {
+        "successTitle": "موفق",
+        "successDescription": "وظیفه با موفقیت به‌روزرسانی شد",
+        "errorTitle": "خطا",
+        "errorDescription": "در به‌روزرسانی وظیفه مشکلی پیش آمد. لطفاً دوباره تلاش کنید."
+      }
+    },
+    "createTask": {
+      "form": {
+        "subtitle": "سازماندهی و مدیریت وظیفه‌ها، منابع و همکاری تیمی",
+
+        "title_label": "عنوان وظیفه",
+        "title_placeholder": "بازطراحی وب‌سایت",
+        "title_required": "عنوان وظیفه الزامی است",
+
+        "description_label": "توضیحات وظیفه",
+        "description_placeholder": "توضیحات",
+        "optional": "(اختیاری)",
+
+        "project_label": "پروژه",
+        "project_placeholder": "یک پروژه انتخاب کنید",
+        "project_required": "انتخاب پروژه الزامی است",
+
+        "assigned_to_label": "مسئول",
+        "assigned_to_placeholder": "یک مسئول انتخاب کنید",
+        "assigned_to_required": "انتخاب مسئول الزامی است",
+        "assigned_to.unknown": "ناشناس",
+
+        "start_date_label": "تاریخ شروع",
+        "start_date_required": "تاریخ شروع الزامی است",
+
+        "due_date_label": "تاریخ سررسید",
+        "due_date_required": "تاریخ سررسید الزامی است",
+
+        "status_label": "وضعیت",
+        "status_placeholder": "یک وضعیت انتخاب کنید",
+        "status_required": "وضعیت الزامی است",
+
+        "priority_label": "اولویت",
+        "priority_placeholder": "یک اولویت انتخاب کنید",
+        "priority_required": "اولویت الزامی است",
+
+        "attachment_label": "فایل پیوست",
+
+        "submit": "ایجاد"
+      },
+
+      "date": {
+        "select_date": "انتخاب تاریخ",
+        "hour_label": "ساعت :",
+        "hour_placeholder": "ساعت",
+        "minute_label": "دقیقه :",
+        "minute_placeholder": "دقیقه"
+      },
+
+      "toast": {
+        "success": {
+          "title": "موفق",
+          "description": "وظیفه با موفقیت ایجاد شد"
+        },
+        "error": {
+          "title": "خطا",
+          "description": "در ایجاد وظیفه خطایی رخ داد. لطفاً دوباره تلاش کنید."
+        }
+      }
+    },
+    "recentTasks": {
+      "empty": "هنوز وظیفه‌ای ایجاد نشده است",
+      "dueDateLabel": "سررسید:"
+    },
+    "filters": {
+      "keyword": "فیلتر وظایف...",
+      "status": {
+        "title": "وضعیت"
+      },
+      "priority": {
+        "title": "اولویت"
+      },
+      "assignee": {
+        "title": "مسئول"
+      },
+      "project": {
+        "title": "پروژه‌ها"
+      }
+    }
+  },
+  "invite": {
+    "title": "سلام! شما برای پیوستن به یک فضای کاری دعوت شده‌اید",
+    "description": "برای پیوستن به این فضای کاری باید ابتدا وارد حساب خود شوید",
+    "joinWorkspace": "پیوستن به فضای کاری",
+    "signUp": "ثبت نام",
+    "login": "ورود",
+    "errorTitle": "خطا",
+    "errorDescription": "در انجام عملیات خطایی رخ داد. لطفاً دوباره تلاش کنید."
+  },
+  "errors": {
+    "unknown": "خطایی رخ داد. لطفاً دوباره تلاش کنید.",
+    "network": "مشکل در ارتباط با سرور. اتصال اینترنت را بررسی کنید.",
+    "UNAUTHORIZED": "دسترسی شما مجاز نیست.",
+    "forbidden": "شما اجازه انجام این عملیات را ندارید.",
+    "notFound": "موردی پیدا نشد.",
+    "server": "خطای سرور رخ داده است. لطفاً بعداً دوباره تلاش کنید.",
+    "accessDenied": "شما اجازه دسترسی به این بخش را ندارید"
+  }
+}

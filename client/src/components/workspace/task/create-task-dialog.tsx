@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+
 import {
   Dialog,
   DialogContent,
@@ -12,6 +14,7 @@ import CreateTaskForm from './create-task-form'
 
 const CreateTaskDialog = (props: { projectId?: string }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const { t } = useTranslation() // namespace مربوط به فایل ترجمه
 
   const onClose = () => {
     setIsOpen(false)
@@ -22,15 +25,15 @@ const CreateTaskDialog = (props: { projectId?: string }) => {
       <DialogTrigger asChild>
         <Button>
           <Plus />
-          وظیفه جدید
+          {t('tasks.dialog.open_button')}
         </Button>
       </DialogTrigger>
+
       <DialogContent className='sm:max-w-lg max-h-auto my-5 border-0'>
         <DialogHeader>
-          <DialogTitle className='mt-4'>ایجاد وظیفه جدید</DialogTitle>
-          {/* در صورت نیاز می‌توانید توضیحی اضافه کنید */}
-          {/* <DialogDescription>فرم ایجاد وظیفه را پر کنید.</DialogDescription> */}
+          <DialogTitle className='mt-4'>{t('tasks.dialog.title')}</DialogTitle>
         </DialogHeader>
+
         <CreateTaskForm projectId={props.projectId} onClose={onClose} />
       </DialogContent>
     </Dialog>

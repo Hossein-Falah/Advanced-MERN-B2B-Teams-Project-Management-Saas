@@ -14,8 +14,10 @@ import useAuth from '@/hooks/api/use-auth'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { invitedUserJoinWorkspaceMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
+import { useTranslation } from 'react-i18next'
 
 const InviteUser = () => {
+  const { t } = useTranslation() // یا هر namespace دلخواه
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -23,14 +25,14 @@ const InviteUser = () => {
   const inviteCode = param.inviteCode as string
 
   const { data: authData, isPending } = useAuth()
-  const user = authData?.user
+  const user = authData?.data?.user
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: invitedUserJoinWorkspaceMutationFn,
   })
 
   const returnUrl = encodeURIComponent(
-    `${BASE_ROUTE.INVITE_URL.replace(':inviteCode', inviteCode)}`,
+    `${BASE_ROUTE.INVITE_URL.replace(':inviteCode', inviteCode)}`
   )
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
@@ -42,10 +44,11 @@ const InviteUser = () => {
         })
         navigate(`/workspace/${data.workspaceId}`)
       },
-      onError: (error) => {
+      onError: () => {
+        // نمایش ندادن error.message خام API
         toast({
-          title: 'خطا',
-          description: error.message,
+          title: t('invite.errorTitle'),
+          description: t('invite.errorDescription'),
           variant: 'destructive',
         })
       },
@@ -60,17 +63,13 @@ const InviteUser = () => {
           className='flex items-center gap-2 self-center font-medium'
         >
           <Logo />
-          تِلِ من
+          {t('common.appName')}
         </Link>
         <div className='flex flex-col gap-6'>
           <Card>
             <CardHeader className='text-center'>
-              <CardTitle className='text-xl'>
-                سلام! شما برای پیوستن به یک فضای کاری دعوت شده‌اید
-              </CardTitle>
-              <CardDescription>
-                برای پیوستن به این فضای کاری باید ابتدا وارد حساب خود شوید
-              </CardDescription>
+              <CardTitle className='text-xl'>{t('invite.title')}</CardTitle>
+              <CardDescription>{t('invite.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               {isPending ? (
@@ -88,7 +87,7 @@ const InviteUser = () => {
                           {isLoading && (
                             <Loader className='!w-6 !h-6 animate-spin' />
                           )}
-                          پیوستن به فضای کاری
+                          {t('invite.joinWorkspace')}
                         </Button>
                       </form>
                     </div>
@@ -98,14 +97,14 @@ const InviteUser = () => {
                         className='flex-1 w-full text-base'
                         to={`/sign-up?returnUrl=${returnUrl}`}
                       >
-                        <Button className='w-full'>ثبت نام</Button>
+                        <Button className='w-full'>{t('invite.signUp')}</Button>
                       </Link>
                       <Link
                         className='flex-1 w-full text-base'
                         to={`/?returnUrl=${returnUrl}`}
                       >
                         <Button variant='secondary' className='w-full border'>
-                          ورود
+                          {t('invite.login')}
                         </Button>
                       </Link>
                     </div>

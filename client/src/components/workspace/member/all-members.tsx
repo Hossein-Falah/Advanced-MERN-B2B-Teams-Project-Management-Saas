@@ -25,17 +25,12 @@ import { changeWorkspaceMemberRoleMutationFn } from '@/lib/api/api'
 import { toast } from '@/hooks/use-toast'
 import { Permissions } from '@/constant'
 
-// تابع کمکی برای ترجمه نقش‌ها
-const getRoleDisplayName = (roleName: string) => {
-  const roleMap: Record<string, string> = {
-    ADMIN: 'مدیر',
-    MEMBER: 'عضو',
-    OWNER: 'مالک',
-  }
-  return roleMap[roleName] || roleName?.toLowerCase()
-}
+// اگر از react-i18next استفاده می‌کنی:
+import { useTranslation } from 'react-i18next'
+import { getRoleDisplayName } from '@/utils/getRoleDisplayName'
 
 const AllMembers = () => {
+  const { t } = useTranslation()
   const { user, hasPermission } = useAuthContext()
 
   const canChangeMemberRole = hasPermission(Permissions.CHANGE_MEMBER_ROLE)
@@ -44,8 +39,8 @@ const AllMembers = () => {
   const workspaceId = useWorkspaceId()
 
   const { data, isPending } = useGetWorkspaceMembers(workspaceId)
-  const members = data?.members || []
-  const roles = data?.roles || []
+  const members = data?.data?.members || []
+  const roles = data?.data?.roles || []
 
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: changeWorkspaceMemberRoleMutationFn,
@@ -66,20 +61,22 @@ const AllMembers = () => {
           queryKey: ['members', workspaceId],
         })
         toast({
-          title: 'موفق',
-          description: 'نقش عضو با موفقیت تغییر کرد',
+          title: t('members.changeRole.successTitle'),
+          description: t('members.changeRole.successDescription'),
           variant: 'success',
         })
       },
-      onError: (error) => {
+      onError: () => {
+        // نمایش پیام کلی و عدم نمایش متن خام API
         toast({
-          title: 'خطا',
-          description: error.message,
+          title: t('members.changeRole.errorTitle'),
+          description: t('members.changeRole.errorDescription'),
           variant: 'destructive',
         })
       },
     })
   }
+
   return (
     <div className='grid gap-6 pt-2' dir='rtl'>
       {isPending ? (
@@ -90,6 +87,9 @@ const AllMembers = () => {
         const name = member.userId?.name
         const initials = getAvatarFallbackText(name)
         const avatarColor = getAvatarColor(name)
+
+        const isCurrentUser = member.userId._id === user?._id
+
         return (
           <div
             key={member._id}
@@ -99,7 +99,7 @@ const AllMembers = () => {
               <Avatar toUser={member.userId?.username} className='h-8 w-8'>
                 <AvatarImage
                   src={member.userId?.profilePicture || ''}
-                  alt='تصویر'
+                  alt={t('members.avatarAlt')}
                 />
                 <AvatarFallback className={avatarColor}>
                   {initials}
@@ -120,22 +120,20 @@ const AllMembers = () => {
                     size='sm'
                     className='mr-auto min-w-24 capitalize disabled:opacity-95 disabled:pointer-events-none'
                     disabled={
-                      isLoading ||
-                      !canChangeMemberRole ||
-                      member.userId._id === user?._id
+                      isLoading || !canChangeMemberRole || isCurrentUser
                     }
                   >
-                    {getRoleDisplayName(member.role.name)}{' '}
-                    {canChangeMemberRole && member.userId._id !== user?._id && (
+                    {getRoleDisplayName(member.role.name, t)}{' '}
+                    {canChangeMemberRole && !isCurrentUser && (
                       <ChevronDown className='text-muted-foreground' />
                     )}
                   </Button>
                 </PopoverTrigger>
-                {canChangeMemberRole && (
+                {canChangeMemberRole && !isCurrentUser && (
                   <PopoverContent className='p-0' align='end'>
                     <Command>
                       <CommandInput
-                        placeholder='انتخاب نقش جدید...'
+                        placeholder={t('members.changeRole.searchPlaceholder')}
                         disabled={isLoading}
                         className='disabled:pointer-events-none'
                       />
@@ -144,7 +142,9 @@ const AllMembers = () => {
                           <Loader className='w-8 h-8 animate-spin place-self-center flex my-4' />
                         ) : (
                           <>
-                            <CommandEmpty>نقشی یافت نشد.</CommandEmpty>
+                            <CommandEmpty>
+                              {t('members.changeRole.noRoleFound')}
+                            </CommandEmpty>
                             <CommandGroup>
                               {roles?.map(
                                 (role) =>
@@ -156,21 +156,21 @@ const AllMembers = () => {
                                       onSelect={() => {
                                         handleSelect(
                                           role._id,
-                                          member.userId._id,
+                                          member.userId._id
                                         )
                                       }}
                                     >
                                       <p className='capitalize'>
-                                        {getRoleDisplayName(role.name)}
+                                        {getRoleDisplayName(role.name, t)}
                                       </p>
                                       <p className='text-sm text-muted-foreground'>
                                         {role.name === 'ADMIN' &&
-                                          'می‌تواند پروژه‌ها و وظیفه ‌ها را مشاهده، ایجاد و ویرایش کند و تنظیمات را مدیریت نماید.'}
+                                          t('roles.roleDescriptions.ADMIN')}
                                         {role.name === 'MEMBER' &&
-                                          'فقط می‌تواند وظیفه ‌های ایجادشده توسط خود را مشاهده و ویرایش کند.'}
+                                          t('roles.roleDescriptions.MEMBER')}
                                       </p>
                                     </CommandItem>
-                                  ),
+                                  )
                               )}
                             </CommandGroup>
                           </>

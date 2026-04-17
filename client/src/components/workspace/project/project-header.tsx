@@ -7,8 +7,11 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { getProjectByIdQueryFn } from '@/lib/api/api'
 import PermissionsGuard from '@/components/resuable/permission-guard'
 import { Permissions } from '@/constant'
+import { useTranslation } from 'react-i18next'
 
 const ProjectHeader = () => {
+  const { t } = useTranslation()
+
   const param = useParams()
   const projectId = param.projectId as string
 
@@ -26,15 +29,15 @@ const ProjectHeader = () => {
     placeholderData: keepPreviousData,
   })
 
-  const project = data?.project
+  const project = data?.data?.project
 
-  // Fallback if no project data is found
   const projectEmoji = project?.emoji || '📊'
-  const projectName = project?.name || 'Untitled project'
+  const projectName = project?.name || t('projects.projecUntitled')
 
   const renderContent = () => {
-    if (isPending) return <span>Loading...</span>
-    if (isError) return <span>Error occured</span>
+    if (isPending) return <span>{t('common.loading')}</span>
+    if (isError) return <span>{t('common.error')}</span>
+
     return (
       <>
         <span>{projectEmoji}</span>
@@ -42,16 +45,19 @@ const ProjectHeader = () => {
       </>
     )
   }
+
   return (
     <div className='flex items-center justify-between space-y-2'>
       <div className='flex items-center gap-2'>
         <h2 className='flex items-center gap-3 text-xl font-medium truncate tracking-tight'>
           {renderContent()}
         </h2>
+
         <PermissionsGuard requiredPermission={Permissions.EDIT_PROJECT}>
           <EditProjectDialog project={project} />
         </PermissionsGuard>
       </div>
+
       <CreateTaskDialog projectId={projectId} />
     </div>
   )

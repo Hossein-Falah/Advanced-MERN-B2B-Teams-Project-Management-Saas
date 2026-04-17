@@ -1,0 +1,956 @@
+{
+  "common": {
+    "search": "搜索",
+    "back": "返回",
+    "tryAgain": "重试",
+    "ok": "好的",
+    "cancel": "取消",
+    "appName": "Teleman",
+    "success": "成功",
+    "error": "错误",
+    "delete": "删除",
+    "openMenu": "打开菜单",
+    "loading": "加载中...",
+    "createdBy": "创建者",
+    "reset": "重置",
+    "unknown": "未知"
+  },
+  "plan": {
+    "free": "免费"
+  },
+  "roles": {
+    "ADMIN": "管理员",
+    "MEMBER": "成员",
+    "OWNER": "所有者",
+    "roleDescriptions": {
+      "ADMIN": "可查看、创建和编辑项目与任务，并管理设置。",
+      "MEMBER": "仅可查看和编辑自己创建的任务。"
+    }
+  },
+  "days": {
+    "0": "星期六",
+    "1": "星期日",
+    "2": "星期一",
+    "3": "星期二",
+    "4": "星期三",
+    "5": "星期四",
+    "6": "星期五"
+  },
+  "sidebar": {
+    "brand": "Teleman",
+    "editProfile": "编辑个人资料",
+    "logout": "退出登录",
+    "logoutDialog": {
+      "title": "确定要退出吗？",
+      "description": "这将结束当前会话，再次访问需重新登录。",
+      "confirm": "退出登录",
+      "cancel": "取消",
+      "errorTitle": "错误",
+      "errorMessage": "退出登录时出错，请重试。"
+    },
+    "nav": {
+      "dashboard": "仪表盘",
+      "tasks": "任务",
+      "members": "成员",
+      "automations": "自动化",
+      "settings": "设置"
+    },
+    "navProjects": {
+      "title": "项目/目标",
+      "emptyDescription": "此工作区尚无项目。创建的项目将在此显示。",
+      "createProject": "创建项目",
+      "more": "更多",
+      "viewProject": "查看项目",
+      "deleteProject": "删除项目",
+      "loadingMore": "加载中...",
+      "deleteDialog": {
+        "title": "删除项目",
+        "description": "确定删除 {{name}} 吗？此操作不可逆。",
+        "defaultItem": "此项",
+        "confirm": "删除",
+        "cancel": "取消"
+      }
+    },
+    "workspaceSwitcher": {
+      "title": "工作区",
+      "noWorkspace": "未选择工作区",
+      "createWorkspace": "创建新工作区"
+    }
+  },
+  "auth": {
+    "googleOAuth": {
+      "googleLogin": "使用 Google 登录",
+      "failure": {
+        "title": "身份验证失败",
+        "description": "无法通过 Google 登录，请重试。",
+        "backToLogin": "返回登录页"
+      }
+    },
+    "validation": {
+      "nameRequired": "姓名不能为空",
+      "emailInvalid": "邮箱格式无效",
+      "emailRequired": "邮箱不能为空",
+      "passwordRequired": "密码不能为空"
+    },
+    "termsText": "注册/登录即表示同意我们的所有条款",
+    "termsLink": "条款与政策",
+    "privacyLink": "隐私政策",
+    "signIn": {
+      "title": "欢迎回来",
+      "description": "使用邮箱或手机号登录",
+      "loginWithGoogle": "使用 Google 登录",
+      "orLoginWith": "或使用",
+      "emailLabel": "邮箱",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "密码",
+      "forgotPassword": "忘记密码？",
+      "loginButton": "登录",
+      "noAccount": "没有账户？",
+      "signup": "注册",
+      "termsText": "注册/登录即表示同意我们的所有条款",
+      "termsLink": "条款与政策",
+      "privacyLink": "隐私政策",
+      "validation": {
+        "emailInvalid": "邮箱格式无效",
+        "emailRequired": "邮箱不能为空",
+        "passwordRequired": "密码不能为空"
+      }
+    },
+    "signup": {
+      "title": "创建账户",
+      "description": "使用邮箱或手机号注册",
+      "googleSignup": "使用 Google 注册",
+      "orSignupWith": "或使用",
+      "nameLabel": "姓名",
+      "namePlaceholder": "您的姓名",
+      "emailLabel": "邮箱",
+      "emailPlaceholder": "m@example.com",
+      "passwordLabel": "密码",
+      "submit": "注册",
+      "haveAccount": "已有账户？",
+      "login": "登录"
+    }
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "您访问的页面不存在或已被移动。",
+    "back": "返回",
+    "goToDashboard": "前往仪表盘"
+  },
+  "header": {
+    "dashboard": "仪表盘",
+    "pageLabel": {
+      "profile": "个人资料",
+      "profile_settings": "个人资料设置",
+      "project": "项目",
+      "settings": "设置",
+      "tasks": "任务",
+      "members": "成员"
+    }
+  },
+  "notifications": {
+    "item": {
+      "defaultUser": "用户",
+      "title": {
+        "taskAssigned": "{{name}} 分配任务给您",
+        "taskUpdated": "{{name}} 更新了任务",
+        "mention": "{{name}} 提及了您",
+        "default": "新通知"
+      },
+      "description": {
+        "default": "点击此通知查看详情。"
+      },
+      "taskLabel": "任务："
+    },
+    "title": "通知",
+    "empty": "暂无通知",
+    "unreadCount": "{{count}} 条未读",
+    "readAll": "全部标为已读",
+    "loadingMore": "加载更多通知...",
+    "showMore": "显示更多通知",
+    "allShown": "已显示全部通知",
+    "showingCount": "已显示 {{shown}}/{{total}} 条通知"
+  },
+  "profileSetting": {
+    "title": "编辑个人资料",
+    "validation": {
+      "nameRequired": "姓名不能为空",
+      "emailInvalid": "邮箱格式无效",
+      "phoneInvalid": "手机号格式无效",
+      "usernameMin": "用户名至少需 3 个字符",
+      "bioMax": "简介不能超过 500 字符",
+      "jobTitleMax": "职位不能超过 100 字符"
+    },
+    "image": {
+      "errorTitle": "错误",
+      "onlyImage": "请仅选择图片文件",
+      "maxSize": "文件大小不能超过 5MB",
+      "label": "个人资料图片",
+      "hint": "JPG/PNG/GIF - 最大 5MB",
+      "button": "选择图片",
+      "changeAria": "更换图片",
+      "alt": "个人资料图片"
+    },
+    "toast": {
+      "updateSuccess": "个人资料更新成功",
+      "updateErrorTitle": "错误",
+      "updateErrorFallback": "更新个人资料时出错"
+    },
+    "tabs": {
+      "profile": "个人资料",
+      "work": "工作",
+      "notify": "通知"
+    },
+    "actions": {
+      "viewProfile": "查看个人资料",
+      "viewProfileShort": "资料",
+      "saving": "保存中...",
+      "saveChanges": "保存更改",
+      "save": "保存",
+      "savingShort": "保存中..."
+    },
+    "fields": {
+      "name": {
+        "label": "姓名",
+        "placeholder": "姓名"
+      },
+      "username": {
+        "label": "用户名",
+        "placeholder": "用户名"
+      },
+      "email": {
+        "label": "邮箱",
+        "placeholder": "example@domain.com"
+      },
+      "phone": {
+        "label": "手机号",
+        "placeholder": "09123456789"
+      },
+      "jobTitle": {
+        "label": "职位",
+        "placeholder": "例如：产品设计师"
+      },
+      "bio": {
+        "label": "简介",
+        "placeholder": "关于我...",
+        "counter": "{{count}}/500"
+      },
+      "region": {
+        "label": "时区",
+        "placeholder": "选择时区",
+        "tehran": "Asia/Tehran"
+      },
+      "workSchedule": {
+        "title": "工作时间设置",
+        "subtitle": "用于计划安排和提交",
+        "workingDays": "工作日",
+        "startHour": "开始时间",
+        "endHour": "结束时间"
+      },
+      "notify": {
+        "title": "通知设置",
+        "subtitle": "为每项通知指定接收方式",
+        "inAppTitle": "应用内通知",
+        "smsTitle": "短信通知",
+        "allOn": "全部开启",
+        "allOff": "全部关闭",
+        "custom": "自定义",
+        "items": {
+          "onCreateTask": "创建任务时",
+          "onUpdateTask": "更新任务时",
+          "onMention": "被提及时",
+          "onAutomationAction": "自动化触发时",
+          "onMessage": "消息通知"
+        },
+        "toggles": {
+          "allInAppAria": "开启/关闭所有应用通知",
+          "allSmsAria": "开启/关闭所有短信通知"
+        }
+      }
+    }
+  },
+  "profileView": {
+    "title": "个人资料",
+    "summary": {
+      "totalTasks": "总任务数",
+      "maxPerHour": "最高/小时",
+      "avgPerHour": "平均/小时",
+      "errors": {
+        "loadFailed": "加载活动数据失败",
+        "unknown": "发生未知错误"
+      }
+    },
+    "activity": {
+      "title": "24 小时活动统计",
+      "chartTabs": {
+        "bar": "柱状图",
+        "pie": "饼图",
+        "line": "折线图",
+        "area": "面积图"
+      },
+      "tooltip": {
+        "hourRange": "{{startHour}}:00 - {{endHour}}:00",
+        "count": "活动次数：{{count}}"
+      },
+      "error": {
+        "generic": "获取活动统计时出错",
+        "notFound": "该用户此日期无数据",
+        "unexpected": "发生意外错误，请稍后重试"
+      }
+    },
+    "online": "在线",
+    "offline": "离线",
+    "activity24h": "24 小时统计",
+    "activityDialog": {
+      "title": "24 小时活动统计"
+    },
+    "imageAlt": "{{name}} 的个人资料图片",
+    "memberSince": "自 {{date}} 加入",
+    "lastSeen": "最后访问：{{date}}",
+    "to": "至",
+    "workSchedule": {
+      "notDefined": "未定义"
+    },
+    "fields": {
+      "fullName": "姓名",
+      "username": "用户名",
+      "email": "邮箱",
+      "phone": "手机号",
+      "jobTitle": "职位",
+      "region": "时区",
+      "workSchedule": "工作时间"
+    },
+    "achievements": {
+      "title": "成就",
+      "empty": "暂无成就",
+      "member_1_month": "🎉 加入满 1 个月",
+      "member_1_year": "🏅 加入满 1 年",
+      "member_10_years": "👑 加入满 10 年",
+      "online_now": "🟢 当前在线",
+      "active_last_24h": "🔥 活跃用户（过去 24 小时）",
+      "profile_completed": "⭐ 个人资料完整"
+    },
+    "about": {
+      "title": "关于我",
+      "empty": "暂无简介"
+    },
+    "error": {
+      "title": "未找到用户",
+      "description": "未找到用户 @{{username}}，是否搜索其他用户？",
+      "searchPlaceholder": "例如：ali 或 testuser"
+    }
+  },
+  "ui": {
+    "fileDrop": {
+      "dragOrClick": "拖放文件或点击",
+      "allowedFormats": "支持格式：jpg, png, pdf, ...",
+      "changeFile": "点击更换文件"
+    },
+    "timeField": {
+      "hourLabel": "小时：",
+      "minuteLabel": "分钟：",
+      "hourPlaceholder": "小时",
+      "minutePlaceholder": "分钟",
+      "errors": {
+        "required": "时间不能为空",
+        "invalidFormat": "时间格式无效",
+        "outOfRange": "时间超出有效范围",
+        "default": "发生错误，请重试"
+      }
+    },
+    "attachmentDownload": {
+      "label": "下载附件",
+      "button": "下载",
+      "error": "无法下载文件"
+    },
+    "datePicker": {
+      "selectDate": "选择日期",
+      "label": "日期"
+    },
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页",
+      "previousPage": "前往上一页",
+      "nextPage": "前往下一页",
+      "morePages": "更多页面"
+    },
+    "sidebar": {
+      "menu": "菜单",
+      "toggle": "切换侧边栏",
+      "errors": {
+        "hookOutsideProvider": "useSidebar 必须在 SidebarProvider 内使用"
+      }
+    }
+  },
+  "automations": {
+    "mainPage": {
+      "title": "所有自动化",
+      "description": "此工作区的自动化列表"
+    },
+    "columns": {
+      "type": "类型",
+      "taskTitle": "任务标题",
+      "daysOfWeek": "执行日",
+      "time": "执行时间",
+      "nextRun": "下次执行",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "status": {
+      "active": "活跃",
+      "inactive": "未活跃"
+    },
+    "table": {
+      "columns": "列",
+      "noResult": "无结果",
+      "pageInfo": "第 {{page}}/{{total}} 页",
+      "previous": "上一页",
+      "next": "下一页",
+      "sortAsc": "升序",
+      "sortDesc": "降序",
+      "hide": "隐藏"
+    },
+    "title": "自动化管理",
+    "createNewAutomationButton": "新建自动化",
+    "createNewAutomationTitle": "创建新自动化",
+    "form": {
+      "type": {
+        "label": "自动化类型",
+        "placeholder": "选择类型"
+      },
+      "task": {
+        "label": "任务",
+        "placeholder": "选择任务",
+        "searchPlaceholder": "搜索任务..."
+      },
+      "daysOfWeek": {
+        "label": "执行日"
+      },
+      "timeOfDay": {
+        "label": "执行时间"
+      },
+      "active": {
+        "label": "状态",
+        "placeholder": "选择状态"
+      },
+      "submit": "创建自动化",
+      "edit": {
+        "title": "编辑自动化",
+        "submit": "保存更改"
+      }
+    },
+    "types": {
+      "TASK_REPETITION": "任务重复",
+      "SCHEDULED": "定时任务",
+      "TRIGGER_BASED": "事件触发",
+      "UNKNOWN": "未知类型"
+    },
+    "validation": {
+      "taskRequired": "必须选择任务",
+      "daysRequired": "至少选择一天",
+      "invalidTime": "时间格式无效 (HH:MM)"
+    },
+    "toast": {
+      "createSuccess": {
+        "title": "成功",
+        "description": "自动化创建成功"
+      },
+      "createError": {
+        "title": "错误",
+        "description": "创建失败，请重试"
+      },
+      "updateSuccess": {
+        "title": "成功",
+        "description": "自动化更新成功"
+      },
+      "updateError": {
+        "title": "错误",
+        "description": "更新失败，请重试"
+      },
+      "deleteSuccess": {
+        "title": "成功",
+        "description": "自动化删除成功"
+      },
+      "deleteError": {
+        "title": "错误",
+        "description": "删除失败，请重试"
+      },
+      "loadError": {
+        "title": "错误",
+        "description": "加载失败，请稍后重试"
+      }
+    },
+    "actions": {
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "messages": {
+      "deleteSuccess": "自动化删除成功"
+    },
+    "errors": {
+      "deleteFailed": "删除失败",
+      "unknown": "未知错误，请稍后重试",
+      "network": "网络错误，请检查连接",
+      "forbidden": "无权限访问",
+      "notFound": "未找到数据",
+      "validation": "输入信息无效，请检查"
+    },
+    "deleteDialog": {
+      "title": "删除自动化",
+      "description": "确定删除 {{name}} 吗？"
+    },
+    "ui": {
+      "filterPlaceholder": "过滤自动化...",
+      "statusFilterTitle": "状态",
+      "resetFilters": "重置",
+      "editDialogTitle": "编辑自动化",
+      "editDialogClose": "关闭"
+    }
+  },
+  "analytics": {
+    "value": "数值",
+    "totalCount": "总数",
+    "previousPeriod": "较上一周期",
+    "previousWeek": "较上周",
+    "teamTab": "团队统计",
+    "personalTab": "个人统计",
+    "projectScopeHint": "此统计基于当前项目",
+    "teamTodayTasks": "团队今日任务",
+    "personalTodayTasks": "我的今日任务",
+    "teamOverdueTasks": "团队逾期任务",
+    "personalOverdueTasks": "我的逾期任务",
+    "teamCompletedTasks": "团队已完成任务",
+    "personalCompletedTasks": "我的已完成任务",
+    "teamInProgressTasks": "团队进行中任务",
+    "personalInProgressTasks": "我的进行中任务",
+    "workspaceScopeHint": "此统计基于当前工作区",
+    "loading": "加载中...",
+    "error": {
+      "loadFailed": "加载工作区统计失败",
+      "unexpected": "发生意外错误"
+    }
+  },
+  "members": {
+    "mainPage": {
+      "title": "工作区成员",
+      "description": "成员可查看/加入工作区所有项目和任务，并创建新任务"
+    },
+    "joinedAtLabel": "加入日期",
+    "avatarAlt": "用户头像",
+    "changeRole": {
+      "successTitle": "成功",
+      "successDescription": "角色更新成功",
+      "errorTitle": "错误",
+      "errorDescription": "更新失败，请重试",
+      "searchPlaceholder": "选择新角色...",
+      "noRoleFound": "未找到角色"
+    },
+    "invite": {
+      "title": "邀请成员加入",
+      "description": "任何人可通过邀请链接加入此工作区。可随时禁用或生成新链接。",
+      "linkLabel": "邀请链接",
+      "copySuccessTitle": "已复制",
+      "copySuccessDescription": "邀请链接已复制到剪贴板"
+    }
+  },
+  "projects": {
+    "projecUntitled": "未命名项目",
+    "createProject": {
+      "title": "创建项目",
+      "subtitle": "组织管理任务、资源和团队协作",
+      "emojiLabel": "选择表情",
+      "nameLabel": "项目名称",
+      "namePlaceholder": "网站改版",
+      "descriptionLabel": "项目描述",
+      "descriptionPlaceholder": "项目描述",
+      "optional": "（可选）",
+      "submit": "创建",
+      "validation": {
+        "nameRequired": "项目名称不能为空"
+      },
+      "toast": {
+        "successTitle": "成功",
+        "successDescription": "项目创建成功",
+        "errorTitle": "错误",
+        "errorDescription": "创建失败，请重试"
+      }
+    },
+    "editProject": {
+      "title": "编辑项目",
+      "subtitle": "更新项目详情以优化任务管理",
+      "emojiLabel": "选择表情",
+      "nameLabel": "项目名称",
+      "namePlaceholder": "项目名称",
+      "descriptionLabel": "项目描述",
+      "descriptionPlaceholder": "项目描述",
+      "optional": "（可选）",
+      "submit": "更新",
+      "validation": {
+        "nameRequired": "项目名称不能为空"
+      },
+      "toast": {
+        "successTitle": "成功",
+        "successDescription": "项目更新成功",
+        "errorTitle": "错误",
+        "errorDescription": "更新失败，请重试"
+      }
+    },
+    "recentProjects": {
+      "empty": "暂无项目",
+      "createdBy": "创建者"
+    }
+  },
+  "workspaces": {
+    "mainPage": {
+      "title": "我的仪表盘",
+      "subtitle": "此工作区概览",
+      "newProject": "新建项目",
+      "recentProjects": "最近项目",
+      "recentTasks": "最近任务",
+      "recentMembers": "最近成员"
+    },
+    "deleteWorkspace": {
+      "title": "删除工作区",
+      "description": "此操作永久删除工作区及所有相关数据（项目/任务/角色），不可恢复！",
+      "deleteButton": "删除工作区",
+      "toast": {
+        "errorTitle": "错误",
+        "errorDescription": "删除失败，请重试"
+      },
+      "confirm": {
+        "title": "删除工作区 {{name}}",
+        "description": "确定删除吗？此操作不可逆！",
+        "confirmText": "删除",
+        "cancelText": "取消"
+      }
+    },
+    "createWorkspace": {
+      "title": "创建工作区",
+      "subtitle": "集中管理团队项目，提升效率",
+      "nameLabel": "工作区名称",
+      "namePlaceholder": "公司/团队名称",
+      "nameDescription": "您的公司、团队或组织名称",
+      "descriptionLabel": "工作区描述",
+      "descriptionPlaceholder": "我们在此管理营销项目与任务",
+      "descriptionHelp": "用简短描述帮助成员理解",
+      "optional": "（可选）",
+      "submit": "创建工作区",
+      "validation": {
+        "nameRequired": "工作区名称不能为空"
+      },
+      "toast": {
+        "errorTitle": "错误",
+        "errorDescription": "创建失败，请重试"
+      }
+    },
+    "editWorkspace": {
+      "mainPage": { "title": "工作区设置" },
+      "title": "编辑工作区",
+      "nameLabel": "工作区名称",
+      "namePlaceholder": "公司/团队名称",
+      "descriptionLabel": "工作区描述",
+      "descriptionPlaceholder": "我们在此管理营销项目与任务",
+      "optional": "（可选）",
+      "submit": "更新工作区",
+      "validation": {
+        "nameRequired": "工作区名称不能为空"
+      },
+      "toast": {
+        "errorTitle": "错误",
+        "errorDescription": "更新失败，请重试"
+      }
+    }
+  },
+  "tasks": {
+    "mainPage": {
+      "title": "所有任务",
+      "description": "此工作区的任务列表"
+    },
+    "taskLogs": {
+      "noLogSelected": "从右侧列表选择日志以查看详情",
+      "headerTitle": "变更详情",
+      "changesByUserAndDate": "这些变更由 {{userName}} 于 {{date}} 提交",
+      "fallbackUser": "用户",
+      "undo": {
+        "loading": "恢复中...",
+        "label": {
+          "desktop": "恢复",
+          "mobile": "返回"
+        }
+      },
+      "redo": {
+        "loading": "应用中...",
+        "label": {
+          "desktop": "应用新值",
+          "mobile": "应用"
+        }
+      },
+      "changeType": {
+        "edit": "编辑变更",
+        "create": "创建变更"
+      },
+      "previousValue": { "label": "原值" },
+      "newValue": { "label": "新值" },
+      "noChangesForLog": "此日志无变更记录",
+      "loading": "加载任务历史...",
+      "empty": "此任务尚无历史记录",
+      "actions": {
+        "create": "创建任务",
+        "update": "更新任务",
+        "delete": "删除任务",
+        "other": "操作"
+      },
+      "changesCount": "{{count}} 项变更",
+      "itemAriaLabel": "{{user}} 的 {{action}} 操作 (ID {{id}})",
+      "unknownUser": "未知用户",
+      "title": "变更历史 - {{title}}",
+      "fields": {
+        "title": "标题",
+        "description": "描述",
+        "status": "状态",
+        "priority": "优先级",
+        "dueDate": "截止日期",
+        "assignedTo": "负责人",
+        "attachment": "附件",
+        "startDate": "开始日期"
+      },
+      "common": {
+        "empty": "—",
+        "invalidDate": "日期无效",
+        "user": "用户"
+      },
+      "errors": {
+        "undoFailed": "恢复失败，请重试",
+        "redoFailed": "应用失败，请重试",
+        "fetchFailed": "加载历史失败，请刷新页面"
+      }
+    },
+    "comment": {
+      "form": {
+        "contentRequired": "评论内容不能为空",
+        "placeholder": "输入评论或反馈...",
+        "submit": "提交评论",
+        "successTitle": "成功",
+        "successDescription": "评论提交成功",
+        "errorTitle": "错误",
+        "errorDescription": "提交失败"
+      },
+      "attachment": {
+        "dropOrSelect": "拖放文件或选择文件",
+        "selectFile": "选择文件"
+      },
+      "mention": {
+        "loading": "加载中...",
+        "noUserFound": "未找到用户",
+        "noUsername": "匿名用户"
+      }
+    },
+    "table": {
+      "columnHeader": {
+        "sortAsc": "升序",
+        "sortDesc": "降序",
+        "hideColumn": "隐藏列"
+      },
+      "columns": {
+        "columns": "列",
+        "selectAll": "全选",
+        "selectRow": "选择行",
+        "title": "标题",
+        "project": "项目",
+        "assignee": "负责人",
+        "dateRange": "时间范围",
+        "status": "状态",
+        "priority": "优先级",
+        "actions": "操作",
+        "avatarAlt": "头像"
+      },
+      "filter": {
+        "searchPlaceholder": "搜索 {{title}}",
+        "noResults": "无结果",
+        "clearFilters": "清除筛选"
+      },
+      "noResults": "无结果",
+      "pagination": {
+        "range": "显示 {{start}} 至 {{end}} 条，共 {{total}} 条",
+        "rowsPerPage": "每页行数",
+        "pageInfo": "第 {{page}}/{{pageCount}} 页",
+        "firstPage": "首页",
+        "previousPage": "上一页",
+        "nextPage": "下一页",
+        "lastPage": "末页",
+        "prevLabel": "上一页",
+        "nextLabel": "下一页"
+      }
+    },
+    "menu": {
+      "openMenu": "打开菜单",
+      "logs": "变更历史",
+      "edit": "编辑任务",
+      "delete": "删除任务"
+    },
+    "deleteDialog": {
+      "title": "删除任务",
+      "description": "确定删除任务 {{taskCode}} 吗？",
+      "confirm": "删除",
+      "cancel": "取消"
+    },
+    "toast": {
+      "deleteSuccessTitle": "成功",
+      "deleteErrorTitle": "错误",
+      "deleteSuccessDescription": "任务删除成功"
+    },
+    "dialog": {
+      "open_button": "新建任务",
+      "title": "创建新任务",
+      "description": "填写任务表单",
+      "noDescription": "此任务无描述",
+      "attachmentLabel": "下载附件",
+      "noComments": "暂无评论",
+      "avatarAlt": "头像"
+    },
+    "status": {
+      "BACKLOG": "待处理",
+      "TODO": "待办",
+      "IN_PROGRESS": "进行中",
+      "IN_REVIEW": "审核中",
+      "DONE": "已完成"
+    },
+    "priority": {
+      "LOW": "低",
+      "MEDIUM": "中",
+      "HIGH": "高",
+      "URGENT": "紧急"
+    },
+    "editTask": {
+      "subtitle": "编辑任务信息",
+      "submit": "保存更改",
+      "fields": {
+        "title": {
+          "label": "任务标题",
+          "placeholder": "网站改版"
+        },
+        "description": {
+          "label": "任务描述",
+          "optional": "（可选）",
+          "placeholder": "描述"
+        },
+        "assignedTo": {
+          "label": "负责人",
+          "placeholder": "选择负责人"
+        },
+        "startDate": { "label": "开始日期" },
+        "dueDate": { "label": "截止日期" },
+        "status": {
+          "label": "状态",
+          "placeholder": "选择状态"
+        },
+        "priority": {
+          "label": "优先级",
+          "placeholder": "选择优先级"
+        },
+        "attachment": {
+          "label": "附件",
+          "previewTitle": "下载附件",
+          "previewAction": "下载"
+        }
+      },
+      "datePicker": {
+        "placeholder": "选择日期",
+        "hourLabel": "小时：",
+        "minuteLabel": "分钟：",
+        "hourPlaceholder": "小时",
+        "minutePlaceholder": "分钟"
+      },
+      "validation": {
+        "titleRequired": "标题不能为空",
+        "statusRequired": "状态不能为空",
+        "priorityRequired": "优先级不能为空",
+        "assigneeRequired": "必须选择负责人",
+        "startDateRequired": "开始日期不能为空",
+        "dueDateRequired": "截止日期不能为空"
+      },
+      "toast": {
+        "successTitle": "成功",
+        "successDescription": "任务更新成功",
+        "errorTitle": "错误",
+        "errorDescription": "更新失败，请重试"
+      }
+    },
+    "createTask": {
+      "form": {
+        "subtitle": "组织管理任务、资源和协作",
+        "title_label": "任务标题",
+        "title_placeholder": "网站改版",
+        "title_required": "标题不能为空",
+        "description_label": "任务描述",
+        "description_placeholder": "描述",
+        "optional": "（可选）",
+        "project_label": "项目",
+        "project_placeholder": "选择项目",
+        "project_required": "必须选择项目",
+        "assigned_to_label": "负责人",
+        "assigned_to_placeholder": "选择负责人",
+        "assigned_to_required": "必须选择负责人",
+        "assigned_to.unknown": "未知",
+        "start_date_label": "开始日期",
+        "start_date_required": "开始日期不能为空",
+        "due_date_label": "截止日期",
+        "due_date_required": "截止日期不能为空",
+        "status_label": "状态",
+        "status_placeholder": "选择状态",
+        "status_required": "状态不能为空",
+        "priority_label": "优先级",
+        "priority_placeholder": "选择优先级",
+        "priority_required": "优先级不能为空",
+        "attachment_label": "附件",
+        "submit": "创建"
+      },
+      "date": {
+        "select_date": "选择日期",
+        "hour_label": "小时：",
+        "hour_placeholder": "小时",
+        "minute_label": "分钟：",
+        "minute_placeholder": "分钟"
+      },
+      "toast": {
+        "success": {
+          "title": "成功",
+          "description": "任务创建成功"
+        },
+        "error": {
+          "title": "错误",
+          "description": "创建失败，请重试"
+        }
+      }
+    },
+    "recentTasks": {
+      "empty": "暂无任务",
+      "dueDateLabel": "截止："
+    },
+    "filters": {
+      "keyword": "筛选任务...",
+      "status": { "title": "状态" },
+      "priority": { "title": "优先级" },
+      "assignee": { "title": "负责人" },
+      "project": { "title": "项目" }
+    }
+  },
+  "invite": {
+    "title": "您好！您被邀请加入工作区",
+    "description": "加入前需先登录账户",
+    "joinWorkspace": "加入工作区",
+    "signUp": "注册",
+    "login": "登录",
+    "errorTitle": "错误",
+    "errorDescription": "操作失败，请重试"
+  },
+  "errors": {
+    "unknown": "发生错误，请重试",
+    "network": "网络错误，请检查连接",
+    "unauthorized": "未授权",
+    "forbidden": "无操作权限",
+    "notFound": "未找到",
+    "server": "服务器错误，请稍后重试",
+    "accessDenied": "无访问权限"
+  }
+}

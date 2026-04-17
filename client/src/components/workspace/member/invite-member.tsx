@@ -8,8 +8,10 @@ import { CheckIcon, CopyIcon, Loader } from 'lucide-react'
 import { BASE_ROUTE } from '@/routes/common/routePaths'
 import PermissionsGuard from '@/components/resuable/permission-guard'
 import { Permissions } from '@/constant'
+import { useTranslation } from 'react-i18next'
 
 const InviteMember = () => {
+  const { t } = useTranslation()
   const { workspace, workspaceLoading } = useAuthContext()
   const [copied, setCopied] = useState(false)
 
@@ -24,11 +26,13 @@ const InviteMember = () => {
     if (inviteUrl) {
       navigator.clipboard.writeText(inviteUrl).then(() => {
         setCopied(true)
+
         toast({
-          title: 'کپی شد',
-          description: 'لینک دعوت در کلیپ‌بورد کپی شد',
+          title: t('members.invite.copySuccessTitle'),
+          description: t('members.invite.copySuccessDescription'),
           variant: 'success',
         })
+
         setTimeout(() => setCopied(false), 2000)
       })
     }
@@ -37,12 +41,11 @@ const InviteMember = () => {
   return (
     <div className='flex flex-col pt-0.5 px-0 gap-4'>
       <h5 className='text-lg leading-[30px] font-semibold mb-1'>
-        دعوت از اعضا برای پیوستن
+        {t('members.invite.title')}
       </h5>
+
       <p className='text-sm text-muted-foreground leading-7'>
-        هر کسی با لینک دعوت می‌تواند به این فضای کاری رایگان بپیوندد. شما
-        می‌توانید در هر زمان لینک دعوت را غیرفعال کرده و یک لینک جدید برای این
-        فضای کاری ایجاد کنید.
+        {t('members.invite.description')}
       </p>
 
       <PermissionsGuard showMessage requiredPermission={Permissions.ADD_MEMBER}>
@@ -56,8 +59,9 @@ const InviteMember = () => {
         ) : (
           <div className='flex py-3 gap-2'>
             <Label htmlFor='link' className='sr-only'>
-              لینک
+              {t('members.invite.linkLabel')}
             </Label>
+
             <Input
               id='link'
               disabled={true}
@@ -65,6 +69,7 @@ const InviteMember = () => {
               value={inviteUrl}
               readOnly
             />
+
             <Button
               disabled={false}
               className='shrink-0'

@@ -3,7 +3,7 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-RUN npm config set registry https://package-mirror.liara.ir/repository/npm
+RUN npm config set registry https://mirror2.chabokan.net/npm/
 
 # Copy package files
 COPY package*.json ./
@@ -30,7 +30,7 @@ FROM node:22-alpine AS runner
 
 WORKDIR /app
 
-RUN npm config set registry https://package-mirror.liara.ir/repository/npm
+RUN npm config set registry https://mirror2.chabokan.net/npm/
 
 # Install serve globally to serve static files
 RUN npm install -g serve

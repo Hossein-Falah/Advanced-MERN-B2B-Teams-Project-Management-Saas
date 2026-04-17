@@ -21,6 +21,9 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 
+// i18n
+import { useTranslation } from 'react-i18next'
+
 interface DataTableFacetedFilterProps {
   title?: string
   options: {
@@ -42,6 +45,7 @@ export function DataTableFacetedFilter({
   multiSelect = true,
   onFilterChange,
 }: DataTableFacetedFilterProps) {
+  const { t } = useTranslation()
   const selectedValueSet = new Set(selectedValues)
 
   const [open, setOpen] = React.useState(false)
@@ -98,15 +102,19 @@ export function DataTableFacetedFilter({
       </PopoverTrigger>
       <PopoverContent className='w-[200px] p-0' align='start'>
         <Command>
-          <CommandInput placeholder={`جستجوی ${title}`} />
+          <CommandInput
+            placeholder={t('tasks.table.filter.searchPlaceholder', {
+              title: title ?? '',
+            })}
+          />
           <CommandList>
-            <CommandEmpty>نتیجه‌ای یافت نشد</CommandEmpty>
+            <CommandEmpty>{t('tasks.table.filter.noResults')}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValueSet.has(option.value)
                 return (
                   <CommandItem
-                    className={`cursor-pointer`}
+                    className='cursor-pointer'
                     key={option.value}
                     onSelect={() => {
                       if (multiSelect) {
@@ -148,7 +156,7 @@ export function DataTableFacetedFilter({
                     onSelect={() => onFilterChange([])}
                     className='justify-center text-center'
                   >
-                    پاک کردن فیلترها
+                    {t('tasks.table.filter.clearFilters')}
                   </CommandItem>
                 </CommandGroup>
               </>

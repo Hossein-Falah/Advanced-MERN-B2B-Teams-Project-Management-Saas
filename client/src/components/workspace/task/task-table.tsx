@@ -17,6 +17,7 @@ import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import CommentsDialog from './table/create-comment-dialog'
+import { useTranslation } from 'react-i18next'
 
 type Filters = ReturnType<typeof useTaskTableFilter>[0]
 type SetFilters = ReturnType<typeof useTaskTableFilter>[1]
@@ -89,8 +90,8 @@ const TaskTable = () => {
     staleTime: 0,
   })
 
-  const tasks: TaskType[] = data?.tasks || []
-  const totalCount = data?.pagination.totalCount || 0
+  const tasks: TaskType[] = data?.data?.tasks || []
+  const totalCount = data?.meta?.total || 0
 
   const handlePageChange = (page: number) => {
     setPageNumber(page)
@@ -144,6 +145,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
   resetAllFilters,
   hasTaskId,
 }) => {
+  const { t } = useTranslation()
   const workspaceId = useWorkspaceId()
 
   const { data } = useGetProjectsInWorkspaceQuery({
@@ -152,8 +154,8 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
 
   const { data: memberData } = useGetWorkspaceMembers(workspaceId)
 
-  const projects = data?.projects || []
-  const members = memberData?.members || []
+  const projects = data?.data?.projects || []
+  const members = memberData?.data?.members || []
 
   const projectOptions = projects?.map((project) => ({
     label: (
@@ -166,7 +168,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
   }))
 
   const assigneesOptions = members?.map((member) => {
-    const name = member.userId?.name || 'ناشناس'
+    const name = member.userId?.name || t('common.unknown')
     const initials = getAvatarFallbackText(name)
     const avatarColor = getAvatarColor(name)
 
@@ -194,7 +196,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
   return (
     <div className='flex flex-col lg:flex-row w-full items-start space-y-2 mb-2 lg:mb-0 lg:space-x-2 lg:space-y-0 rtl:space-x-reverse'>
       <Input
-        placeholder='فیلتر وظایف ...'
+        placeholder={t('tasks.filters.keyword')}
         value={filters.keyword || ''}
         onChange={(e) =>
           setFilters({
@@ -203,24 +205,27 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
         }
         className='h-8 w-full lg:w-[250px]'
       />
+
       <DataTableFacetedFilter
-        title='وضعیت'
+        title={t('tasks.filters.status.title')}
         multiSelect={true}
         options={statuses}
         disabled={isLoading}
         selectedValues={filters.status?.split(',') || []}
         onFilterChange={(values) => handleFilterChange('status', values)}
       />
+
       <DataTableFacetedFilter
-        title='اولویت'
+        title={t('tasks.filters.priority.title')}
         multiSelect={true}
         options={priorities}
         disabled={isLoading}
         selectedValues={filters.priority?.split(',') || []}
         onFilterChange={(values) => handleFilterChange('priority', values)}
       />
+
       <DataTableFacetedFilter
-        title='مسئول'
+        title={t('tasks.filters.assignee.title')}
         multiSelect={true}
         options={assigneesOptions}
         disabled={isLoading}
@@ -230,7 +235,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
 
       {!projectId && (
         <DataTableFacetedFilter
-          title='پروژه‌ها'
+          title={t('tasks.filters.project.title')}
           multiSelect={false}
           options={projectOptions}
           disabled={isLoading}
@@ -240,7 +245,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
       )}
 
       {(Object.values(filters).some(
-        (value) => value !== null && value !== '',
+        (value) => value !== null && value !== ''
       ) ||
         hasTaskId) && (
         <Button
@@ -249,7 +254,7 @@ const DataTableFilterToolbar: FC<DataTableFilterToolbarProps> = ({
           className='h-8 px-2 lg:px-3'
           onClick={resetAllFilters}
         >
-          بازنشانی
+          {t('common.reset')}
           <X />
         </Button>
       )}

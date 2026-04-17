@@ -2,6 +2,7 @@ import { NotificationItem } from '@/types/notification.type'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface NotificationItemProps {
   notification: NotificationItem
@@ -12,6 +13,7 @@ const NotificationItemComponent = ({
   notification,
   onClick,
 }: NotificationItemProps) => {
+  const { t } = useTranslation()
   const { type, sender, task, createdAt, read } = notification
 
   const createdDate = new Date(createdAt)
@@ -21,20 +23,27 @@ const NotificationItemComponent = ({
   })
   const dateString = createdDate.toLocaleDateString('fa-IR')
 
-  const senderName = sender?.username || sender?.name || 'کاربر'
+  const senderName =
+    sender?.username || sender?.name || t('notifications.item.defaultUser')
+
   const senderInitials = getAvatarFallbackText(senderName)
   const senderColor = getAvatarColor(senderName)
 
-  const notificationTitles: Record<string, (name: string) => string> = {
-    TASK_ASSIGNED: (name) => `${name} یک وظیفه به شما اختصاص داد`,
-    TASK_UPDATED: (name) => `${name} یک وظیفه را بروزرسانی کرد`,
-    MENTION: (name) => `${name} شما را منشن کرد`,
+  const notificationTitleKeyMap: Record<string, string> = {
+    TASK_ASSIGNED: 'notifications.item.title.taskAssigned',
+    TASK_UPDATED: 'notifications.item.title.taskUpdated',
+    MENTION: 'notifications.item.title.mention',
   }
 
-  const title = notificationTitles[type]?.(senderName) ?? 'نوتیفیکیشن جدید'
+  const titleKey =
+    notificationTitleKeyMap[type] || 'notifications.item.title.default'
+
+  const title = t(titleKey, {
+    name: senderName,
+  })
 
   const description =
-    task?.description || 'برای جزئیات بیشتر، روی این نوتیفیکیشن کلیک کنید.'
+    task?.description || t('notifications.item.description.default')
 
   return (
     <button
@@ -45,7 +54,7 @@ const NotificationItemComponent = ({
         'hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         !read
           ? 'bg-slate-100 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700'
-          : 'bg-background border-transparent',
+          : 'bg-background border-transparent'
       )}
     >
       <Avatar className='h-9 w-9 flex-shrink-0'>
@@ -71,7 +80,7 @@ const NotificationItemComponent = ({
         <div className='mt-1 flex items-center justify-between text-[11px] text-muted-foreground'>
           {task?.title ? (
             <span className='line-clamp-1 max-w-[60%]'>
-              وظیفه: {task.title}
+              {t('notifications.item.taskLabel')} {task.title}
             </span>
           ) : (
             <span />

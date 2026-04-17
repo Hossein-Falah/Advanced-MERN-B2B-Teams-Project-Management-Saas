@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Check, ChevronDown, Loader, Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import {
   DropdownMenu,
@@ -29,6 +30,8 @@ type WorkspaceType = {
 }
 
 export function WorkspaceSwitcher() {
+  const { t } = useTranslation()
+
   const navigate = useNavigate()
   const { isMobile } = useSidebar()
 
@@ -37,14 +40,14 @@ export function WorkspaceSwitcher() {
 
   const [activeWorkspace, setActiveWorkspace] = React.useState<WorkspaceType>()
 
-  const { data, isPending } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: ['userWorkspaces'],
     queryFn: getAllWorkspacesUserIsMemberQueryFn,
     staleTime: 1,
     refetchOnMount: true,
   })
 
-  const workspaces = data?.workspaces
+  const workspaces = data?.data?.workspaces
 
   React.useEffect(() => {
     if (workspaces?.length) {
@@ -67,7 +70,7 @@ export function WorkspaceSwitcher() {
   return (
     <div dir='rtl'>
       <SidebarGroupLabel className='w-full justify-between pr-0'>
-        <span>فضاهای کاری</span>
+        <span>{t('sidebar.workspaceSwitcher.title')}</span>
         <button
           onClick={onOpen}
           className='flex size-5 items-center justify-center rounded-full border'
@@ -75,6 +78,7 @@ export function WorkspaceSwitcher() {
           <Plus className='size-3.5' />
         </button>
       </SidebarGroupLabel>
+
       <SidebarMenu>
         <SidebarMenuItem>
           <DropdownMenu>
@@ -92,19 +96,20 @@ export function WorkspaceSwitcher() {
                       <span className='truncate font-semibold'>
                         {activeWorkspace?.name}
                       </span>
-                      <span className='truncate text-xs'>رایگان</span>
+                      <span className='truncate text-xs'>{t('plan.free')}</span>
                     </div>
                   </>
                 ) : (
                   <div className='grid flex-1 text-right text-sm leading-tight'>
                     <span className='truncate font-semibold'>
-                      فضای کاری انتخاب نشده
+                      {t('sidebar.workspaceSwitcher.noWorkspace')}
                     </span>
                   </div>
                 )}
                 <ChevronDown className='mr-auto' />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent
               className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
               align='start'
@@ -112,9 +117,16 @@ export function WorkspaceSwitcher() {
               sideOffset={4}
             >
               <DropdownMenuLabel className='text-xs text-muted-foreground'>
-                فضاهای کاری
+                {t('sidebar.workspaceSwitcher.title')}
               </DropdownMenuLabel>
-              {isPending ? <Loader className=' w-5 h-5 animate-spin' /> : null}
+
+              {isPending && <Loader className='w-5 h-5 animate-spin' />}
+
+              {isError && (
+                <div className='text-xs text-destructive px-2 py-1'>
+                  {t('errors.unknown')}
+                </div>
+              )}
 
               {workspaces?.map((workspace) => (
                 <DropdownMenuItem
@@ -125,6 +137,7 @@ export function WorkspaceSwitcher() {
                   <div className='flex size-6 items-center justify-center rounded-sm border'>
                     {workspace?.name?.split(' ')?.[0]?.charAt(0)}
                   </div>
+
                   {workspace.name}
 
                   {workspace._id === workspaceId && (
@@ -134,7 +147,9 @@ export function WorkspaceSwitcher() {
                   )}
                 </DropdownMenuItem>
               ))}
+
               <DropdownMenuSeparator />
+
               <DropdownMenuItem
                 className='gap-2 p-2 !cursor-pointer'
                 onClick={onOpen}
@@ -143,7 +158,7 @@ export function WorkspaceSwitcher() {
                   <Plus className='size-4' />
                 </div>
                 <div className='font-medium text-muted-foreground'>
-                  ایجاد فضای کاری جدید
+                  {t('sidebar.workspaceSwitcher.createWorkspace')}
                 </div>
               </DropdownMenuItem>
             </DropdownMenuContent>

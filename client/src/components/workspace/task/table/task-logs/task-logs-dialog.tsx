@@ -19,6 +19,8 @@ import {
   undoTaskLog,
 } from '@/lib/api/task-logs-api'
 import useWorkspaceId from '@/hooks/use-workspace-id'
+// فرض: از i18next استفاده می‌کنی
+import { useTranslation } from 'react-i18next'
 
 const TaskLogsDialog = ({
   task,
@@ -29,10 +31,12 @@ const TaskLogsDialog = ({
   isOpen: boolean
   onClose: () => void
 }) => {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [selectedLog, setSelectedLog] = useState<TaskLogType | null>(null)
   const workspaceId = useWorkspaceId()
-  const { data, isLoading } = useQuery({
+
+  const { data, isLoading /*, error*/ } = useQuery({
     queryKey: ['task-logs', task?.workspace, task?._id],
     queryFn: () =>
       getAllTaskLogsQueryFn({
@@ -41,7 +45,7 @@ const TaskLogsDialog = ({
     enabled: isOpen && !!task?._id && !!task?.workspace,
   })
 
-  const logs = data?.logs.filter((l) => l.action == 'UPDATE') ?? []
+  const logs = data?.data?.logs.filter((l) => l.action == 'UPDATE') ?? []
 
   // وقتی مودال باز شد و لاگ‌ها آمدند، به صورت پیش‌فرض آخری را انتخاب کن
   useEffect(() => {
@@ -71,6 +75,11 @@ const TaskLogsDialog = ({
         queryKey: ['all-tasks', workspaceId],
       })
     },
+    onError: () => {
+      // اینجا به‌جای متن API از یک پیام کلی i18n استفاده کن
+      // مثلا با toast:
+      // toast.error(t('tasks.taskLogs.errors.undoFailed'))
+    },
   })
 
   // Redo mutation
@@ -90,6 +99,10 @@ const TaskLogsDialog = ({
         queryKey: ['all-tasks', workspaceId],
       })
     },
+    onError: () => {
+      // به‌جای نمایش متن خطای API
+      // toast.error(t('tasks.taskLogs.errors.redoFailed'))
+    },
   })
 
   if (!task) return null
@@ -99,7 +112,8 @@ const TaskLogsDialog = ({
       <DialogContent className='sm:max-w-3xl my-5 border-0'>
         <DialogHeader>
           <DialogTitle className='mt-4 flex flex-col gap-2 md:flex-row justify-between break-all'>
-            <p>تاریخچه تغییرات - {task?.title}</p>
+            {/* "تاریخچه تغییرات" را i18n می‌کنیم و عنوان تسک را هم به‌صورت داینامیک اضافه می‌کنیم */}
+            <p>{t('tasks.taskLogs.title', { title: task?.title })}</p>
             <p className='text-xs font-normal '>
               {task.dueDate
                 ? formatJalali(new Date(task.dueDate), 'PPP HH:mm', {

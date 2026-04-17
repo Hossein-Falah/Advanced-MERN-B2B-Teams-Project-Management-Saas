@@ -1,19 +1,11 @@
-import { PaginationType, TaskType, UserType } from './api.type'
+import { TaskType, UserType } from './api.type'
+import { ResponseType } from './api.type'
 
 export type LogActionEnum = 'CREATE' | 'UPDATE' | 'DELETE'
 
-export type TaskLogFieldEnum =
-  | 'title'
-  | 'description'
-  | 'status'
-  | 'priority'
-  | 'assignedTo'
-  | 'dueDate'
-  | 'attachment'
-
 export type TaskLogChangeType = {
   _id: string
-  field: TaskLogFieldEnum
+  field: Partial<keyof TaskType>
   oldValue?: string | null
   newValue?: string | null
 }
@@ -29,20 +21,22 @@ export type TaskLogType = {
   createdAt: string
 }
 
-export type AllTaskLogsResponseType = {
+// پجینیشن حذف شد؛ مدیریت پجینیشن فقط در خود ResponseType انجام می‌شود
+export type AllTaskLogsResponseType = ResponseType<{
   logs: TaskLogType[]
-  pagination: PaginationType
-}
+}>
 
 export type GetAllTaskLogsParamsType = {
   taskId: string
 }
+
 export type LogsListProps = {
   logs: TaskLogType[]
   selectedLogId?: string | null
   onSelectLog: (log: TaskLogType) => void
   isLoading?: boolean
 }
+
 export type LogDetailsProps = {
   log: TaskLogType | null
   task: TaskType & Record<string, any>

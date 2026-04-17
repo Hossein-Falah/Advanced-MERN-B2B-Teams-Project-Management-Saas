@@ -8,7 +8,7 @@ type CollapsibleContextValue = {
 }
 
 const CollapsibleContext = React.createContext<CollapsibleContextValue | null>(
-  null,
+  null
 )
 
 type CollapsibleProps = {
@@ -50,7 +50,7 @@ export const Collapsible: React.FC<CollapsibleProps> = ({
       open: actualOpen,
       setOpen,
     }),
-    [actualOpen],
+    [actualOpen]
   )
 
   return (
@@ -88,7 +88,7 @@ export const CollapsibleTrigger: React.FC<CollapsibleTriggerProps> = ({
   if (!context) {
     // اگر خارج از Collapsible استفاده بشه، چیزی رندر نکن
     console.warn(
-      '[CollapsibleTrigger] used outside of <Collapsible /> – حتماً Trigger داخل Collapsible باشه.',
+      '[CollapsibleTrigger] used outside of <Collapsible /> – حتماً Trigger داخل Collapsible باشه.'
     )
     return null
   }
@@ -141,7 +141,7 @@ export const CollapsibleContent: React.FC<CollapsibleContentProps> = ({
 
   if (!context) {
     console.warn(
-      '[CollapsibleContent] used outside of <Collapsible /> – حتماً Content داخل Collapsible باشه.',
+      '[CollapsibleContent] used outside of <Collapsible /> – حتماً Content داخل Collapsible باشه.'
     )
     return null
   }
@@ -155,7 +155,7 @@ export const CollapsibleContent: React.FC<CollapsibleContentProps> = ({
         open
           ? 'data-[state=open]:animate-collapseDown'
           : 'data-[state=closed]:animate-collapseUp',
-        className,
+        className
       )}
       data-state={open ? 'open' : 'closed'}
       style={{

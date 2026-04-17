@@ -6,12 +6,7 @@ import { DataTableColumnHeader } from './table-column-header'
 import { DataTableRowActions } from './table-row-actions'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import {
-  TaskPriorityEnum,
-  TaskPriorityEnumType,
-  TaskStatusEnum,
-  TaskStatusEnumType,
-} from '@/constant'
+
 import {
   formatStatusToEnum,
   getAvatarColor,
@@ -21,6 +16,16 @@ import { priorities, statuses } from './data'
 import { TaskType } from '@/types/api.type'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MoveLeftIcon } from 'lucide-react'
+import {
+  TaskPriorityEnum,
+  TaskPriorityEnumType,
+  TaskStatusEnum,
+  TaskStatusEnumType,
+} from '@/constant/task'
+import { useTranslation } from 'react-i18next'
+
+// نوع تابع t را اگر از next-i18next می‌آید می‌توانی از خود پکیج import کنی.
+// برای سادگی، اینجا از نوع کلی any استفاده شده است؛ اگر خواستی می‌توانیم آن را هم دقیق کنیم.
 
 export const getColumns = ({
   projectId,
@@ -29,6 +34,7 @@ export const getColumns = ({
   projectId?: string
   onOpenComments: (task: TaskType) => void
 }): ColumnDef<TaskType>[] => {
+  const { t } = useTranslation()
   const columns: ColumnDef<TaskType>[] = [
     {
       id: '_id',
@@ -39,16 +45,16 @@ export const getColumns = ({
             (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='انتخاب همه'
-          className='translate-y-[2px]  mr-3'
+          aria-label={t('tasks.table.columns.selectAll')}
+          className='translate-y-[2px] mr-3'
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label='انتخاب ردیف'
-          className='translate-y-[2px] mr-3 '
+          aria-label={t('tasks.table.columns.selectRow')}
+          className='translate-y-[2px] mr-3'
         />
       ),
       enableSorting: false,
@@ -56,9 +62,12 @@ export const getColumns = ({
     },
     {
       accessorKey: 'title',
-      meta: { displayName: 'عنوان' },
+      meta: { displayName: t('tasks.table.columns.title') },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='عنوان' />
+        <DataTableColumnHeader
+          column={column}
+          title={t('tasks.table.columns.title')}
+        />
       ),
       cell: ({ row }) => {
         return (
@@ -81,9 +90,12 @@ export const getColumns = ({
       : [
           {
             accessorKey: 'project',
-            meta: { displayName: 'پروژه' },
+            meta: { displayName: t('tasks.table.columns.project') },
             header: ({ column }: { column: Column<TaskType, unknown> }) => (
-              <DataTableColumnHeader column={column} title='پروژه' />
+              <DataTableColumnHeader
+                column={column}
+                title={t('tasks.table.columns.project')}
+              />
             ),
             cell: ({ row }: { row: Row<TaskType> }) => {
               const project = row.original.project
@@ -101,9 +113,12 @@ export const getColumns = ({
         ]),
     {
       accessorKey: 'assignedTo',
-      meta: { displayName: 'مسئول' },
+      meta: { displayName: t('tasks.table.columns.assignee') },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='مسئول' />
+        <DataTableColumnHeader
+          column={column}
+          title={t('tasks.table.columns.assignee')}
+        />
       ),
       cell: ({ row }) => {
         const assignee = row.original.assignedTo || null
@@ -117,7 +132,7 @@ export const getColumns = ({
               <Avatar toUser={row.original?.assignedTo?.username} className=''>
                 <AvatarImage
                   src={row.original?.assignedTo?.profilePicture || ''}
-                  alt='تصویر'
+                  alt={t('tasks.table.columns.avatarAlt')}
                 />
                 <AvatarFallback className={avatarColor}>
                   {initials}
@@ -133,9 +148,12 @@ export const getColumns = ({
     },
     {
       id: 'dateRange',
-      meta: { displayName: 'بازه زمانی' },
+      meta: { displayName: t('tasks.table.columns.dateRange') },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='بازه زمانی انجام کار' />
+        <DataTableColumnHeader
+          column={column}
+          title={t('tasks.table.columns.dateRange')}
+        />
       ),
       cell: ({ row }) => {
         const start = row.original.startDate
@@ -165,17 +183,17 @@ export const getColumns = ({
     },
     {
       accessorKey: 'status',
-      meta: { displayName: 'وضعیت' },
+      meta: { displayName: t('tasks.table.columns.status') },
       header: ({ column }) => (
         <DataTableColumnHeader
           className='min-w-[100px]'
           column={column}
-          title='وضعیت'
+          title={t('tasks.table.columns.status')}
         />
       ),
       cell: ({ row }) => {
         const status = statuses.find(
-          (status) => status.value === row.getValue('status'),
+          (status) => status.value === row.getValue('status')
         )
         if (!status) return null
         const statusKey = formatStatusToEnum(status.value) as TaskStatusEnumType
@@ -196,17 +214,20 @@ export const getColumns = ({
     },
     {
       accessorKey: 'priority',
-      meta: { displayName: 'اولویت' },
+      meta: { displayName: t('tasks.table.columns.priority') },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='اولویت' />
+        <DataTableColumnHeader
+          column={column}
+          title={t('tasks.table.columns.priority')}
+        />
       ),
       cell: ({ row }) => {
         const priority = priorities.find(
-          (priority) => priority.value === row.getValue('priority'),
+          (priority) => priority.value === row.getValue('priority')
         )
         if (!priority) return null
         const statusKey = formatStatusToEnum(
-          priority.value,
+          priority.value
         ) as TaskPriorityEnumType
         const Icon = priority.icon
         if (!Icon) return null
@@ -225,9 +246,12 @@ export const getColumns = ({
     },
     {
       id: 'actions',
-      meta: { displayName: 'عملیات' },
+      meta: { displayName: t('tasks.table.columns.actions') },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='عملیات' />
+        <DataTableColumnHeader
+          column={column}
+          title={t('tasks.table.columns.actions')}
+        />
       ),
       cell: ({ row }) => <DataTableRowActions row={row} />,
     },

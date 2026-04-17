@@ -7,13 +7,16 @@ import AnalyticsCard from './common/analytics-card'
 import { MoveLeftIcon } from 'lucide-react'
 import { getWorkspaceAnalyticsQueryFn } from '@/lib/api/dashboard'
 import useWorkspaceId from '@/hooks/use-workspace-id'
+import { useTranslation } from 'react-i18next' // یا از 'next-i18next' در صورت استفاده در Next.js
 
 const WorkspaceAnalytics = () => {
+  const { t } = useTranslation()
+
   const [activeTab, setActiveTab] = useState<'team' | 'personal'>('personal')
 
   const workspaceId = useWorkspaceId()
 
-  const { data, isLoading, isError, error, isFetching } = useQuery({
+  const { data, isLoading, isError, isFetching } = useQuery({
     queryKey: ['workspaceAnalytics', workspaceId, activeTab],
     queryFn: () =>
       getWorkspaceAnalyticsQueryFn({
@@ -30,8 +33,8 @@ const WorkspaceAnalytics = () => {
 
   const isPending = isLoading || isFetching
 
-  const team = data?.analytics?.team
-  const personal = data?.analytics?.personal
+  const team = data?.data?.analytics?.team
+  const personal = data?.data?.analytics?.personal
 
   return (
     <div className='space-y-6'>
@@ -40,21 +43,23 @@ const WorkspaceAnalytics = () => {
         onValueChange={(value) => setActiveTab(value as 'team' | 'personal')}
       >
         <TabsList>
-          <TabsTrigger value='team'>آمار کل تیم</TabsTrigger>
-          <TabsTrigger value='personal'>آمار من</TabsTrigger>
+          <TabsTrigger value='team'>{t('analytics.teamTab')}</TabsTrigger>
+          <TabsTrigger value='personal'>
+            {t('analytics.personalTab')}
+          </TabsTrigger>
         </TabsList>
 
         <div className='flex justify-start items-center gap-1'>
           <MoveLeftIcon size={15} />
           <p className='text-sm opacity-65 my-3'>
-            این آمار مربوط به این فضای کار میباشد
+            {t('analytics.workspaceScopeHint')}
           </p>
         </div>
 
         {isError && (
           <p className='text-xs text-red-500'>
-            خطا در دریافت آمار فضای کار
-            {(error as any)?.message && `: ${(error as any).message}`}
+            {/* فقط پیام‌های سمت ما؛ هیچ چیزی از err / API نشان داده نمی‌شود */}
+            {t('analytics.error.loadFailed')}
           </p>
         )}
 
@@ -63,45 +68,45 @@ const WorkspaceAnalytics = () => {
           <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف امروز تیم'
+              title={t('analytics.teamTodayTasks')}
               value={team?.todayTasks?.value ?? 0}
               totalValue={team?.todayTasks?.total ?? 0}
               kind='total'
               trend={team?.todayTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={team?.todayTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف عقب‌افتاده امروز تیم'
+              title={t('analytics.teamOverdueTasks')}
               value={team?.overdueTasks?.value ?? 0}
               totalValue={team?.todayTasks?.total ?? 0}
               kind='overdue'
               trend={team?.overdueTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={team?.overdueTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف انجام‌شده امروز تیم'
+              title={t('analytics.teamCompletedTasks')}
               value={team?.completedTasks?.value ?? 0}
               totalValue={team?.todayTasks?.total ?? 0}
               kind='completed'
               trend={team?.completedTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={team?.completedTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف در حال انجام امروز تیم'
+              title={t('analytics.teamInProgressTasks')}
               value={team?.inProgressTasks?.value ?? 0}
               totalValue={team?.todayTasks?.total ?? 0}
               kind='inprogress'
               trend={team?.inProgressTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={team?.inProgressTasks?.chartData ?? []}
             />
           </div>
@@ -112,45 +117,45 @@ const WorkspaceAnalytics = () => {
           <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف امروز شما'
+              title={t('analytics.personalTodayTasks')}
               value={personal?.todayTasks?.value ?? 0}
               totalValue={personal?.todayTasks?.total ?? 0}
               kind='total'
               trend={personal?.todayTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={personal?.todayTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف عقب‌افتاده امروز شما'
+              title={t('analytics.personalOverdueTasks')}
               value={personal?.overdueTasks?.value ?? 0}
               totalValue={personal?.todayTasks?.total ?? 0}
               kind='overdue'
               trend={personal?.overdueTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={personal?.overdueTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف انجام‌شده امروز شما'
+              title={t('analytics.personalCompletedTasks')}
               value={personal?.completedTasks?.value ?? 0}
               totalValue={personal?.todayTasks?.total ?? 0}
               kind='completed'
               trend={personal?.completedTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={personal?.completedTasks?.chartData ?? []}
             />
 
             <AnalyticsCard
               isLoading={isPending}
-              title='وظایف در حال انجام امروز شما'
+              title={t('analytics.personalInProgressTasks')}
               value={personal?.inProgressTasks?.value ?? 0}
               totalValue={personal?.todayTasks?.total ?? 0}
               kind='inprogress'
               trend={personal?.inProgressTasks?.trend ?? 0}
-              trendLabel='نسبت به هفته قبل'
+              trendLabel={t('analytics.previousWeek')}
               chartData={personal?.inProgressTasks?.chartData ?? []}
             />
           </div>

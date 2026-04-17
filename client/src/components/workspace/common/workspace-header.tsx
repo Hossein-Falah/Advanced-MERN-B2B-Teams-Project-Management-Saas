@@ -1,8 +1,10 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useAuthContext } from '@/context/auth-provider'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const WorkspaceHeader = () => {
+  const { t } = useTranslation()
   const { workspaceLoading, workspace } = useAuthContext()
   return (
     <div className='w-full max-w-3xl mx-auto pb-2'>
@@ -19,7 +21,7 @@ const WorkspaceHeader = () => {
             <span className='truncate font-semibold text-xl'>
               {workspace?.name}
             </span>
-            <span className='truncate text-sm'>Free</span>
+            <span className='truncate text-sm'>{t('plan.free')}</span>
           </div>
         </div>
       )}

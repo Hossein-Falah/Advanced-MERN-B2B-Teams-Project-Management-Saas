@@ -13,7 +13,7 @@ import {
 
 // دریافت همه اتوماسیون‌ها
 export const getAllAutomationsQueryFn = async (
-  params: GetAllAutomationsRequest,
+  params: GetAllAutomationsRequest
 ): Promise<GetAllAutomationsResponse> => {
   const { workspaceId, page, limit } = params
 
@@ -33,10 +33,10 @@ export const getAllAutomationsQueryFn = async (
 // دریافت یک اتوماسیون
 export const getAutomationByIdQueryFn = async (
   workspaceId: string,
-  automationId: string,
+  automationId: string
 ): Promise<GetSingleAutomationResponse> => {
   const response = await API.get(
-    `/automation/workspace/${workspaceId}/getById/${automationId}`,
+    `/automation/workspace/${workspaceId}/getById/${automationId}`
   )
 
   return response.data
@@ -44,13 +44,13 @@ export const getAutomationByIdQueryFn = async (
 
 // ایجاد اتوماسیون
 export const createAutomationMutationFn = async (
-  payload: CreateAutomationApiRequest,
+  payload: CreateAutomationApiRequest
 ): Promise<GetSingleAutomationResponse> => {
   const { workspaceId, data } = payload
 
   const response = await API.post(
     `/automation/workspace/${workspaceId}/create`,
-    data,
+    data
   )
 
   return response.data
@@ -58,14 +58,14 @@ export const createAutomationMutationFn = async (
 
 // آپدیت اتوماسیون
 export const updateAutomationMutationFn = async (
-  payload: UpdateAutomationApiRequest,
+  payload: UpdateAutomationApiRequest
 ): Promise<GetSingleAutomationResponse> => {
   const { workspaceId, automationId, data } = payload
   const { ...updateFields } = data
 
   const response = await API.patch(
     `/automation/workspace/${workspaceId}/update/${automationId}`,
-    updateFields,
+    updateFields
   )
 
   return response.data
@@ -73,12 +73,12 @@ export const updateAutomationMutationFn = async (
 
 // حذف اتوماسیون
 export const deleteAutomationMutationFn = async (
-  data: DeleteAutomationRequest,
+  data: DeleteAutomationRequest
 ): Promise<DeleteAutomationResponse> => {
   const { workspaceId, automationId } = data
 
   const response = await API.delete(
-    `/automation/workspace/${workspaceId}/delete/${automationId}`,
+    `/automation/workspace/${workspaceId}/delete/${automationId}`
   )
 
   return response.data

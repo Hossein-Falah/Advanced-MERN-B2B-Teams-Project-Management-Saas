@@ -2,21 +2,18 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
 import useWorkspaceId from '@/hooks/use-workspace-id'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
+import { getRoleDisplayName } from '@/utils/getRoleDisplayName'
 import { format } from 'date-fns-jalali'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const RecentMembers = () => {
+  const { t } = useTranslation()
+
   const workspaceId = useWorkspaceId()
   const { data, isPending } = useGetWorkspaceMembers(workspaceId)
-  const getRoleDisplayName = (roleName: string) => {
-    const roleMap: Record<string, string> = {
-      ADMIN: 'مدیر',
-      MEMBER: 'عضو',
-      OWNER: 'مالک',
-    }
-    return roleMap[roleName] || roleName?.toLowerCase()
-  }
-  const members = data?.members || []
+
+  const members = data?.data?.members || []
 
   return (
     <div className='flex flex-col pt-2'>
@@ -33,13 +30,13 @@ const RecentMembers = () => {
           const name = member?.userId?.name || ''
           const initials = getAvatarFallbackText(name)
           const avatarColor = getAvatarColor(name)
+
           return (
             <li
               key={index}
               role='listitem'
               className='flex items-center gap-4 p-3 rounded-lg border border-gray-200 hover:bg-gray-50'
             >
-              {/* Avatar */}
               <div className='flex-shrink-0'>
                 <Avatar
                   toUser={member.userId?.username}
@@ -47,7 +44,7 @@ const RecentMembers = () => {
                 >
                   <AvatarImage
                     src={member.userId.profilePicture || ''}
-                    alt='Avatar'
+                    alt={t('members.avatarAlt')}
                   />
                   <AvatarFallback className={avatarColor}>
                     {initials}
@@ -55,21 +52,22 @@ const RecentMembers = () => {
                 </Avatar>
               </div>
 
-              {/* Member Details */}
               <div className='flex flex-col'>
                 <p className='text-sm font-medium text-gray-900'>
                   {member.userId.name}
                 </p>
                 <p className='text-sm text-gray-500'>
-                  {' '}
-                  {getRoleDisplayName(member.role.name)}
+                  {getRoleDisplayName(member.role.name, t)}
                 </p>
               </div>
 
-              {/* Joined Date */}
-              <div className='mr-auto text-sm leading-5  text-gray-500'>
-                <p className='font-extralight'>عضو شده در تاریخ</p>
-                <p>{member.joinedAt ? format(member.joinedAt, 'PPP') : null}</p>
+              <div className='mr-auto text-sm leading-5 text-gray-500'>
+                <p className='font-extralight'>{t('members.joinedAtLabel')}</p>
+                <p>
+                  {member.joinedAt
+                    ? format(member.joinedAt, 'PPP')
+                    : t('members.noDate')}
+                </p>
               </div>
             </li>
           )

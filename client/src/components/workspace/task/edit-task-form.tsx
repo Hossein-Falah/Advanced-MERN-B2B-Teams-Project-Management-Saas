@@ -31,7 +31,6 @@ import { Textarea } from '../../ui/textarea'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { TaskPriorityEnum, TaskStatusEnum } from '@/constant'
 import useGetWorkspaceMembers from '@/hooks/api/use-get-workspace-members'
 import { editTaskMutationFn } from '@/lib/api/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -39,7 +38,12 @@ import { toast } from '@/hooks/use-toast'
 import { TaskType } from '@/types/api.type'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
-
+import { useTranslation } from 'react-i18next'
+import { TaskPriorityEnum, TaskStatusEnum } from '@/constant/task'
+import {
+  getTaskStatusLabels,
+  getTaskPriorityLabels,
+} from '@/utils/getTaskLabel'
 /**
  * کامپوننت reusable برای انتخاب تاریخ + ساعت + دقیقه
  */
@@ -49,6 +53,7 @@ type DateTimeFieldProps = {
 }
 
 function DateTimeField({ label, field }: DateTimeFieldProps) {
+  const { t } = useTranslation()
   const value = field.value ? new Date(field.value) : undefined
 
   const updateDate = (updater: (date: Date) => void) => {
@@ -69,7 +74,7 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
               variant='outline'
               className={cn(
                 'w-full flex-1 pl-3 text-right font-normal',
-                !value && 'text-muted-foreground',
+                !value && 'text-muted-foreground'
               )}
             >
               {value ? (
@@ -77,7 +82,7 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
                   locale: faIR,
                 })
               ) : (
-                <span>انتخاب تاریخ</span>
+                <span>{t('tasks.editTask.datePicker.placeholder')}</span>
               )}
               <CalendarIcon className='mr-auto h-4 w-4 opacity-50' />
             </Button>
@@ -106,7 +111,9 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
           <div className='flex gap-2'>
             {/* ساعت */}
             <div className='flex flex-col gap-1'>
-              <p className='text-xs'>ساعت :</p>
+              <p className='text-xs'>
+                {t('tasks.editTask.datePicker.hourLabel')}
+              </p>
 
               <Select
                 value={value ? String(value.getHours()) : undefined}
@@ -115,7 +122,9 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
                 }}
               >
                 <SelectTrigger className='w-[80px]'>
-                  <SelectValue placeholder='ساعت' />
+                  <SelectValue
+                    placeholder={t('tasks.editTask.datePicker.hourPlaceholder')}
+                  />
                 </SelectTrigger>
 
                 <SelectContent className='max-h-[200px]'>
@@ -130,7 +139,9 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
 
             {/* دقیقه */}
             <div className='flex flex-col gap-1'>
-              <p className='text-xs'>دقیقه :</p>
+              <p className='text-xs'>
+                {t('tasks.editTask.datePicker.minuteLabel')}
+              </p>
 
               <Select
                 value={value ? String(value.getMinutes()) : undefined}
@@ -139,7 +150,11 @@ function DateTimeField({ label, field }: DateTimeFieldProps) {
                 }}
               >
                 <SelectTrigger className='w-[80px]'>
-                  <SelectValue placeholder='دقیقه' />
+                  <SelectValue
+                    placeholder={t(
+                      'tasks.editTask.datePicker.minutePlaceholder'
+                    )}
+                  />
                 </SelectTrigger>
 
                 <SelectContent className='max-h-[200px]'>
@@ -167,6 +182,7 @@ export default function EditTaskForm({
   task: TaskType
   onClose: () => void
 }) {
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const workspaceId = useWorkspaceId()
 
@@ -175,11 +191,11 @@ export default function EditTaskForm({
   })
 
   const { data: memberData } = useGetWorkspaceMembers(workspaceId)
-  const members = memberData?.members || []
+  const members = memberData?.data?.members || []
 
   // اعضای فضای کاری
   const membersOptions = members?.map((member) => {
-    const name = member.userId?.name || 'ناشناس'
+    const name = member.userId?.name || t('common.unknown')
     const initials = getAvatarFallbackText(name)
     const avatarColor = getAvatarColor(name)
 
@@ -199,30 +215,36 @@ export default function EditTaskForm({
 
   // --------- schema فرم با startDate + dueDate ---------
   const formSchema = z.object({
-    title: z.string().trim().min(1, {
-      message: 'عنوان وظیفه  الزامی است',
-    }),
+    title: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('tasks.editTask.validation.titleRequired'),
+      }),
     description: z.string().trim(),
     status: z.enum(
       Object.values(TaskStatusEnum) as [keyof typeof TaskStatusEnum],
       {
-        required_error: 'وضعیت الزامی است',
-      },
+        required_error: t('tasks.editTask.validation.statusRequired'),
+      }
     ),
     priority: z.enum(
       Object.values(TaskPriorityEnum) as [keyof typeof TaskPriorityEnum],
       {
-        required_error: 'اولویت الزامی است',
-      },
+        required_error: t('tasks.editTask.validation.priorityRequired'),
+      }
     ),
-    assignedTo: z.string().trim().min(1, {
-      message: 'انتخاب مسئول الزامی است',
-    }),
+    assignedTo: z
+      .string()
+      .trim()
+      .min(1, {
+        message: t('tasks.editTask.validation.assigneeRequired'),
+      }),
     startDate: z.date({
-      required_error: 'تاریخ شروع الزامی است',
+      required_error: t('tasks.editTask.validation.startDateRequired'),
     }),
     dueDate: z.date({
-      required_error: 'تاریخ سررسید الزامی است',
+      required_error: t('tasks.editTask.validation.dueDateRequired'),
     }),
     attachment: z.instanceof(File).optional(),
   })
@@ -238,8 +260,8 @@ export default function EditTaskForm({
       startDate: task?.startDate
         ? new Date(task.startDate as any)
         : task?.dueDate
-          ? new Date(task.dueDate)
-          : new Date(),
+        ? new Date(task.dueDate)
+        : new Date(),
       dueDate: task?.dueDate ? new Date(task.dueDate) : new Date(),
       attachment: undefined,
     } as any,
@@ -248,22 +270,10 @@ export default function EditTaskForm({
   const taskStatusList = Object.values(TaskStatusEnum)
   const taskPriorityList = Object.values(TaskPriorityEnum)
 
-  // برچسب‌های فارسی برای وضعیت‌ها
-  const statusLabels: Record<string, string> = {
-    BACKLOG: 'لیست انتظار',
-    TODO: 'برای انجام',
-    IN_PROGRESS: 'در حال انجام',
-    IN_REVIEW: 'در حال بررسی',
-    DONE: 'انجام شده',
-  }
-
+  // برچسب‌های فارسی برای وضعیت‌ها (می‌توان بعداً به i18n منتقل کرد)
+  const statusLabels = getTaskStatusLabels(t)
   // برچسب‌های فارسی برای اولویت‌ها
-  const priorityLabels: Record<string, string> = {
-    LOW: 'کم',
-    MEDIUM: 'متوسط',
-    HIGH: 'زیاد',
-    URGENT: 'فوری',
-  }
+  const priorityLabels = getTaskPriorityLabels(t)
 
   const statusOptions = taskStatusList.map((status) => ({
     value: status,
@@ -312,33 +322,27 @@ export default function EditTaskForm({
           })
 
           toast({
-            title: 'موفق',
-            description: 'وظیفه  با موفقیت به‌روزرسانی شد',
+            title: t('tasks.editTask.toast.successTitle'),
+            description: t('tasks.editTask.toast.successDescription'),
             variant: 'success',
           })
 
           onClose()
         },
-        onError: (error: any) => {
+        onError: () => {
           toast({
-            title: 'خطا',
-            description: error.message,
+            title: t('tasks.editTask.toast.errorTitle'),
+            description: t('tasks.editTask.toast.errorDescription'),
             variant: 'destructive',
           })
         },
-      },
+      }
     )
   }
 
   return (
     <div className='w-full h-auto max-w-full' dir='rtl'>
       <div className='h-full'>
-        <div className='my-5 pb-2 border-b'>
-          <p className='text-muted-foreground text-sm leading-tight text-center sm:text-right'>
-            ویرایش و بروزرسانی اطلاعات وظیفه
-          </p>
-        </div>
-
         <Form {...form}>
           <form className='space-y-3' onSubmit={form.handleSubmit(onSubmit)}>
             {/* عنوان */}
@@ -349,11 +353,13 @@ export default function EditTaskForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      عنوان وظیفه
+                      {t('tasks.editTask.fields.title.label')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='بازطراحی وب‌سایت'
+                        placeholder={t(
+                          'tasks.editTask.fields.title.placeholder'
+                        )}
                         className='!h-[48px]'
                         {...field}
                       />
@@ -372,13 +378,19 @@ export default function EditTaskForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='dark:text-[#f1f7feb5] text-sm'>
-                      توضیحات وظیفه
+                      {t('tasks.editTask.fields.description.label')}
                       <span className='text-xs font-extralight mr-2'>
-                        (اختیاری)
+                        ({t('tasks.editTask.fields.description.optional')})
                       </span>
                     </FormLabel>
                     <FormControl>
-                      <Textarea rows={1} placeholder='توضیحات' {...field} />
+                      <Textarea
+                        rows={1}
+                        placeholder={t(
+                          'tasks.editTask.fields.description.placeholder'
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -393,7 +405,9 @@ export default function EditTaskForm({
                 name='assignedTo'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>مسئول</FormLabel>
+                    <FormLabel>
+                      {t('tasks.editTask.fields.assignedTo.label')}
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -401,7 +415,11 @@ export default function EditTaskForm({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='یک مسئول انتخاب کنید' />
+                          <SelectValue
+                            placeholder={t(
+                              'tasks.editTask.fields.assignedTo.placeholder'
+                            )}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -430,7 +448,10 @@ export default function EditTaskForm({
                 control={form.control}
                 name='startDate'
                 render={({ field }) => (
-                  <DateTimeField label='تاریخ شروع' field={field} />
+                  <DateTimeField
+                    label={t('tasks.editTask.fields.startDate.label')}
+                    field={field}
+                  />
                 )}
               />
             </div>
@@ -441,7 +462,10 @@ export default function EditTaskForm({
                 control={form.control}
                 name='dueDate'
                 render={({ field }) => (
-                  <DateTimeField label='تاریخ سررسید' field={field} />
+                  <DateTimeField
+                    label={t('tasks.editTask.fields.dueDate.label')}
+                    field={field}
+                  />
                 )}
               />
             </div>
@@ -453,7 +477,9 @@ export default function EditTaskForm({
                 name='status'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>وضعیت</FormLabel>
+                    <FormLabel>
+                      {t('tasks.editTask.fields.status.label')}
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -463,7 +489,9 @@ export default function EditTaskForm({
                         <SelectTrigger>
                           <SelectValue
                             className='!text-muted-foreground !capitalize'
-                            placeholder='یک وضعیت انتخاب کنید'
+                            placeholder={t(
+                              'tasks.editTask.fields.status.placeholder'
+                            )}
                           />
                         </SelectTrigger>
                       </FormControl>
@@ -492,7 +520,9 @@ export default function EditTaskForm({
                 name='priority'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>اولویت</FormLabel>
+                    <FormLabel>
+                      {t('tasks.editTask.fields.priority.label')}
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -500,7 +530,11 @@ export default function EditTaskForm({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='یک اولویت انتخاب کنید' />
+                          <SelectValue
+                            placeholder={t(
+                              'tasks.editTask.fields.priority.placeholder'
+                            )}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -531,7 +565,9 @@ export default function EditTaskForm({
 
                   return (
                     <FormItem>
-                      <FormLabel>فایل پیوست</FormLabel>
+                      <FormLabel>
+                        {t('tasks.editTask.fields.attachment.label')}
+                      </FormLabel>
                       {attachmentPreview && (
                         <div className='bg-slate-50 dark:bg-slate-900 p-3 rounded-lg'>
                           <a
@@ -540,8 +576,16 @@ export default function EditTaskForm({
                             rel='noopener noreferrer'
                           >
                             <div className='flex justify-between'>
-                              <p>دانلود فایل ضمیمه</p>
-                              <p className='text-sm '>دانلود</p>
+                              <p>
+                                {t(
+                                  'tasks.editTask.fields.attachment.previewTitle'
+                                )}
+                              </p>
+                              <p className='text-sm '>
+                                {t(
+                                  'tasks.editTask.fields.attachment.previewAction'
+                                )}
+                              </p>
                             </div>
                             <p className='line-clamp-3 opacity-50 text-right text-xs mt-1'>
                               {attachmentPreview}
@@ -568,7 +612,7 @@ export default function EditTaskForm({
               disabled={isPending}
             >
               {isPending && <Loader className='animate-spin ml-2' />}
-              ذخیره تغییرات
+              {t('tasks.editTask.submit')}
             </Button>
           </form>
         </Form>

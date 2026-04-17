@@ -6,8 +6,11 @@ import { Loader } from 'lucide-react'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
 import { format as formatJalali } from 'date-fns-jalali'
 import { faIR } from 'date-fns-jalali/locale'
+import { useTranslation } from 'react-i18next'
 
 const RecentProjects = () => {
+  const { t } = useTranslation()
+
   const workspaceId = useWorkspaceId()
 
   const { data, isPending } = useGetProjectsInWorkspaceQuery({
@@ -16,25 +19,17 @@ const RecentProjects = () => {
     pageSize: 10,
   })
 
-  const projects = data?.projects || []
+  const projects = data?.data?.projects || []
 
   return (
     <div className='flex flex-col pt-2'>
       {isPending ? (
-        <Loader
-          className='w-8 h-8
-         animate-spin
-         place-self-center
-         flex'
-        />
+        <Loader className='w-8 h-8 animate-spin place-self-center flex' />
       ) : null}
+
       {projects?.length === 0 && (
-        <div
-          className='font-semibold
-         text-sm text-muted-foreground
-          text-center py-5'
-        >
-          هنوز پروژه ای وجود ندارد
+        <div className='font-semibold text-sm text-muted-foreground text-center py-5'>
+          {t('projects.recentProjects.empty')}
         </div>
       )}
 
@@ -48,7 +43,7 @@ const RecentProjects = () => {
             <li
               key={project._id}
               role='listitem'
-              className='shadow-none cursor-pointer border-0 py-2 hover:bg-gray-50 transition-colors ease-in-out '
+              className='shadow-none cursor-pointer border-0 py-2 hover:bg-gray-50 transition-colors ease-in-out'
             >
               <Link
                 to={`/workspace/${workspaceId}/project/${project._id}`}
@@ -58,10 +53,12 @@ const RecentProjects = () => {
                   <div className='text-xl !leading-[1.4rem]'>
                     {project.emoji}
                   </div>
+
                   <div className='grid gap-1'>
                     <p className='text-sm font-medium leading-none'>
                       {project.name}
                     </p>
+
                     <p className='text-sm text-muted-foreground'>
                       {project.createdAt
                         ? formatJalali(new Date(project.createdAt), 'PPP', {
@@ -70,11 +67,13 @@ const RecentProjects = () => {
                         : null}
                     </p>
                   </div>
+
                   <div className='mr-auto flex items-center gap-4'>
                     <span className='text-sm text-gray-500'>
-                      ایجاد شده توسط{' '}
+                      {t('projects.recentProjects.createdBy')}
                     </span>
-                    <Avatar className=' h-9 w-9 sm:flex'>
+
+                    <Avatar className='h-9 w-9 sm:flex'>
                       <AvatarImage
                         src={project.createdBy.profilePicture || ''}
                         alt='Avatar'

@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getAvatarColor, getAvatarFallbackText } from '@/lib/helper'
 import { cn } from '@/lib/utils'
 import { LogsListProps } from '@/types/task-logs.type'
+import { useTranslation } from 'react-i18next'
 
 const LogsList = ({
   logs,
@@ -12,14 +13,18 @@ const LogsList = ({
   onSelectLog,
   isLoading,
 }: LogsListProps) => {
+  const { t } = useTranslation()
+
   if (isLoading) {
     return (
       <div
         className={cn(
           'max-h-[420px] overflow-y-auto rounded-2xl border',
-          'bg-white/80 dark:bg-slate-950/90 p-3 space-y-2.5',
+          'bg-white/80 dark:bg-slate-950/90 p-3 space-y-2.5'
         )}
         dir='rtl'
+        aria-busy='true'
+        aria-label={t('tasks.taskLogs.loading')}
       >
         {[1, 2, 3].map((i) => (
           <div
@@ -50,11 +55,11 @@ const LogsList = ({
         className={cn(
           'w-full h-full flex items-center justify-center rounded-2xl border',
           'bg-gradient-to-b from-background to-muted/40',
-          'px-4 py-8 text-xs sm:text-sm text-muted-foreground text-center',
+          'px-4 py-8 text-xs sm:text-sm text-muted-foreground text-center'
         )}
         dir='rtl'
       >
-        هنوز تاریخچه‌ای برای این وظیفه ثبت نشده است.
+        {t('tasks.taskLogs.empty')}
       </div>
     )
   }
@@ -63,7 +68,7 @@ const LogsList = ({
     <div
       className={cn(
         'max-h-[420px] overflow-y-auto rounded-2xl border',
-        'bg-white/80 dark:bg-slate-950/90 p-3 space-y-2.5',
+        'bg-white/80 dark:bg-slate-950/90 p-3 space-y-2.5'
       )}
       dir='rtl'
     >
@@ -75,19 +80,19 @@ const LogsList = ({
 
         const actionLabel =
           log.action === 'CREATE'
-            ? 'ایجاد وظیفه '
+            ? t('tasks.taskLogs.actions.create')
             : log.action === 'UPDATE'
-              ? 'ویرایش وظیفه '
-              : log.action === 'DELETE'
-                ? 'حذف وظیفه '
-                : 'اقدام'
+            ? t('tasks.taskLogs.actions.update')
+            : log.action === 'DELETE'
+            ? t('tasks.taskLogs.actions.delete')
+            : t('tasks.taskLogs.actions.other')
 
         const formattedDate = formatJalali(
           new Date(log.createdAt),
           'PPP HH:mm',
           {
             locale: faIR,
-          },
+          }
         )
 
         return (
@@ -103,8 +108,13 @@ const LogsList = ({
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2',
               'group',
               isActive &&
-                'border-primary/10 bg-primary/5 dark:bg-primary/10 shadow-md',
+                'border-primary/10 bg-primary/5 dark:bg-primary/10 shadow-md'
             )}
+            aria-label={t('tasks.taskLogs.itemAriaLabel', {
+              user: name || t('tasks.taskLogs.unknownUser'),
+              action: actionLabel,
+              id: log._id.slice(-4),
+            })}
           >
             <div className='flex items-center justify-between gap-2'>
               <div className='flex items-center gap-2 min-w-0'>
@@ -136,7 +146,9 @@ const LogsList = ({
               </div>
 
               <span className='text-[10px] sm:text-[11px] text-muted-foreground whitespace-nowrap ms-2'>
-                {log.changes?.length || 0} تغییر
+                {t('tasks.taskLogs.changesCount', {
+                  count: log.changes?.length || 0,
+                })}
               </span>
             </div>
 
@@ -147,7 +159,7 @@ const LogsList = ({
                   'bg-white/80 dark:bg-slate-950/80 border text-[11px]',
                   isActive
                     ? 'border-primary/40 text-primary'
-                    : 'border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200',
+                    : 'border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200'
                 )}
               >
                 <span className='inline-block h-1.5 w-1.5 rounded-full bg-primary/70' />

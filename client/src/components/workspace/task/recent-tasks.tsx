@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { TaskPriorityEnum, TaskStatusEnum } from '@/constant'
+import { TaskPriorityEnum, TaskStatusEnum } from '@/constant/task'
 import useWorkspaceId from '@/hooks/use-workspace-id'
 import { getAllTasksQueryFn } from '@/lib/api/api'
 import {
@@ -13,9 +13,11 @@ import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns-jalali'
 import { faIR } from 'date-fns-jalali/locale'
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const RecentTasks = () => {
   const workspaceId = useWorkspaceId()
+  const { t } = useTranslation()
 
   const { data, isLoading } = useQuery({
     queryKey: ['all-tasks', workspaceId],
@@ -27,32 +29,32 @@ const RecentTasks = () => {
     enabled: !!workspaceId,
   })
 
-  const tasks: TaskType[] = data?.tasks || []
+  const tasks: TaskType[] = data?.data?.tasks || []
 
   return (
     <div className='flex flex-col space-y-6' dir='rtl'>
       {isLoading ? (
         <Loader
           className='w-8 h-8 
-        animate-spin
-        place-self-center flex
+          animate-spin
+          place-self-center flex
         '
         />
       ) : null}
 
-      {tasks?.length === 0 && (
+      {tasks?.length === 0 && !isLoading && (
         <div
           className='font-semibold
          text-sm text-muted-foreground
           text-center py-5'
         >
-          هنوز وظیفه ی ایجاد نشده است
+          {t('tasks.recentTasks.empty')}
         </div>
       )}
 
       <ul role='list' className='divide-y divide-gray-200'>
         {tasks.map((task) => {
-          const name = task?.assignedTo?.name || ''
+          const name = task?.assignedTo?.name || t('common.unknown')
           const initials = getAvatarFallbackText(name)
           const avatarColor = getAvatarColor(name)
           return (
@@ -69,7 +71,7 @@ const RecentTasks = () => {
                   {task.title}
                 </p>
                 <span className='text-sm text-gray-500'>
-                  سررسید:{' '}
+                  {t('tasks.recentTasks.dueDateLabel')}{' '}
                   {task.dueDate
                     ? format(new Date(task.dueDate), 'PPP', { locale: faIR })
                     : null}
@@ -101,7 +103,7 @@ const RecentTasks = () => {
                 <Avatar toUser={task.assignedTo?.username} className='h-8 w-8'>
                   <AvatarImage
                     src={task.assignedTo?.profilePicture || ''}
-                    alt={task.assignedTo?.name}
+                    alt={name}
                   />
                   <AvatarFallback className={avatarColor}>
                     {initials}

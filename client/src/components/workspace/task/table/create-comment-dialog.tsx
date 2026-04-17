@@ -17,6 +17,9 @@ import { Description } from '@radix-ui/react-dialog'
 import { TaskType } from '@/types/api.type'
 import { renderCommentContent } from '@/utils/renderCommentContent'
 
+// i18n
+import { useTranslation } from 'react-i18next'
+
 const CommentsDialog = ({
   task,
   isOpen,
@@ -26,7 +29,9 @@ const CommentsDialog = ({
   isOpen: boolean
   onClose: () => void
 }) => {
-  //call api
+  const { t } = useTranslation()
+
+  // call api
   const { data, isLoading } = useQuery({
     queryKey: ['all-comments', task?.workspace, task?.id],
     queryFn: () =>
@@ -39,7 +44,7 @@ const CommentsDialog = ({
 
   if (!task) return null
 
-  const comments = data?.comments.comments
+  const comments = data?.data?.comments
   const attachmentPreview = task?.attachment ?? undefined
 
   return (
@@ -56,17 +61,18 @@ const CommentsDialog = ({
                 : null}
             </p>
           </DialogTitle>
+
           <Description className='text-sm leading-6 text-slate-700 dark:text-slate-300 whitespace-pre-line break-all'>
-            {task?.description || 'توضیحی برای این وظیفه ثبت نشده است.'}
+            {task?.description || t('tasks.dialog.noDescription')}
           </Description>
         </DialogHeader>
 
-        {/* task description */}
+        {/* task attachment */}
         <div className='space-y-3'>
           {attachmentPreview && (
             <AttachmentDownload
               url={attachmentPreview}
-              label='دانلود فایل پیوست '
+              labelKey={t('tasks.dialog.attachmentLabel')}
             />
           )}
         </div>
@@ -75,7 +81,7 @@ const CommentsDialog = ({
         <CreateCommentForm taskId={task.id} />
         <hr className='opacity-40 my-3' />
 
-        {/*show comments */}
+        {/* show comments */}
         <div className='space-y-3 max-h-[400px] overflow-y-auto '>
           {isLoading ? (
             <div className='space-y-3'>
@@ -96,7 +102,7 @@ const CommentsDialog = ({
           ) : comments && comments.length > 0 ? (
             <div className='space-y-3 max-h-[400px] overflow-y-auto'>
               <AnimatePresence initial={false}>
-                {comments?.map((comment) => {
+                {comments.map((comment) => {
                   const name = comment.user?.name
                   const initials = getAvatarFallbackText(name)
                   const avatarColor = getAvatarColor(name)
@@ -119,7 +125,7 @@ const CommentsDialog = ({
                           >
                             <AvatarImage
                               src={comment.user.profilePicture || ''}
-                              alt='تصویر'
+                              alt={t('tasks.dialog.avatarAlt')}
                             />
                             <AvatarFallback className={avatarColor}>
                               {initials}
@@ -149,8 +155,8 @@ const CommentsDialog = ({
 
                       {comment?.attachment && (
                         <AttachmentDownload
-                          url={comment?.attachment}
-                          label='دانلود فایل پیوست'
+                          url={comment.attachment}
+                          labelKey={t('tasks.dialog.attachmentLabel')}
                         />
                       )}
                     </motion.div>
@@ -160,7 +166,7 @@ const CommentsDialog = ({
             </div>
           ) : (
             <p className='text-sm text-muted-foreground'>
-              هنوز کامنتی ثبت نشده است.
+              {t('tasks.dialog.noComments')}
             </p>
           )}
         </div>

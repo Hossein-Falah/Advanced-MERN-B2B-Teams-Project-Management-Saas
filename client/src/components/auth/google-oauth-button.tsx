@@ -1,12 +1,18 @@
 import { baseURL } from '@/lib/base-url'
 import { Button } from '../ui/button'
+import { useTranslation } from 'react-i18next'
 
-const GoogleOauthButton = (props: { label: string }) => {
-  const { label } = props
-  console.log(label)
+type Props = {
+  label?: string
+}
+
+const GoogleOauthButton = ({ label }: Props) => {
+  const { t } = useTranslation()
+
   const handleClick = () => {
     window.location.href = `${baseURL}/auth/google`
   }
+
   return (
     <Button
       onClick={handleClick}
@@ -20,7 +26,8 @@ const GoogleOauthButton = (props: { label: string }) => {
           fill='currentColor'
         />
       </svg>
-      ورود با اکانت گوگل
+
+      {label || t('auth.googleOAuth.googleLogin')}
     </Button>
   )
 }

@@ -1,17 +1,15 @@
-import { PaginationType } from './api.type'
+import { ResponseType } from './api.type'
 
 export type MentionableUsersType = {
   _id: string
   username: string
 }
 
-export type AllMentionableUsersResponseType = {
-  message: string
-  mention: {
-    users: MentionableUsersType[]
-    pagination: PaginationType
-  }
-}
+// ریسپانس بدون پجینیشن داخلی — پجینیشن فقط داخل ResponseType
+export type AllMentionableUsersResponseType = ResponseType<{
+  users: MentionableUsersType[]
+}>
+
 export type GetAllMentionableUsersParamsType = {
   workspaceId: string
   query: string

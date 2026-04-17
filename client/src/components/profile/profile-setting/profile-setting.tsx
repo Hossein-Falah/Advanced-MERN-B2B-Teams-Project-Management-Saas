@@ -31,6 +31,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { NOTIF_ITEMS } from '@/constant/profile'
+import { ALL_DAYS } from '@/constant'
+import { useTranslation } from 'react-i18next'
 
 // --------- Zod Schema ---------
 const notifSchema = z.object({
@@ -41,55 +44,45 @@ const notifSchema = z.object({
   onMessage: z.boolean().optional().default(false),
 })
 
-const formSchema = z.object({
-  name: z.string().trim().min(1, { message: 'نام الزامی است' }),
-  email: z.string().email({ message: 'ایمیل معتبر نیست' }),
-  phone: z.string().regex(/^09\d{9}$/, { message: 'شماره تلفن معتبر نیست' }),
-  username: z
-    .string()
-    .trim()
-    .min(3, { message: 'نام کاربری باید حداقل ۳ حرف باشد' }),
-  bio: z
-    .string()
-    .max(500, { message: 'بیوگرافی نباید بیشتر از ۵۰۰ کاراکتر باشد' })
-    .optional(),
-  jobTitle: z
-    .string()
-    .max(100, { message: 'عنوان شغلی نباید بیشتر از ۱۰۰ کاراکتر باشد' })
-    .optional(),
-  profilePicture: z.instanceof(File).optional().or(z.string().optional()),
+const formSchema = (t: (k: string) => string) =>
+  z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, { message: t('profileSetting.validation.nameRequired') }),
+    email: z
+      .string()
+      .email({ message: t('profileSetting.validation.emailInvalid') }),
+    phone: z.string().regex(/^09\d{9}$/, {
+      message: t('profileSetting.validation.phoneInvalid'),
+    }),
+    username: z
+      .string()
+      .trim()
+      .min(3, { message: t('profileSetting.validation.usernameMin') }),
+    bio: z
+      .string()
+      .max(500, { message: t('profileSetting.validation.bioMax') })
+      .optional(),
+    jobTitle: z
+      .string()
+      .max(100, { message: t('profileSetting.validation.jobTitleMax') })
+      .optional(),
+    profilePicture: z.instanceof(File).optional().or(z.string().optional()),
 
-  region: z.string().optional(),
-  workSchedule: z
-    .object({
-      workingDays: z.array(z.number()).optional(),
-      startHour: z.number().min(0).max(23).optional(),
-      endHour: z.number().min(0).max(23).optional(),
-    })
-    .optional(),
-  notifConditions: notifSchema.optional(),
-  smsConditions: notifSchema.optional(),
-})
+    region: z.string().optional(),
+    workSchedule: z
+      .object({
+        workingDays: z.array(z.number()).optional(),
+        startHour: z.number().min(0).max(23).optional(),
+        endHour: z.number().min(0).max(23).optional(),
+      })
+      .optional(),
+    notifConditions: notifSchema.optional(),
+    smsConditions: notifSchema.optional(),
+  })
 
-type FormValues = z.infer<typeof formSchema>
-
-const ALL_DAYS = [
-  { value: 0, label: 'شنبه' },
-  { value: 1, label: 'یکشنبه' },
-  { value: 2, label: 'دوشنبه' },
-  { value: 3, label: 'سه‌شنبه' },
-  { value: 4, label: 'چهارشنبه' },
-  { value: 5, label: 'پنجشنبه' },
-  { value: 6, label: 'جمعه' },
-]
-
-const NOTIF_ITEMS = [
-  { key: 'onCreateTask' as const, label: 'ساخت تسک' },
-  { key: 'onUpdateTask' as const, label: 'ویرایش تسک' },
-  { key: 'onMention' as const, label: 'منشن' },
-  { key: 'onAutomationAction' as const, label: 'اتومیشن' },
-  { key: 'onMessage' as const, label: 'پیام' },
-]
+type FormValues = z.infer<ReturnType<typeof formSchema>>
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 
@@ -101,13 +94,14 @@ function allFalse(obj: any, keys: string[]) {
 }
 
 const ProfileSetting = () => {
+  const { t } = useTranslation()
   const { user } = useAuthContext()
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [activeTab, setActiveTab] = useState<'profile' | 'work' | 'notify'>(
-    'profile',
+    'profile'
   )
   const workspaceId = useWorkspaceId()
 
@@ -116,7 +110,7 @@ const ProfileSetting = () => {
   })
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       name: '',
       email: '',
@@ -184,16 +178,16 @@ const ProfileSetting = () => {
 
     if (!file.type.startsWith('image/')) {
       toast({
-        title: 'خطا',
-        description: 'لطفاً فقط فایل تصویری انتخاب کنید',
+        title: t('profileSetting.image.errorTitle'),
+        description: t('profileSetting.image.onlyImage'),
         variant: 'destructive',
       })
       return
     }
     if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: 'خطا',
-        description: 'حجم فایل نباید بیشتر از ۵ مگابایت باشد',
+        title: t('profileSetting.image.errorTitle'),
+        description: t('profileSetting.image.maxSize'),
         variant: 'destructive',
       })
       return
@@ -225,7 +219,7 @@ const ProfileSetting = () => {
           workingDays: values.workSchedule.workingDays || [],
           startHour: values.workSchedule.startHour ?? 9,
           endHour: values.workSchedule.endHour ?? 18,
-        }),
+        })
       )
     }
 
@@ -241,16 +235,19 @@ const ProfileSetting = () => {
     updateProfile(formData as any, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['authUser'] })
-        toast({ title: 'پروفایل با موفقیت به‌روزرسانی شد', variant: 'success' })
+        toast({
+          title: t('profileSetting.toast.updateSuccess'),
+          variant: 'success',
+        })
         setSelectedFile(null)
       },
       onError: (error: any) => {
         toast({
-          title: 'خطا',
+          title: t('profileSetting.toast.updateErrorTitle'),
           description:
             error?.response?.data?.message ||
             error.message ||
-            'خطا در به‌روزرسانی پروفایل',
+            t('profileSetting.toast.updateErrorFallback'),
           variant: 'destructive',
         })
       },
@@ -275,17 +272,17 @@ const ProfileSetting = () => {
           to={`/workspace/${workspaceId}/profile/${user?.username || ''}`}
           className='inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted transition'
         >
-          مشاهده پروفایل
+          {t('profileSetting.actions.viewProfile')}
         </Link>
 
         <Button type='submit' disabled={isUpdating} className='min-w-36'>
           {isUpdating ? (
             <span className='inline-flex items-center gap-2'>
               <Loader className='h-4 w-4 animate-spin' />
-              در حال ذخیره…
+              {t('profileSetting.actions.saving')}
             </span>
           ) : (
-            'ذخیره تغییرات'
+            t('profileSetting.actions.saveChanges')
           )}
         </Button>
       </div>
@@ -297,7 +294,7 @@ const ProfileSetting = () => {
             to={`/workspace/${workspaceId}/profile/${user?.username || ''}`}
             className='flex-1 inline-flex items-center justify-center rounded-lg border px-4 py-3 text-sm font-medium'
           >
-            پروفایل
+            {t('profileSetting.actions.viewProfileShort')}
           </Link>
           <Button
             type='submit'
@@ -307,10 +304,10 @@ const ProfileSetting = () => {
             {isUpdating ? (
               <span className='inline-flex items-center gap-2'>
                 <Loader className='h-4 w-4 animate-spin' />
-                ذخیره…
+                {t('profileSetting.actions.savingShort')}
               </span>
             ) : (
-              'ذخیره'
+              t('profileSetting.actions.save')
             )}
           </Button>
         </div>
@@ -331,9 +328,15 @@ const ProfileSetting = () => {
                 className='mt-3'
               >
                 <TabsList className='w-full grid grid-cols-3'>
-                  <TabsTrigger value='profile'>پروفایل</TabsTrigger>
-                  <TabsTrigger value='work'>کاری</TabsTrigger>
-                  <TabsTrigger value='notify'>اعلان‌ها</TabsTrigger>
+                  <TabsTrigger value='profile'>
+                    {t('profileSetting.tabs.profile')}
+                  </TabsTrigger>
+                  <TabsTrigger value='work'>
+                    {t('profileSetting.tabs.work')}
+                  </TabsTrigger>
+                  <TabsTrigger value='notify'>
+                    {t('profileSetting.tabs.notify')}
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -353,7 +356,7 @@ const ProfileSetting = () => {
                         {previewImage ? (
                           <img
                             src={previewImage}
-                            alt='تصویر پروفایل'
+                            alt={t('profileSetting.image.alt')}
                             className='w-full h-full object-cover'
                           />
                         ) : (
@@ -366,16 +369,18 @@ const ProfileSetting = () => {
                         type='button'
                         onClick={triggerFileInput}
                         className='absolute -bottom-2 -left-2 inline-flex items-center justify-center rounded-full border bg-background p-2 shadow'
-                        aria-label='تغییر تصویر'
+                        aria-label={t('profileSetting.image.changeAria')}
                       >
                         <Camera className='h-4 w-4' />
                       </button>
                     </div>
 
                     <div className='flex-1 min-w-0'>
-                      <p className='text-sm font-medium'>تصویر پروفایل</p>
+                      <p className='text-sm font-medium'>
+                        {t('profileSetting.image.label')}
+                      </p>
                       <p className='text-xs text-muted-foreground mt-1'>
-                        JPG/PNG/GIF — حداکثر ۵MB
+                        {t('profileSetting.image.hint')}
                       </p>
                       <div className='mt-3 flex gap-2'>
                         <Button
@@ -386,7 +391,7 @@ const ProfileSetting = () => {
                           className='gap-2'
                         >
                           <Upload className='h-4 w-4' />
-                          انتخاب تصویر
+                          {t('profileSetting.image.button')}
                         </Button>
                       </div>
                     </div>
@@ -408,11 +413,15 @@ const ProfileSetting = () => {
                       name='name'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>نام و نام خانوادگی</FormLabel>
+                          <FormLabel>
+                            {t('profileSetting.fields.name.label')}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               className='h-11'
-                              placeholder='نام و نام خانوادگی'
+                              placeholder={t(
+                                'profileSetting.fields.name.placeholder'
+                              )}
                               {...field}
                             />
                           </FormControl>
@@ -426,11 +435,15 @@ const ProfileSetting = () => {
                       name='username'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>نام کاربری</FormLabel>
+                          <FormLabel>
+                            {t('profileSetting.fields.username.label')}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               className='h-11'
-                              placeholder='نام کاربری'
+                              placeholder={t(
+                                'profileSetting.fields.username.placeholder'
+                              )}
                               {...field}
                             />
                           </FormControl>
@@ -444,13 +457,17 @@ const ProfileSetting = () => {
                       name='email'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>ایمیل</FormLabel>
+                          <FormLabel>
+                            {t('profileSetting.fields.email.label')}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               disabled
                               type='email'
                               className='h-11'
-                              placeholder='example@domain.com'
+                              placeholder={t(
+                                'profileSetting.fields.email.placeholder'
+                              )}
                               {...field}
                             />
                           </FormControl>
@@ -464,11 +481,15 @@ const ProfileSetting = () => {
                       name='phone'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>شماره تلفن</FormLabel>
+                          <FormLabel>
+                            {t('profileSetting.fields.phone.label')}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               className='h-11'
-                              placeholder='09123456789'
+                              placeholder={t(
+                                'profileSetting.fields.phone.placeholder'
+                              )}
                               inputMode='numeric'
                               {...field}
                             />
@@ -483,11 +504,15 @@ const ProfileSetting = () => {
                       name='jobTitle'
                       render={({ field }) => (
                         <FormItem className='sm:col-span-2'>
-                          <FormLabel>عنوان شغلی</FormLabel>
+                          <FormLabel>
+                            {t('profileSetting.fields.jobTitle.label')}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               className='h-11'
-                              placeholder='مثلاً: Product Designer'
+                              placeholder={t(
+                                'profileSetting.fields.jobTitle.placeholder'
+                              )}
                               {...field}
                             />
                           </FormControl>
@@ -499,24 +524,37 @@ const ProfileSetting = () => {
                     <FormField
                       control={form.control}
                       name='bio'
-                      render={({ field }) => (
-                        <FormItem className='sm:col-span-2'>
-                          <div className='flex items-center justify-between'>
-                            <FormLabel>بیوگرافی</FormLabel>
-                            <span className='text-xs text-muted-foreground'>
-                              {field.value?.length || 0}/500
-                            </span>
-                          </div>
-                          <FormControl>
-                            <Textarea
-                              className='min-h-[120px] resize-none'
-                              placeholder='درباره خودتان…'
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        const count = field.value?.length || 0
+                        // اگر از i18next استفاده می‌کنی و interpolation داری:
+                        const counterText = t(
+                          'profileSetting.fields.bio.counter',
+                          { count }
+                        )
+
+                        return (
+                          <FormItem className='sm:col-span-2'>
+                            <div className='flex items-center justify-between'>
+                              <FormLabel>
+                                {t('profileSetting.fields.bio.label')}
+                              </FormLabel>
+                              <span className='text-xs text-muted-foreground'>
+                                {counterText}
+                              </span>
+                            </div>
+                            <FormControl>
+                              <Textarea
+                                className='min-h-[120px] resize-none'
+                                placeholder={t(
+                                  'profileSetting.fields.bio.placeholder'
+                                )}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
                   </div>
                 </Card>
@@ -528,9 +566,11 @@ const ProfileSetting = () => {
               <TabsContent value='work' className='mt-0 space-y-4'>
                 <Card className='p-4 sm:p-6 space-y-4'>
                   <div>
-                    <p className='text-sm font-semibold'>تنظیمات کاری</p>
+                    <p className='text-sm font-semibold'>
+                      {t('profileSetting.fields.workSchedule.title')}
+                    </p>
                     <p className='text-xs text-muted-foreground mt-1'>
-                      برای زمان‌بندی‌ها و ارسال‌ها استفاده می‌شود.
+                      {t('profileSetting.fields.workSchedule.subtitle')}
                     </p>
                   </div>
 
@@ -539,20 +579,26 @@ const ProfileSetting = () => {
                     name='region'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>منطقه زمانی</FormLabel>
+                        <FormLabel>
+                          {t('profileSetting.fields.region.label')}
+                        </FormLabel>
                         <FormControl>
                           <Select
                             value={field.value || 'Asia/Tehran'}
                             onValueChange={field.onChange}
                           >
                             <SelectTrigger className='h-11'>
-                              <SelectValue placeholder='انتخاب منطقه زمانی' />
+                              <SelectValue
+                                placeholder={t(
+                                  'profileSetting.fields.region.placeholder'
+                                )}
+                              />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='Asia/Tehran'>
-                                Asia/Tehran
+                                {t('profileSetting.fields.region.tehran')}
                               </SelectItem>
-                              {/* اگر timezone های دیگر داری اینجا اضافه کن */}
+                              {/* timezone های دیگر */}
                             </SelectContent>
                           </Select>
                         </FormControl>
@@ -562,7 +608,9 @@ const ProfileSetting = () => {
                   />
 
                   <div className='space-y-2'>
-                    <FormLabel>روزهای کاری</FormLabel>
+                    <FormLabel>
+                      {t('profileSetting.fields.workSchedule.workingDays')}
+                    </FormLabel>
                     <div className='grid grid-cols-2 sm:grid-cols-4 gap-2'>
                       {ALL_DAYS.map((day) => {
                         const checked =
@@ -589,7 +637,8 @@ const ProfileSetting = () => {
                                 })
                               }}
                             />
-                            <span>{day.label}</span>
+                            {/* لیبل از i18n خوانده می‌شود */}
+                            <span>{t(`days.${day.value}`)}</span>
                           </label>
                         )
                       })}
@@ -598,7 +647,9 @@ const ProfileSetting = () => {
 
                   <div className='grid grid-cols-2 gap-3'>
                     <FormItem>
-                      <FormLabel>ساعت شروع</FormLabel>
+                      <FormLabel>
+                        {t('profileSetting.fields.workSchedule.startHour')}
+                      </FormLabel>
                       <FormControl>
                         <Select
                           value={String(workSchedule?.startHour ?? 9)}
@@ -624,7 +675,9 @@ const ProfileSetting = () => {
                     </FormItem>
 
                     <FormItem>
-                      <FormLabel>ساعت پایان</FormLabel>
+                      <FormLabel>
+                        {t('profileSetting.fields.workSchedule.endHour')}
+                      </FormLabel>
                       <FormControl>
                         <Select
                           value={String(workSchedule?.endHour ?? 18)}
@@ -658,9 +711,11 @@ const ProfileSetting = () => {
               <TabsContent value='notify' className='mt-0 space-y-4'>
                 <Card className='p-4 sm:p-6 space-y-4'>
                   <div>
-                    <p className='text-sm font-semibold'>تنظیمات اعلان‌ها</p>
+                    <p className='text-sm font-semibold'>
+                      {t('profileSetting.fields.notify.title')}
+                    </p>
                     <p className='text-xs text-muted-foreground mt-1'>
-                      برای هر مورد، نوع دریافت را مشخص کن.
+                      {t('profileSetting.fields.notify.subtitle')}
                     </p>
                   </div>
 
@@ -668,24 +723,28 @@ const ProfileSetting = () => {
                     {/* In-app */}
                     <div className='rounded-xl border p-4'>
                       <div className='flex items-center justify-between'>
-                        <p className='text-sm font-medium'>درون سیستم</p>
+                        <p className='text-sm font-medium'>
+                          {t('profileSetting.fields.notify.inAppTitle')}
+                        </p>
                         <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                           <span>
                             {notifAllOn
-                              ? 'همه روشن'
+                              ? t('profileSetting.fields.notify.allOn')
                               : notifAllOff
-                                ? 'همه خاموش'
-                                : 'سفارشی'}
+                              ? t('profileSetting.fields.notify.allOff')
+                              : t('profileSetting.fields.notify.custom')}
                           </span>
                           <Switch
                             checked={notifAllOn}
                             onCheckedChange={(checked) => {
                               const next = Object.fromEntries(
-                                NOTIF_ITEMS.map((it) => [it.key, checked]),
+                                NOTIF_ITEMS.map((it) => [it.key, checked])
                               )
                               form.setValue('notifConditions', next as any)
                             }}
-                            aria-label='روشن/خاموش همه نوتیف‌ها'
+                            aria-label={t(
+                              'profileSetting.fields.notify.toggles.allInAppAria'
+                            )}
                           />
                         </div>
                       </div>
@@ -696,7 +755,11 @@ const ProfileSetting = () => {
                             key={item.key}
                             className='flex items-center justify-between gap-3 py-2'
                           >
-                            <span className='text-sm'>{item.label}</span>
+                            <span className='text-sm'>
+                              {t(
+                                `profileSetting.fields.notify.items.${item.key}`
+                              )}
+                            </span>
                             <Checkbox
                               checked={
                                 (notifConditions as any)?.[item.key] || false
@@ -716,24 +779,28 @@ const ProfileSetting = () => {
                     {/* SMS */}
                     <div className='rounded-xl border p-4'>
                       <div className='flex items-center justify-between'>
-                        <p className='text-sm font-medium'>SMS</p>
+                        <p className='text-sm font-medium'>
+                          {t('profileSetting.fields.notify.smsTitle')}
+                        </p>
                         <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                           <span>
                             {smsAllOn
-                              ? 'همه روشن'
+                              ? t('profileSetting.fields.notify.allOn')
                               : smsAllOff
-                                ? 'همه خاموش'
-                                : 'سفارشی'}
+                              ? t('profileSetting.fields.notify.allOff')
+                              : t('profileSetting.fields.notify.custom')}
                           </span>
                           <Switch
                             checked={smsAllOn}
                             onCheckedChange={(checked) => {
                               const next = Object.fromEntries(
-                                NOTIF_ITEMS.map((it) => [it.key, checked]),
+                                NOTIF_ITEMS.map((it) => [it.key, checked])
                               )
                               form.setValue('smsConditions', next as any)
                             }}
-                            aria-label='روشن/خاموش همه SMSها'
+                            aria-label={t(
+                              'profileSetting.fields.notify.toggles.allSmsAria'
+                            )}
                           />
                         </div>
                       </div>
@@ -744,7 +811,11 @@ const ProfileSetting = () => {
                             key={item.key}
                             className='flex items-center justify-between gap-3 py-2'
                           >
-                            <span className='text-sm'>{item.label}</span>
+                            <span className='text-sm'>
+                              {t(
+                                `profileSetting.fields.notify.items.${item.key}`
+                              )}
+                            </span>
                             <Checkbox
                               checked={
                                 (smsConditions as any)?.[item.key] || false
