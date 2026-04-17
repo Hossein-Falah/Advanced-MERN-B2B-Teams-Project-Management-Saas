@@ -269,12 +269,12 @@ export class AnalyticsRepository {
         startDate: Date,
         endDate: Date,
         projectId?: string
-    ) {        
+    ) {
         const match: FilterQuery<TaskDocument> = {
             workspace: toObjectId(workspaceId),
             createdAt: { $gte: startDate, $lte: endDate },
             ...(projectId && { project: toObjectId(projectId) })
-        };        
+        };
 
         return this.taskModel.aggregate([
             { $match: match },
@@ -301,7 +301,7 @@ export class AnalyticsRepository {
             updatedAt: { $gte: startDate, $lte: endDate },
             ...(projectId && { project: toObjectId(projectId) })
         };
-        
+
         const aggregation = await this.taskModel.aggregate([
             { $match: match },
             {
@@ -393,10 +393,28 @@ export class AnalyticsRepository {
             { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: false } },
             {
                 $project: {
-                    user_id: "$_id",
-                    user_name: "$userInfo.name",
-                    assigned_count: 1,
-                    _id: 0,
+                    _id: "$_id",
+                    name: "$userInfo.name",
+                    email: "$userInfo.email",
+                    username: "$userInfo.username",
+                    phone: "$userInfo.phone",
+                    profile: {
+                        $cond: {
+                            if: { $ifNull: ["$userInfo.profilePicture", false] },
+                            then: {
+                                $concat: [
+                                    "https://",
+                                    process.env.AWS_S3_BUCKET_NAME,
+                                    ".",
+                                    process.env.AWS_ENDPOINT,
+                                    "/",
+                                    "$userInfo.profilePicture"
+                                ]
+                            },
+                            else: null
+                        }
+                    },
+                    assigned_count: 1
                 },
             },
             { $sort: { assigned_count: -1 } },
