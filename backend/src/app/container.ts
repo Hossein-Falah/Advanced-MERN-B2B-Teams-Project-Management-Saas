@@ -42,7 +42,7 @@ export function getContainer() {
     if (container) return container;
 
     // ---- Instantiate Repositories ----
-    const analyticsRepository = new AnalyticsRepository(TaskModel);
+    const analyticsRepository = new AnalyticsRepository(TaskModel, MemberModel);
 
     // ---- Instantiate Services ----
     const authService = new AuthService(

@@ -1,5 +1,5 @@
 import z from "zod";
-import { workspaceIdSchema } from "../../common/validator/common.validator";
+import { userIdSchema, workspaceIdSchema } from "../../common/validator/common.validator";
 
 export const DateSchema = z
     .union([z.string(), z.date()])
@@ -18,6 +18,7 @@ export const DateSchema = z
     });
 
 export const profileActivitySchema = z.object({
+    userId: userIdSchema,
     workspaceId: workspaceIdSchema,
     date: DateSchema
 });

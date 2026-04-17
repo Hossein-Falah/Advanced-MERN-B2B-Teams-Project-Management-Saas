@@ -52,9 +52,7 @@ export class AnalyticsController {
 
     public getProfileActivity = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const userId = req.user?._id;
-
-            const { workspaceId, date } = profileActivitySchema.parse(req.query);
+            const { workspaceId, date, userId } = profileActivitySchema.parse(req.query);
 
             const profile = await this.analyticsService.getUserDailyActivity(
                 workspaceId as string,
@@ -76,6 +74,8 @@ export class AnalyticsController {
 
     public getTaskAnalytics = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            const userId = req.user?._id;
+
             const { type, start_date, end_date, projectId } = req.query;
     
             const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
@@ -84,6 +84,9 @@ export class AnalyticsController {
             const startDate = parseDateOrThrow(start_date, "start_date");
             const endDate = parseDateOrThrow(end_date, "end_date");
     
+            const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceId as string);
+            roleGuard(role, [Permissions.VIEW_ANALYTICS]);
+
             const taskAnalytics = await this.analyticsService.getTaskAnalytics(
                 workspaceId,
                 type as AnalyticsTaskTypeEnum,
@@ -106,8 +109,13 @@ export class AnalyticsController {
     
     public getProjectAnalytics = async (req: Request, res: Response, next: NextFunction) => {
         try {    
+            const userId = req.user?._id;
+
             const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
     
+            const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceId as string);
+            roleGuard(role, [Permissions.VIEW_ANALYTICS]);
+
             const projectAnalytics = await this.analyticsService.getProjectAnalytics(workspaceId);
     
             return ResponseHandler.send(res, {
@@ -124,9 +132,14 @@ export class AnalyticsController {
     
     public getUserAnalytics = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            const userId = req.user?._id;
+
             const { start_date, end_date } = req.query;
     
             const workspaceID = workspaceIdSchema.parse(req.params.workspaceId);
+            
+            const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID as string);
+            roleGuard(role, [Permissions.VIEW_ANALYTICS]);
     
             const startDate = parseDateOrThrow(start_date, "start_date");
             const endDate = parseDateOrThrow(end_date, "end_date");

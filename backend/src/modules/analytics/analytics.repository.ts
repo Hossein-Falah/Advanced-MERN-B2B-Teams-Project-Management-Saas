@@ -3,9 +3,13 @@ import { TaskStatusEnum } from "../../common/enums/task.enum";
 import { toObjectId } from "../../utils/convert-objectId.util";
 import { TaskDocument } from "../task/task.model";
 import { calculateTrendFromChart } from "./helper/analytics.helper";
+import { MemberDocument } from "../member/member.model";
 
 export class AnalyticsRepository {
-    constructor(private taskModel: Model<TaskDocument>) { }
+    constructor(
+        private taskModel: Model<TaskDocument>,
+        private memberModel: Model<MemberDocument>
+    ) { }
 
     private getDateRanges(days: number) {
         const now = new Date();
@@ -368,37 +372,54 @@ export class AnalyticsRepository {
         startDate: Date,
         endDate: Date
     ): Promise<any[]> {
-        const aggregation = await this.taskModel.aggregate([
+        const aggregation = await this.memberModel.aggregate([
             {
                 $match: {
-                    workspace: toObjectId(workspaceId),
-                    assignedTo: { $ne: null },
-                    createdAt: { $gte: startDate, $lte: endDate },
-                },
-            },
-            {
-                $group: {
-                    _id: "$assignedTo",
-                    assigned_count: { $sum: 1 },
+                    workspaceId: toObjectId(workspaceId),
                 },
             },
             {
                 $lookup: {
                     from: "users",
-                    localField: "_id",
+                    localField: "userId",
                     foreignField: "_id",
                     as: "userInfo",
                 },
             },
-            { $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: false } },
+            { $unwind: "$userInfo" },
+            {
+                $lookup: {
+                    from: "tasks",
+                    let: { userId: "$userId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ["$assignedTo", "$$userId"] },
+                                workspace: toObjectId(workspaceId),
+                                createdAt: { $gte: startDate, $lte: endDate },
+                                assignedTo: { $ne: null },
+                            },
+                        },
+                        { $count: "count" },
+                    ],
+                    as: "taskStats",
+                },
+            },
+            {
+                $addFields: {
+                    assigned_count: {
+                        $ifNull: [{ $arrayElemAt: ["$taskStats.count", 0] }, 0],
+                    },
+                },
+            },
             {
                 $project: {
-                    _id: "$_id",
+                    _id: "$userId",
                     name: "$userInfo.name",
                     email: "$userInfo.email",
                     username: "$userInfo.username",
                     phone: "$userInfo.phone",
-                    profile: {
+                    profilePicture: {
                         $cond: {
                             if: { $ifNull: ["$userInfo.profilePicture", false] },
                             then: {
@@ -408,17 +429,18 @@ export class AnalyticsRepository {
                                     ".",
                                     process.env.AWS_ENDPOINT,
                                     "/",
-                                    "$userInfo.profilePicture"
-                                ]
+                                    "$userInfo.profilePicture",
+                                ],
                             },
-                            else: null
-                        }
+                            else: null,
+                        },
                     },
-                    assigned_count: 1
+                    assigned_count: 1,
                 },
             },
             { $sort: { assigned_count: -1 } },
         ]);
+
         return aggregation;
     }
 }
