@@ -6,6 +6,7 @@ import { BadRequestException, NotFoundException } from "../../../common/errors/a
 import { TaskService } from "../../task/task.service";
 import { MESSAGES } from "../../../common/constants/message.constant";
 import { PaginationFilter } from "../../../common/types/pagination.type";
+import { toObjectId } from "../../../utils/convert-objectId.util";
 
 export class AutomationService {
     constructor(
@@ -65,11 +66,16 @@ export class AutomationService {
         { page, limit }: PaginationFilter,
         workspaceId: Types.ObjectId, 
         userId: Types.ObjectId, 
+        taskId?: string | null
     ) {
         const skip = (page - 1) * limit;
-
+        
         const [automations, total] = await Promise.all([
-            this.automationModel.find({ workspaceId, userId })
+            this.automationModel.find({ 
+                workspaceId, 
+                userId,  
+                ...(taskId && { taskId: toObjectId(taskId) })
+            })
                 .populate({ path: "taskId", select: "_id title description" })
                 .sort({ createdAt: -1 })
                 .skip(skip)

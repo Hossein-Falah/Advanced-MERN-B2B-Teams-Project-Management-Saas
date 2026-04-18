@@ -9,7 +9,7 @@ import { toObjectId } from "../../utils/convert-objectId.util";
 import { ResponseHandler } from "../../common/response/response-handler";
 import { HTTPSTATUS } from "../../config/http.config";
 import { MESSAGES } from "../../common/constants/message.constant";
-import { automationIdSchema, workspaceIdSchema } from "../../common/validator/common.validator";
+import { automationIdSchema, taskIdSchema, workspaceIdSchema } from "../../common/validator/common.validator";
 import { paginationQuerySchema } from "../../common/validator/pagination.validator";
 import { buildPaginationMeta } from "../../utils/pagination-meta";
 
@@ -58,16 +58,19 @@ export class AutomationController {
         try {
             const userId = req.user?._id;
 
-            const { workspaceId } = req.params;
+            const taskId = taskIdSchema
+                .optional()
+                .parse(req.query.taskId)
 
             const paginationFilter = paginationQuerySchema.parse(req.query)
 
-            const workspaceID = workspaceIdSchema.parse(workspaceId);
+            const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
 
             const { automations, pagination } = await this.automationService.getAutomations(
                 paginationFilter,
-                toObjectId(workspaceID),
+                toObjectId(workspaceId),
                 userId,
+                taskId
             );
 
             return ResponseHandler.send(res, {
