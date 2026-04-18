@@ -268,7 +268,7 @@ export class AnalyticsRepository {
         ]);
     }
 
-    async getTasksCreatedDaily(
+    public async getTasksCreatedDaily(
         workspaceId: string,
         startDate: Date,
         endDate: Date,
@@ -293,7 +293,7 @@ export class AnalyticsRepository {
         ]);
     }
 
-    async getTasksCompletedDaily(
+    public async getTasksCompletedDaily(
         workspaceId: string,
         startDate: Date,
         endDate: Date,
@@ -319,7 +319,6 @@ export class AnalyticsRepository {
         ]);
         return aggregation;
     }
-
 
     async getProjectsProgress(workspaceId: string): Promise<any[]> {
         const aggregation = await this.taskModel.aggregate([

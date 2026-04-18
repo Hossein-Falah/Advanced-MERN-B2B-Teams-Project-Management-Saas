@@ -9,6 +9,7 @@ import { TaskDocument } from "../task/task.model";
 import { UserService } from "../user/user.service";
 import { AnalyticsTaskTypeEnum } from "../../common/enums/analytics.enum";
 import { validateDateTask } from "../../utils/validate-task.util";
+import { generateDateRange } from "../../utils/date-fill-gap.util";
 
 export class AnalyticsService {
     constructor(
@@ -125,12 +126,21 @@ export class AnalyticsService {
         start.setHours(0, 0, 0, 0);
         end.setHours(23, 59, 59, 999);
             
-        const getTasksDaily =
+        const tasksDaily =
             type === AnalyticsTaskTypeEnum.CREATED
                 ? await this.analyticsRepository.getTasksCreatedDaily(workspaceId, start, end, projectId)
-                : await this.analyticsRepository.getTasksCompletedDaily(workspaceId, start, end, projectId);        
+                : await this.analyticsRepository.getTasksCompletedDaily(workspaceId, start, end, projectId);
+                
+        const allDates = generateDateRange(start, end);
 
-        return getTasksDaily;
+        const map = new Map(tasksDaily.map(t => [t.date, t.count]));
+
+        const filled = allDates.map(date => ({
+            date,
+            count: map.get(date) ?? 0
+        }));
+
+        return filled;
     }
 
     public async getProjectAnalytics(workspaceId: string) {
