@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { TaskService } from "./task.service";
-import { createTaskSchema, taskQuerySchema, updateTaskSchema } from "./task.validation";
+import { createTaskSchema, taskCloneQuerySchema, taskQuerySchema, updateTaskSchema } from "./task.validation";
 import { roleGuard } from "../../utils/roleGuard";
 import { Permissions } from "../../common/enums/role.enum";
 import { uploadFileToS3 } from "../../utils/s3";
@@ -54,6 +54,29 @@ export class TaskController {
         statusCode: HTTPSTATUS.OK,
         code: MESSAGES.TASK.CREATED.code,
         message: MESSAGES.TASK.CREATED.message,
+        data: task,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  cloneTask = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?._id;
+
+      const { taskId, workspaceId } = taskCloneQuerySchema.parse(req.query);
+
+      const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceId);
+      roleGuard(role, [Permissions.CLONE_TASK]);      
+
+      const task = await this.taskService.cloneTask({ taskId, userId });
+
+      return ResponseHandler.send(res, {
+        success: true,
+        statusCode: HTTPSTATUS.OK,
+        code: MESSAGES.TASK.CLONE.code,
+        message: MESSAGES.TASK.CLONE.message,
         data: task,
       });
     } catch (error) {

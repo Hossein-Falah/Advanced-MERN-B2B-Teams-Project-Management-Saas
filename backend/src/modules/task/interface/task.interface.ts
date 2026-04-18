@@ -29,3 +29,8 @@ export interface TaskFilters {
     keyword?: string;
     dueDate?: Date | string;
 }
+
+export interface ICloneTaskParam {
+    taskId: string;
+    userId: string | Types.ObjectId;
+}

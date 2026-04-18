@@ -1,5 +1,5 @@
 import { Model, Types } from "mongoose";
-import { CreateTaskInput, UpdateTaskInput } from "./interface/task.interface";
+import { CreateTaskInput, ICloneTaskParam, UpdateTaskInput } from "./interface/task.interface";
 import { ProjectDocument } from "../project/project.model";
 import { MemberDocument } from "../member/member.model";
 import { TaskDocument } from "./task.model";
@@ -113,6 +113,54 @@ export class TaskService {
     });
 
     return { task };
+  }
+
+  public async cloneTask({ taskId, userId }: ICloneTaskParam) {
+    const task = await this.checkExistTaskById(toObjectId(taskId));    
+
+    const result = await this.taskModel.create({
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      status: task.status,
+      assignedTo: task.assignedTo,
+      createdBy: task.createdBy,
+      workspace: task.workspace,
+      project: task.project,
+      startDate: task.startDate,
+      dueDate: task.dueDate,
+      attachment: task.attachment
+    });
+    
+    await result.save();
+
+    if (task.assignedTo) {
+      await this.assignTask(
+        task.id,
+        toObjectId(task.assignedTo),
+        toObjectId(userId),
+        NotificationTypeEnum.TASK_ASSIGNED
+      );
+    }
+
+    await this.taskLogModel.create({
+      task: task._id,
+      workspace: task.workspace,
+      user: userId,
+      action: TaskLogActionEnumType.CREATE,
+      changes: [
+        { field: "title", newValue: task.title },
+        { field: "description", newValue: task.description },
+        { field: "status", newValue: task.status },
+        { field: "priority", newValue: task.priority },
+        { field: "assignedTo", newValue: task.assignedTo },
+        { field: "dueDate", newValue: task.dueDate },
+        { field: "startDate", newValue: task.startDate },
+        { field: "attachment", newValue: task.attachment },
+      ],
+    });
+
+    return { task: result };
   }
 
   public async updateTask(

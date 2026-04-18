@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TaskPriorityEnum, TaskStatusEnum } from "../../common/enums/task.enum";
+import { taskIdSchema, workspaceIdSchema } from "../../common/validator/common.validator";
 
 export const titleSchema = z.string().trim().min(1).max(255);
 export const descriptionSchema = z.string().trim().optional();
@@ -118,4 +119,9 @@ export const taskQuerySchema = z.object({
     .string()
     .optional()
     .transform((v) => (v ? parseInt(v) : 10)),
+});
+
+export const taskCloneQuerySchema = z.object({
+  taskId: taskIdSchema,
+  workspaceId: workspaceIdSchema
 });

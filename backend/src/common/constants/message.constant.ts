@@ -136,6 +136,10 @@ export const MESSAGES = {
             code: "TASK_CREATED",
             message: "Task created successfully",
         },
+        CLONE: {
+            code: "TASK_CLONE",
+            message: "Task cloned successfully",
+        },
         FETCHED: {
             code: "TASK_FETCHED",
             message: "Task fetched successfully",

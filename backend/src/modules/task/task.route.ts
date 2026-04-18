@@ -14,6 +14,11 @@ taskRoutes.post(
   taskController.createTask
 );
 
+taskRoutes.post(
+  "/clone",
+  taskController.cloneTask
+);
+
 taskRoutes.put(
   "/:id/project/:projectId/workspace/:workspaceId/update",
   singleUpload,

@@ -37,7 +37,9 @@ export const Permissions = {
   EDIT_AUTOMATION: "EDIT_AUTOMATION",
   DELETE_AUTOMATION: "DELETE_AUTOMATION",
 
-  VIEW_ANALYTICS: "VIEW_ANALYTICS"
+  VIEW_ANALYTICS: "VIEW_ANALYTICS",
+
+  CLONE_TASK: "CLONE_TASK"
 } as const;
 
 export type PermissionType = keyof typeof Permissions;
