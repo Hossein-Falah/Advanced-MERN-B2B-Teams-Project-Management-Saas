@@ -1,4 +1,4 @@
-import ProfileView from '@/components/profile/profile-view/profile-view'
+import ProfileView from '@/components/workspace/profile/profile-view/profile-view'
 
 import { Separator } from '@/components/ui/separator'
 import { useTranslation } from 'react-i18next'

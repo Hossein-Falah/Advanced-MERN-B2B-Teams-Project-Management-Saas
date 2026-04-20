@@ -1,4 +1,4 @@
-import ProfileSetting from '@/components/profile/profile-setting/profile-setting'
+import ProfileSetting from '@/components/workspace/profile/profile-setting/profile-setting'
 import { Separator } from '@/components/ui/separator'
 import { useTranslation } from 'react-i18next'
 

@@ -34,6 +34,7 @@ type ProfileActivityTimelineDialogProps = {
   onOpenChange: (open: boolean) => void
   title?: string
   username?: string
+  userId: string
   date?: string
 }
 
@@ -42,7 +43,7 @@ type ChartType = 'bar' | 'pie' | 'line' | 'area'
 
 const ProfileActivityTimelineDialog: React.FC<
   ProfileActivityTimelineDialogProps
-> = ({ open, username, onOpenChange, title, date }) => {
+> = ({ open, username, onOpenChange, title, date, userId }) => {
   const { t } = useTranslation()
   const workspaceId = useWorkspaceId()
 
@@ -50,7 +51,7 @@ const ProfileActivityTimelineDialog: React.FC<
   const dialogTitle = title ?? t('profileView.activity.title')
 
   // نوع نمودار: ستونی، دایره‌ای، خطی، ناحیه‌ای
-  const [chartType, setChartType] = React.useState<ChartType>('bar')
+  const [chartType, setChartType] = React.useState<ChartType>('pie')
 
   const [selectedDate, setSelectedDate] = React.useState<string>(() => {
     if (date) return date
@@ -67,6 +68,7 @@ const ProfileActivityTimelineDialog: React.FC<
       getProfileActivityAnalyticsQueryFn({
         workspaceId: workspaceId,
         date: selectedDate,
+        userId,
       }),
     enabled: !!username && !!workspaceId && !!selectedDate && open,
     retry: (failureCount, err: any) => {
@@ -144,11 +146,6 @@ const ProfileActivityTimelineDialog: React.FC<
                 <DialogTitle className='flex items-center justify-center gap-2 text-sm lg:text-base mb-2 '>
                   <Clock className='w-4 h-4 text-emerald-500' />
                   <span>{dialogTitle}</span>
-                  {username && (
-                    <span className='text-xs text-gray-500 dark:text-gray-400'>
-                      ({username})
-                    </span>
-                  )}
                 </DialogTitle>
 
                 <JalaliDateSelector

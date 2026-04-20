@@ -17,14 +17,14 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import useWorkspaceId from '@/hooks/use-workspace-id'
 
-import ProfileViewSkeleton from '../../skeleton-loaders/profile-view-skeleton'
+import ProfileViewSkeleton from '../../../skeleton-loaders/profile-view-skeleton'
 import ProfileViewError from './profile-view-error'
 import getAchievements from './profile-view-achivment'
-import InfoRow from '../../ui/info-row'
+import InfoRow from '../../../ui/info-row'
 
 import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import ProfileActivityTimelineDialog from '@/components/profile/profile-view/activity-dialog/activity-dialog'
+import ProfileActivityTimelineDialog from '@/components/workspace/common/user-activity-dialog/activity-dialog'
 import { ALL_DAYS } from '@/constant'
 import { useTranslation } from 'react-i18next'
 
@@ -115,6 +115,7 @@ const ProfileView = () => {
     >
       {/* مودال آمار فعالیت */}
       <ProfileActivityTimelineDialog
+        userId={user._id}
         open={isTimelineOpen}
         onOpenChange={setIsTimelineOpen}
         title={t('profileView.activityDialog.title')}

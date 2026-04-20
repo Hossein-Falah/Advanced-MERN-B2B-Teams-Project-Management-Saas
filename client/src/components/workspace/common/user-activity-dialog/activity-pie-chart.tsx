@@ -1,6 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip } from 'recharts'
 import { ProfileActivityItem } from '@/types/profile.type'
-import { CustomTooltip } from './custom-tooltip'
+import { CustomTooltip } from '../../../ui/custom-tooltip'
 
 const RADIAN = Math.PI / 180
 

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import useCreateProjectDialog from '@/hooks/use-create-project-dialog'
-import WorkspaceAnalytics from '@/components/workspace/workspace-analytics'
+import WorkspaceAnalytics from '@/components/workspace/common/short-analytics'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import RecentProjects from '@/components/workspace/project/recent-projects'
 import RecentTasks from '@/components/workspace/task/recent-tasks'

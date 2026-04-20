@@ -1,5 +1,5 @@
 import { AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
-import { CustomTooltip } from './custom-tooltip'
+import { CustomTooltip } from '../../../ui/custom-tooltip'
 import { ProfileActivityItem } from '@/types/profile.type'
 
 const ActiviryAreaChart = ({

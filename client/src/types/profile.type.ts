@@ -58,6 +58,7 @@ export interface GetUserProfileRequestType {
 export interface GetProfileActivityAnalyticsRequest {
   workspaceId: string
   date: string // مثال: "2026-04-06"
+  userId: string
   projectId?: string
 }
 
@@ -71,41 +72,4 @@ export interface ProfileActivityItem {
 // ✅ پاسخ API (روی ResponseType پیچیده شد)
 export type GetProfileActivityAnalyticsResponse = ResponseType<{
   analytics: ProfileActivityItem[]
-}>
-
-/* ======  🔹🔹🔹  API جدید Analytics Workspace  🔹🔹🔹  ====== */
-
-// امروز، دیرکرد، تکمیل‌شده، در حال انجام
-export interface AnalyticsMetric {
-  value: number
-  total?: number
-  trend: number
-  chartData: number[]
-}
-
-// ساختار بخش team و personal
-export interface AnalyticsGroup {
-  todayTasks: AnalyticsMetric
-  overdueTasks: AnalyticsMetric
-  completedTasks: AnalyticsMetric
-  inProgressTasks: AnalyticsMetric
-}
-
-// کل analytics
-export interface WorkspaceAnalytics {
-  team: AnalyticsGroup
-  personal: AnalyticsGroup
-}
-
-// درخواست API
-export interface GetWorkspaceAnalyticsRequest {
-  workspaceId: string
-  type?: 'all' | 'team' | 'personal' // بر اساس کوئری type=all
-  projectId?: string
-  treandRange?: number // طبق پارامتر treandRange=5
-}
-
-// ✅ پاسخ API (هماهنگ با ResponseType جنرال)
-export type GetWorkspaceAnalyticsResponse = ResponseType<{
-  analytics: WorkspaceAnalytics
 }>

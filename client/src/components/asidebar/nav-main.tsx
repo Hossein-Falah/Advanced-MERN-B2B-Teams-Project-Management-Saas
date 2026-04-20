@@ -1,6 +1,3 @@
-'use client'
-
-import { useState } from 'react'
 import {
   LucideIcon,
   Settings,
@@ -9,7 +6,7 @@ import {
   LayoutDashboard,
   GitBranch,
   MessagesSquareIcon,
-  ChevronDown,
+  ChartArea,
 } from 'lucide-react'
 
 import {
@@ -17,9 +14,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
 
 import { Link, useLocation } from 'react-router-dom'
@@ -27,48 +21,57 @@ import useWorkspaceId from '@/hooks/use-workspace-id'
 import { useAuthContext } from '@/context/auth-provider'
 import { Permissions } from '@/constant'
 import { useTranslation } from 'react-i18next'
+import { Separator } from '../ui/separator'
 
-type ItemType = {
-  title: string
-  url: string
-  icon: LucideIcon
-}
+// تعریف نوع برای آیتم‌ها (معمولی یا جداکننده)
+type NavItem =
+  | { type: 'item'; title: string; url: string; icon: LucideIcon }
+  | { type: 'separator' }
 
 export function NavMain() {
   const { t } = useTranslation()
   const { hasPermission } = useAuthContext()
   const canManageSettings = hasPermission(Permissions.MANAGE_WORKSPACE_SETTINGS)
+
   const workspaceId = useWorkspaceId()
   const location = useLocation()
   const pathname = location.pathname
 
-  // آیتم‌های اصلی (همیشه بیرون از دراپ‌داون)
-  const mainItems: ItemType[] = [
+  // ساخت آرایه آیتم‌ها با قابلیت جداکننده
+  const items: NavItem[] = [
     {
+      type: 'item',
       title: t('sidebar.nav.dashboard'),
       url: `/workspace/${workspaceId}`,
       icon: LayoutDashboard,
     },
     {
+      type: 'item',
       title: t('sidebar.nav.messages'),
       url: `/workspace/${workspaceId}/messages`,
       icon: MessagesSquareIcon,
     },
     {
+      type: 'item',
       title: t('sidebar.nav.tasks'),
       url: `/workspace/${workspaceId}/tasks`,
       icon: CheckCircle,
     },
-  ]
-
-  // آیتم‌هایی که داخل دراپ‌داون می‌روند
-  const dropdownItems: ItemType[] = [
     {
+      type: 'item',
       title: t('sidebar.nav.automations'),
       url: `/workspace/${workspaceId}/automations`,
       icon: GitBranch,
     },
+    { type: 'separator' }, // جداکننده قبل از اعضا
     {
+      type: 'item',
+      title: t('sidebar.nav.analytics'),
+      url: `/workspace/${workspaceId}/analytics`,
+      icon: ChartArea,
+    },
+    {
+      type: 'item',
       title: t('sidebar.nav.members'),
       url: `/workspace/${workspaceId}/members`,
       icon: Users,
@@ -76,6 +79,7 @@ export function NavMain() {
     ...(canManageSettings
       ? [
           {
+            type: 'item' as const,
             title: t('sidebar.nav.settings'),
             url: `/workspace/${workspaceId}/settings`,
             icon: Settings,
@@ -84,58 +88,25 @@ export function NavMain() {
       : []),
   ]
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {/* آیتم‌های اصلی */}
-        {mainItems.map((item) => (
-          <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton isActive={item.url === pathname} asChild>
-              <Link to={item.url} className='!text-[15px]'>
-                <item.icon />
-                <span>{item.title}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
+        {items.map((item, index) => {
+          if (item.type === 'separator') {
+            return <Separator key={`sep-${index}`} />
+          }
 
-        {/* دراپ‌داون سفارشی */}
-        {dropdownItems.length > 0 && (
-          <SidebarMenuItem>
-            {/* دکمه باز/بسته شدن دراپ‌داون */}
-            <SidebarMenuButton
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              <ChevronDown
-                className={`ml-auto transition-transform duration-200 ${
-                  isDropdownOpen ? 'rotate-180' : ''
-                }`}
-              />
-              <span>{t('sidebar.nav.management') || 'مدیریت'}</span>
-            </SidebarMenuButton>
-
-            {/* زیرمنو (دراپ‌داون) که در صورت باز بودن نمایش داده می‌شود */}
-            {isDropdownOpen && (
-              <SidebarMenuSub>
-                {dropdownItems.map((item) => (
-                  <SidebarMenuSubItem key={item.title}>
-                    <SidebarMenuSubButton
-                      asChild
-                      isActive={item.url === pathname}
-                    >
-                      <Link to={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                ))}
-              </SidebarMenuSub>
-            )}
-          </SidebarMenuItem>
-        )}
+          return (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton isActive={item.url === pathname} asChild>
+                <Link to={item.url} className='!text-[15px]'>
+                  <item.icon />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )
+        })}
       </SidebarMenu>
     </SidebarGroup>
   )

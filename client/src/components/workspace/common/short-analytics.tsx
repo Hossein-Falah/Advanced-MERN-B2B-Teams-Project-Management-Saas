@@ -1,28 +1,30 @@
-'use client'
-
+// ShortAnalytics.tsx - نسخه کامل اصلاح شده
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import AnalyticsCard from './common/analytics-card'
+import AnalyticsCard from './short-analytics-card'
 import { MoveLeftIcon } from 'lucide-react'
-import { getWorkspaceAnalyticsQueryFn } from '@/lib/api/dashboard'
+import { getWorkspaceAnalyticsQueryFn } from '@/lib/api/analytics'
 import useWorkspaceId from '@/hooks/use-workspace-id'
-import { useTranslation } from 'react-i18next' // یا از 'next-i18next' در صورت استفاده در Next.js
+import { useTranslation } from 'react-i18next'
 
-const WorkspaceAnalytics = () => {
+type ShortAnalyticsProps = {
+  projectId?: string
+}
+
+const ShortAnalytics = ({ projectId }: ShortAnalyticsProps) => {
   const { t } = useTranslation()
-
   const [activeTab, setActiveTab] = useState<'team' | 'personal'>('personal')
-
   const workspaceId = useWorkspaceId()
 
   const { data, isLoading, isError, isFetching } = useQuery({
-    queryKey: ['workspaceAnalytics', workspaceId, activeTab],
+    queryKey: ['workspaceAnalytics', workspaceId, activeTab, projectId],
     queryFn: () =>
       getWorkspaceAnalyticsQueryFn({
         workspaceId,
         type: activeTab,
         treandRange: 5,
+        projectId: projectId || undefined,
       }),
     enabled: !!workspaceId,
     retry: (failureCount, err: any) => {
@@ -32,7 +34,6 @@ const WorkspaceAnalytics = () => {
   })
 
   const isPending = isLoading || isFetching
-
   const team = data?.data?.analytics?.team
   const personal = data?.data?.analytics?.personal
 
@@ -58,7 +59,6 @@ const WorkspaceAnalytics = () => {
 
         {isError && (
           <p className='text-xs text-red-500'>
-            {/* فقط پیام‌های سمت ما؛ هیچ چیزی از err / API نشان داده نمی‌شود */}
             {t('analytics.error.loadFailed')}
           </p>
         )}
@@ -154,7 +154,6 @@ const WorkspaceAnalytics = () => {
               value={personal?.inProgressTasks?.value ?? 0}
               totalValue={personal?.todayTasks?.total ?? 0}
               kind='inprogress'
-              trend={personal?.inProgressTasks?.trend ?? 0}
               trendLabel={t('analytics.previousWeek')}
               chartData={personal?.inProgressTasks?.chartData ?? []}
             />
@@ -165,4 +164,4 @@ const WorkspaceAnalytics = () => {
   )
 }
 
-export default WorkspaceAnalytics
+export default ShortAnalytics

@@ -11,7 +11,7 @@ import InviteUser from '@/page/invite/InviteUser'
 import ProfileSettings from '@/page/profile/ProfileSettings'
 import Profile from '@/page/profile/Profile'
 import Automation from '@/page/workspace/Automation'
-import Analytics from '@/page/analytics/Analytics'
+import AnalyticsPage from '@/page/analytics/Analytics'
 
 export const authenticationRoutePaths = [
   { path: AUTH_ROUTES.SIGN_IN, element: <SignIn /> },
@@ -28,7 +28,7 @@ export const protectedRoutePaths = [
   { path: PROTECTED_ROUTES.PROJECT_DETAILS, element: <ProjectDetails /> },
   { path: PROTECTED_ROUTES.PROFILE_SETTINGS, element: <ProfileSettings /> },
   { path: PROTECTED_ROUTES.PROFILE_PUBLIC, element: <Profile /> },
-  { path: PROTECTED_ROUTES.ANALYTICS, element: <Analytics /> },
+  { path: PROTECTED_ROUTES.ANALYTICS, element: <AnalyticsPage /> },
 ]
 
 export const baseRoutePaths = [

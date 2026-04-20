@@ -3,7 +3,7 @@ import { Search, ArrowRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
-import { Input } from '../../ui/input'
+import { Input } from '../../../ui/input'
 import { useTranslation } from 'react-i18next'
 
 const ProfileViewError = () => {

@@ -5,10 +5,12 @@ import {
   GetUserProfileRequestType,
   UpdateProfileRequestType,
   UpdateProfileResponseType,
-  GetWorkspaceAnalyticsRequest,
-  GetWorkspaceAnalyticsResponse,
 } from '@/types/profile.type'
 import API from '../axios-client'
+import {
+  GetWorkspaceAnalyticsRequest,
+  GetWorkspaceAnalyticsResponse,
+} from '@/types/analytics.type'
 
 // تابع اصلی برای به‌روزرسانی پروفایل
 export const updateProfileMutationFn = async (
@@ -35,13 +37,13 @@ export const getUserProfileMutationFn = async (
 export const getProfileActivityAnalyticsQueryFn = async (
   params: GetProfileActivityAnalyticsRequest
 ): Promise<GetProfileActivityAnalyticsResponse> => {
-  const { workspaceId, date, projectId } = params
+  const { workspaceId, date, projectId, userId } = params
 
   const searchParams = new URLSearchParams()
 
   searchParams.append('workspaceId', workspaceId)
   searchParams.append('date', date)
-
+  searchParams.append('userId', userId)
   projectId && searchParams.append('projectId', projectId)
 
   const url = `/analytics/profile/activity?${searchParams.toString()}`

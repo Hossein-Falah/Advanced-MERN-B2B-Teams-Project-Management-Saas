@@ -1,8 +1,8 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
-import { CustomTooltip } from './custom-tooltip'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
+import { CustomTooltip } from '../../../ui/custom-tooltip'
 import { ProfileActivityItem } from '@/types/profile.type'
 
-const ActivityLineChart = ({
+const ActiviryBarChart = ({
   hourTasks,
   isMobile,
 }: {
@@ -10,7 +10,7 @@ const ActivityLineChart = ({
   isMobile: boolean
 }) => {
   return (
-    <LineChart
+    <BarChart
       data={hourTasks}
       margin={{
         top: 10,
@@ -18,6 +18,10 @@ const ActivityLineChart = ({
         left: 0,
         bottom: 10,
       }}
+      barCategoryGap='20%'
+      barSize={isMobile ? 12 : 20}
+      tabIndex={-1}
+      onClick={() => {}}
     >
       <CartesianGrid
         strokeDasharray='3 3'
@@ -25,7 +29,6 @@ const ActivityLineChart = ({
         stroke='#e5e7eb'
         opacity={0.6}
       />
-
       <XAxis
         dataKey='hour'
         tickFormatter={(v: number) => v.toString()}
@@ -38,7 +41,6 @@ const ActivityLineChart = ({
         }}
         interval={isMobile ? 3 : 1}
       />
-
       <YAxis
         tickLine={false}
         axisLine={false}
@@ -49,22 +51,25 @@ const ActivityLineChart = ({
           fill: '#6b7280',
         }}
       />
-
       <Tooltip content={<CustomTooltip />} />
-
-      <Line
-        type='monotone'
+      <Bar
         dataKey='count'
-        stroke='#10b981'
-        strokeWidth={2}
-        dot={{ r: isMobile ? 2 : 3 }}
-        activeDot={{ r: isMobile ? 4 : 5 }}
+        radius={[6, 6, 0, 0]}
+        maxBarSize={isMobile ? 16 : 24}
+        fill='url(#activityGradient)'
         isAnimationActive={true}
         animationDuration={900}
         animationEasing='ease-out'
+        animationBegin={0}
       />
-    </LineChart>
+      <defs>
+        <linearGradient id='activityGradient' x1='0' y1='0' x2='0' y2='1'>
+          <stop offset='0%' stopColor='#10b981' stopOpacity={0.9} />
+          <stop offset='100%' stopColor='#6ee7b7' stopOpacity={0.6} />
+        </linearGradient>
+      </defs>
+    </BarChart>
   )
 }
 
-export default ActivityLineChart
+export default ActiviryBarChart
