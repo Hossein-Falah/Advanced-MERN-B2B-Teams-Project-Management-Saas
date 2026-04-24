@@ -14,6 +14,7 @@ import mentionRoutes from "../modules/mention/mention.route";
 import analyticsRoutes from "../modules/analytics/analytics.route";
 import automationRoutes from "../modules/automation/automation.route";
 import isAuthenticated from "../common/middlewares/isAuthenticated.middleware";
+import fileRoutes from "../modules/file/file.route";
 
 export class Routes {
     constructor(private app: Application) {
@@ -35,6 +36,7 @@ export class Routes {
         this.app.use(`${BASE_PATH}/mention`, isAuthenticated, mentionRoutes);
         this.app.use(`${BASE_PATH}/automation`, isAuthenticated, automationRoutes);
         this.app.use(`${BASE_PATH}/analytics`, isAuthenticated, analyticsRoutes);
+        this.app.use(`${BASE_PATH}/files`, isAuthenticated, fileRoutes)
 
         this.app.use(errorHandler);
     }

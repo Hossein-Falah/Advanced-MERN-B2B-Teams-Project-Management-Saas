@@ -9,7 +9,6 @@ import { BadRequestException, NotFoundException } from "../../common/errors/app-
 import { validateTaskDates } from "../../utils/validate-task.util";
 import { TaskPriorityEnum, TaskStatusEnum } from "../../common/enums/task.enum";
 import { TaskLogActionEnumType } from "../../common/enums/task-log.enum";
-import { deleteFile, uploadFileToS3 } from "../../utils/s3";
 import { TaskFilters } from "../../@types/task.type";
 import { toObjectId } from "../../utils/convert-objectId.util";
 import { NotificationType, NotificationTypeEnum } from "../../common/enums/notification.enum";
@@ -18,6 +17,8 @@ import { TaskLogService } from "../task-log/task-log.service";
 import { CommentDocument } from "../comment/comment.model";
 import { PaginationFilter } from "../../common/types/pagination.type";
 import { AutomationDocument } from "../automation/automation.model";
+import { FileService } from "../file/file.service";
+import { FileDocument } from "../file/file.model";
 
 export class TaskService {
   constructor(
@@ -28,15 +29,16 @@ export class TaskService {
     private commentModel: Model<CommentDocument>,
     private automationModel: Model<AutomationDocument>,
     private notificationService: NotificationService,
-    private taskLogService: TaskLogService
-  ) {};
+    private taskLogService: TaskLogService,
+    private fileService: FileService
+  ) { };
 
   public async createTask(
     workspaceId: string | Types.ObjectId,
     projectId: string | Types.ObjectId,
     userId: string | Types.ObjectId,
     body: CreateTaskInput,
-    attachment: string | undefined
+    attachments?: Express.Multer.File[]
   ) {
     const {
       title,
@@ -70,6 +72,23 @@ export class TaskService {
 
     validateTaskDates(startDate, dueDate);
 
+    let attachmentIds: Types.ObjectId[] = [];
+
+    if (attachments && attachments.length > 0) {
+      const uploadedFiles = await Promise.all(
+        attachments.map((file) =>
+          this.fileService.upload(
+            file,
+            "task/attachment",
+            toObjectId(userId),
+            toObjectId(workspaceId)
+          )
+        )
+      );
+
+      attachmentIds = uploadedFiles.map((f) => f._id);
+    };
+
     const task = new this.taskModel({
       title,
       description,
@@ -81,7 +100,7 @@ export class TaskService {
       project: projectId,
       startDate: startDate ?? new Date(),
       dueDate,
-      attachment,
+      attachment: attachmentIds,
     });
 
     await task.save();
@@ -116,7 +135,7 @@ export class TaskService {
   }
 
   public async cloneTask({ taskId, userId }: ICloneTaskParam) {
-    const task = await this.checkExistTaskById(toObjectId(taskId));    
+    const task = await this.checkExistTaskById(toObjectId(taskId));
 
     const result = await this.taskModel.create({
       title: task.title,
@@ -131,7 +150,7 @@ export class TaskService {
       dueDate: task.dueDate,
       attachment: task.attachment
     });
-    
+
     await result.save();
 
     if (task.assignedTo) {
@@ -169,7 +188,7 @@ export class TaskService {
     taskId: string,
     userId: string,
     body: UpdateTaskInput,
-    file?: Express.Multer.File
+    file?: Express.Multer.File[]
   ) {
     const project = await this.projectModel.findById(projectId);
 
@@ -189,18 +208,40 @@ export class TaskService {
 
     const oldTask = task.toObject();
 
-    let attachmentUrl: string | undefined;
+    let attachments = [...task.attachment];
 
-    if (file) {
-      if (task?.attachment) {
-        await deleteFile(task.attachment);
-      }
-      attachmentUrl = await uploadFileToS3(file, "task/attachment");
+    if (body.removeAttachmentIds?.length) {
+      await this.fileService.deleteMany(body.removeAttachmentIds);
+  
+      attachments = attachments.filter(
+        id => !body.removeAttachmentIds?.includes(id.toString())
+      );
     }
+
+    let attachmentUrl: FileDocument | null = null;
+
+    if (file?.length) {
+      const uploaded = await Promise.all(
+        file.map(file =>
+          this.fileService.upload(
+            file,
+            "task/attachment",
+            toObjectId(userId),
+            toObjectId(workspaceId)
+          )
+        )
+      );
+  
+      attachments.push(...uploaded.map(f => f._id));
+    }
+  
+    task.attachment = attachments;
+  
+    await task.save();
 
     const updateData: any = {
       ...body,
-      ...(attachmentUrl && { attachment: attachmentUrl }),
+      ...(attachmentUrl ? { attachment: attachments } : {}),
       ...(body.startDate !== undefined && { startDate: body.startDate }),
     };
 
@@ -230,7 +271,7 @@ export class TaskService {
         task.id,
         toObjectId(
           (updatedTask?.assignedTo as Types.ObjectId) ??
-            updatedTask?.createdBy
+          updatedTask?.createdBy
         ),
         toObjectId(userId),
         NotificationTypeEnum.TASK_UPDATED
@@ -281,7 +322,8 @@ export class TaskService {
         .limit(limit)
         .sort({ createdAt: -1 })
         .populate("assignedTo", { password: 0 })
-        .populate("project", "_id emoji name"),
+        .populate("project", "_id emoji name")
+        .populate("attachment"),
 
       this.taskModel.countDocuments(query),
     ]);
@@ -313,7 +355,9 @@ export class TaskService {
       _id: taskId,
       workspace: workspaceId,
       project: projectId,
-    }).populate("assignedTo", "_id name profilePicture -password");
+    })
+      .populate("assignedTo", "_id name profilePicture -password")
+      .populate("attachment");
 
     if (!task) {
       throw new NotFoundException(MESSAGES.TASK.TASK_NOT_FOUND.message);
@@ -327,16 +371,24 @@ export class TaskService {
       _id: taskId,
       workspace: workspaceId,
     });
-    
+
     if (!task) {
       throw new NotFoundException(
         MESSAGES.TASK.TASK_NOT_IN_WORKSPACE.message
       );
     }
 
-    await this.commentModel.deleteMany({ 
-      task: taskId, 
-      workspace: workspaceId, 
+    if (task.attachment && task.attachment.length > 0) {
+      await Promise.all(
+        task.attachment.map((fileId: Types.ObjectId) =>
+          this.fileService.delete(fileId)
+        )
+      );
+    }
+
+    await this.commentModel.deleteMany({
+      task: taskId,
+      workspace: workspaceId,
       user: userId
     });
 
@@ -411,7 +463,7 @@ export class TaskService {
     return task;
   }
 
-  public async assignTask (
+  public async assignTask(
     taskId: Types.ObjectId,
     userId: Types.ObjectId,
     senderId: Types.ObjectId,
@@ -422,7 +474,7 @@ export class TaskService {
       { assignedTo: userId },
       { new: true }
     );
-  
+
     await this.notificationService.create({
       type,
       receiver: userId,

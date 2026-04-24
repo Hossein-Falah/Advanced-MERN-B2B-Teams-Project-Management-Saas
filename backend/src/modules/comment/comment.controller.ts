@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { uploadFileToS3 } from "../../utils/s3";
 import { ResponseHandler } from "../../common/response/response-handler";
 import { HTTPSTATUS } from "../../config/http.config";
 import { MESSAGES } from "../../common/constants/message.constant";
@@ -31,19 +30,15 @@ export class CommentController {
   
       const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID);
       roleGuard(role, [Permissions.CREATE_COMMENT]);
-  
-      let attachment;
-  
-      if (req.file) {
-        attachment = await uploadFileToS3(req.file, "comment/attachment");
-      }
+
+      const files = req.files as Express.Multer.File[];
   
       const comment = await this.commentService.createComment(
         workspaceID,
         taskID,
         userId,
         body,
-        attachment
+        files
       );
   
       return ResponseHandler.send(res, {
@@ -101,13 +96,16 @@ export class CommentController {
   
       const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID);
       roleGuard(role, [Permissions.EDIT_COMMENT]);
+
+      const files = req.files as Express.Multer.File[];
   
       const { comment } = await this.commentService.updateComment(
+        userId,
         workspaceID,
         commentID,
         taskID,
         body,
-        req.file
+        files
       );
   
       return ResponseHandler.send(res, {

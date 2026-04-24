@@ -4,13 +4,13 @@ import { getContainer } from "../../app/container";
 
 const commentRoutes = Router();
 
-const singleUpload: RequestHandler = uploadMiddelware.single("attachment");
+const multipleUpload: RequestHandler = uploadMiddelware.array("attachment", 10);
 
 const { commentController } = getContainer()
 
 commentRoutes.post(
   "/task/:taskId/workspace/:workspaceId/create",
-  singleUpload,
+  multipleUpload,
   commentController.createComment
 );
 
@@ -23,7 +23,7 @@ commentRoutes.get(
 
 commentRoutes.put(
   "/:commentId/task/:taskId/workspace/:workspaceId/update",
-  singleUpload,
+  multipleUpload,
   commentController.updateComment
 );
 

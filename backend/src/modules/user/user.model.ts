@@ -57,6 +57,8 @@ const userSchema = new Schema<UserDocument>(
     },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date, default: null },
+    storageUsed: { type: Number, default: 0 },
+    storageLimit: { type: Number, required: true, default: 5 * 1024 ** 3 },
     region: {
       type: String,
       default: "Asia/Tehran"

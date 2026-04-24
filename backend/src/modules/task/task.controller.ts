@@ -3,7 +3,6 @@ import { TaskService } from "./task.service";
 import { createTaskSchema, taskCloneQuerySchema, taskQuerySchema, updateTaskSchema } from "./task.validation";
 import { roleGuard } from "../../utils/roleGuard";
 import { Permissions } from "../../common/enums/role.enum";
-import { uploadFileToS3 } from "../../utils/s3";
 import { MemberService } from "../member/member.service";
 import { ResponseHandler } from "../../common/response/response-handler";
 import { HTTPSTATUS } from "../../config/http.config";
@@ -36,17 +35,14 @@ export class TaskController {
       const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID);
       roleGuard(role, [Permissions.CREATE_TASK]);
 
-      let attachmentUrl: string | undefined;
-      if (req.file) {
-        attachmentUrl = await uploadFileToS3(req.file, "task/attachment");
-      }
+      const files = req.files as Express.Multer.File[];
 
       const task = await this.taskService.createTask(
         workspaceID,
         projectID,
         userId,
         body,
-        attachmentUrl
+        files
       );
 
       return ResponseHandler.send(res, {
@@ -56,7 +52,7 @@ export class TaskController {
         message: MESSAGES.TASK.CREATED.message,
         data: task,
       });
-    } catch (error) {
+    } catch (error) {      
       next(error);
     }
   }
@@ -99,13 +95,15 @@ export class TaskController {
       const { role } = await this.memberService.getMemberRoleInWorkspace(userId, workspaceID);
       roleGuard(role, [Permissions.EDIT_TASK]);
 
+      const files = req.files as Express.Multer.File[];
+
       const task = await this.taskService.updateTask(
         workspaceID,
         projectID,
         taskId,
         userId,
         body,
-        req.file
+        files
       );
 
       return ResponseHandler.send(res, {

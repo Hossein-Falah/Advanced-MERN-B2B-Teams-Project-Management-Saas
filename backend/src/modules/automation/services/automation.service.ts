@@ -48,7 +48,6 @@ export class AutomationService {
                 startDate: now,
                 dueDate: new Date(now.getTime() + automation.durationMs),
             },
-            task.attachment
         )
 
         const nextRun = await calculateNextRun(

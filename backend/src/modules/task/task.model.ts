@@ -12,7 +12,7 @@ export interface TaskDocument extends Document {
   priority: TaskPriorityEnumType;
   assignedTo: mongoose.Types.ObjectId | null;
   createdBy: mongoose.Types.ObjectId;
-  attachment: string;
+  attachment: mongoose.Types.ObjectId[];
   startDate: Date | null;
   dueDate: Date | null;
   createdAt: Date;
@@ -37,9 +37,8 @@ const taskSchema = new Schema<TaskDocument>(
       default: null,
     },
     attachment: {
-      type: String,
-      trim: true,
-      default: null,
+      type: [{ type: mongoose.Types.ObjectId, ref: "File" }],
+      default: []
     },
     project: {
       type: Schema.Types.ObjectId,
@@ -90,13 +89,6 @@ const TaskModel = mongoose.model<TaskDocument>("Task", taskSchema);
 taskSchema.index({ workspace: 1, project: 1, startDate: 1, dueDate: 1 });
 
 taskSchema.index({ workspace: 1, assignedTo: 1, startDate: 1, dueDate: 1 });
-
-taskSchema.path("attachment").get(function (value: string) {
-  if (!value) return value;
-  const bucket = process.env.AWS_S3_BUCKET_NAME;
-  const endpoint = process.env.AWS_ENDPOINT;
-  return `https://${bucket}.${endpoint}/${value}`;
-});
 
 taskSchema.set("toJSON", { getters: true });
 

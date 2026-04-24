@@ -15,6 +15,8 @@ export const statusSchema = z.enum(
   Object.values(TaskStatusEnum) as [string, ...string[]]
 );
 
+export const removeAttachmentIdsSchema = z.array(z.string()).optional();
+
 export const dueDateSchema = z
   .union([z.string(), z.date()])
   .optional()
@@ -68,7 +70,8 @@ export const updateTaskSchema = z.object({
   ).optional(),
   assignedTo: assignedToSchema,
   dueDate: dueDateSchema,
-  startDate: startDateSchema
+  startDate: startDateSchema,
+  removeAttachmentIds: removeAttachmentIdsSchema
 });
 
 // objectId validator

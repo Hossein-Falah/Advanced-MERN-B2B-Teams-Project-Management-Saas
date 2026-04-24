@@ -18,6 +18,7 @@ export interface UpdateTaskInput {
     assignedTo?: string | null;
     startDate?: Date | null;
     dueDate?: Date | null;
+    removeAttachmentIds?: string[];
 }
 
 export interface TaskFilters {

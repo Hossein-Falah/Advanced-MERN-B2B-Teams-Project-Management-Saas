@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { removeAttachmentIdsSchema } from "../task/task.validation";
 
 export const contentSchema = z.string().trim().min(1);
 
@@ -9,5 +10,6 @@ export const userSchema = z.string().trim().min(1);
 export const commentIdSchema = z.string().trim().min(1);
 
 export const commentSchema = z.object({
-    content: contentSchema
+    content: contentSchema,
+    removeAttachmentIds: removeAttachmentIdsSchema
 });

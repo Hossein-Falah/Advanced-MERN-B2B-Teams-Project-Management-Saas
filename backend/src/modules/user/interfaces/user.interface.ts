@@ -35,6 +35,10 @@ export interface UserDocument extends Document {
     jobTitle?: string;
     isOnline?: boolean;
     lastSeen?: Date | null;
+
+    storageUsed: number; // storage used bite
+    storageLimit: number; 
+
     createdAt: Date;
     updatedAt: Date;
     currentWorkspace: mongoose.Types.ObjectId | null;

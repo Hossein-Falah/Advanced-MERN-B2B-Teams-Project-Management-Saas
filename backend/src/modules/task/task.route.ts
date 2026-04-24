@@ -4,13 +4,13 @@ import upload from "../../common/middlewares/upload.middelware";
 
 const taskRoutes = Router();
 
-const singleUpload: RequestHandler = upload.single("attachment");
+const multipleUpload: RequestHandler = upload.array("attachment", 10);
 
 const { taskController } = getContainer()
 
 taskRoutes.post(
   "/project/:projectId/workspace/:workspaceId/create",
-  singleUpload,
+  multipleUpload,
   taskController.createTask
 );
 
@@ -21,7 +21,7 @@ taskRoutes.post(
 
 taskRoutes.put(
   "/:id/project/:projectId/workspace/:workspaceId/update",
-  singleUpload,
+  multipleUpload,
   taskController.updateTask
 );
 

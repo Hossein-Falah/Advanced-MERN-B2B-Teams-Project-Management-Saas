@@ -1,14 +1,16 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { IUpdateUserProfileInput, UserDocument } from "./interfaces/user.interface";
 import { MemberDocument } from "../member/member.model";
 import { MESSAGES } from "../../common/constants/message.constant";
-import { uploadFileToS3 } from "../../utils/s3";
 import { BadRequestException, NotFoundException } from "../../common/errors/app-error";
+import { FileService } from "../file/file.service";
+import { toObjectId } from "../../utils/convert-objectId.util";
 
 export class UserService {
   constructor(
     private userModel: Model<UserDocument>,
-    private memberModel: Model<MemberDocument>
+    private memberModel: Model<MemberDocument>,
+    private fileService: FileService
   ) { }
 
   public async getCurrentUser(userId: string) {
@@ -76,18 +78,20 @@ export class UserService {
       };
     }
 
+    const user = await this.userModel.findOne({ _id: userId })
+
     if (file) {
-      const attachmentUrl = await uploadFileToS3(file, "profile");
+      const attachmentUrl = await this.fileService.upload(file, "profile", toObjectId(userId), user?.currentWorkspace as Types.ObjectId)
       updateData.profilePicture = attachmentUrl;
     }
 
-    const user = await this.userModel.findByIdAndUpdate(
+    const userUpdated = await this.userModel.findByIdAndUpdate(
       userId,
       { $set: updateData },
       { new: true }
     ).select("-password");
 
-    return user;
+    return userUpdated;
   }
 
   public async getUserProfile(username: string, workspaceId: string) {
@@ -113,5 +117,19 @@ export class UserService {
     if (!user) throw new BadRequestException(MESSAGES.USER.NOT_FOUND.message);
 
     return user;
+  }
+
+  public async incrementStorageUsed(ownerId: Types.ObjectId, size: number) {
+    await this.userModel.updateOne(
+      { _id: ownerId },
+      { $inc: { storageUsed: size } }
+    );
+  }
+
+  public async decrementStorageUsed(ownerId: Types.ObjectId, size: number) {
+    await this.userModel.updateOne(
+      { _id: ownerId },
+      { $inc: { storageUsed: -size } }
+    );
   }
 }

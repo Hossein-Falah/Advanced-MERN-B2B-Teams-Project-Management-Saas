@@ -386,5 +386,35 @@ export const MESSAGES = {
             code: "PROJECT_NOT_FOUND",
             message: "Project not found or does not belong to the specified workspace",
         },
-    }
+    },
+    FILE: {
+        FETCHED: {
+            code: "FILE_FETCHED",
+            message: "File fetched successfully",
+        },
+        NOT_FOUND: {
+            code: "FILE_NOT_FOUND",
+            message: "File not found"
+        },
+        STORAGE_LIMIT_EXCEEDED: {
+            code: "STORAGE_LIMIT_EXCEEDED",
+            message: "You have exceeded your storage capacity limit."
+        }
+    },
+    STORAGE: {
+        LIMIT_EXCEEDED: {
+            code: 'STORAGE_LIMIT_EXCEEDED',
+            message: "The uploaded file exceeds your available storage limit.",
+        },
+    },
+    UPLOAD: {
+        SERVICE_UNAVAILABLE: {
+            code: "UPLOAD_SERVICE_UNAVAILABLE",
+            message: "The upload service is temporarily unavailable. Please try again later.",
+        },
+        FAILED: {
+            code: "UPLOAD_FAILED",
+            message: "An error occurred during the upload process.",
+        },
+    },
 } as const;

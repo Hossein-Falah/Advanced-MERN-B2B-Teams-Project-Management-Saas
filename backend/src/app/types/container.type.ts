@@ -7,6 +7,9 @@ import { AutomationController } from "../../modules/automation/automation.contro
 import { AutomationService } from "../../modules/automation/services/automation.service";
 import { CommentController } from "../../modules/comment/comment.controller";
 import { CommentService } from "../../modules/comment/comment.service";
+import { FileController } from "../../modules/file/file.controller";
+import { FileRepository } from "../../modules/file/file.repository";
+import { FileService } from "../../modules/file/file.service";
 import { MemberController } from "../../modules/member/member.controller";
 import { MemberService } from "../../modules/member/member.service";
 import { MentionController } from "../../modules/mention/mention.controller";
@@ -27,6 +30,7 @@ import { WorkspaceService } from "../../modules/workspace/workspace.service";
 export type Container = {
     // repository
     analyticsRepository: AnalyticsRepository,
+    fileRepository: FileRepository,
 
     // Services
     analyticsService: AnalyticsService,
@@ -41,6 +45,7 @@ export type Container = {
     userService: UserService,
     workspaceService: WorkspaceService,
     mentionService: MentionService,
+    fileService: FileService,
 
     // Controllers
     analyticsController: AnalyticsController,
@@ -54,5 +59,6 @@ export type Container = {
     taskLogController: TaskLogController,
     userController: UserController,
     workspaceController: WorkspaceController,
-    mentionController: MentionController
+    mentionController: MentionController,
+    fileController: FileController
 };
